@@ -2,16 +2,16 @@ package plia.framework;
 
 import android.database.Observable;
 
-public class Model extends Observable<Controller>
+public class Model extends Observable<ViewController>
 {
-	public void notifyObserver(Controller observer, Object...objects)
+	public void notifyObserver(ViewController observer, Object...objects)
 	{
 		observer.update(observer, objects);
 	}
 	
 	public void notifyAllObserver(Object...objects)
 	{
-		for (Controller observer : mObservers)
+		for (ViewController observer : mObservers)
 		{
 			observer.update(observer, objects);
 		}

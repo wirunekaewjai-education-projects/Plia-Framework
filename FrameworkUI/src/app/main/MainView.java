@@ -1,9 +1,9 @@
 package app.main;
 
 import android.view.View;
-import plia.framework.Controller;
+import plia.framework.ViewController;
 
-public class MainView extends Controller
+public class MainView extends ViewController
 {
 
 	public MainView(View view)
@@ -14,7 +14,7 @@ public class MainView extends Controller
 	}
 
 	@Override
-	public void update(Controller observer, Object... objects)
+	public void update(ViewController observer, Object... objects)
 	{
 		
 		

@@ -1,104 +1,113 @@
 package plia.framework;
 
-import java.lang.Thread.State;
-import java.util.Vector;
+import static android.opengl.GLES20.*;
 
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+
+import android.app.Activity;
 import android.content.Context;
+import android.opengl.GLSurfaceView;
+import android.opengl.GLSurfaceView.Renderer;
 import android.util.Log;
-import android.view.View;
 import android.widget.FrameLayout;
 
-public abstract class Framework implements IFramework, Runnable
+public abstract class Framework extends GameThread implements IFramework
 {
-	private Context mContext;
-	
 	private FrameLayout baseLayout = null;
-	
-	private Thread gameThread = null;
-	private volatile boolean isRun = false;
-	private Vector<Runnable> runnables = null;
+	private GLRenderer renderer = null;
 	
 	public Framework(Context context)
 	{
-		instance = this;
+		super(context);
 		
-		mContext = context;
 		baseLayout = new FrameLayout(context);
+		renderer = new GLRenderer(context);
 		
-		gameThread = new Thread(this);
-		runnables = new Vector<Runnable>();
+		baseLayout.addView(renderer);
+		addRunnable(renderer);
 	}
 	
 	@Override
-	public void destroy()
-	{
-		instance = null;
-	}
-	
-	@Override
-	public void run()
-	{
-		while(isRun)
-		{
-			try
-			{
-				// TODO Something
-				for (Runnable runnable : runnables)
-				{
-					runnable.run();
-				}
-				
-				//
-				Thread.sleep(15);
-			} catch (InterruptedException e)
-			{
-				Log.e("Error", e.getMessage());
-			}
-		}
-	}
-	
 	public void start()
 	{
-		isRun = true;
-		gameThread.start();
+		((Activity)baseLayout.getContext()).setContentView(baseLayout);
+		super.start();
 	}
 	
-	public void stop()
+	@Override
+	public void render()
 	{
-		destroy();
+		// TODO Something
 		
-		isRun = false;
+		Log.e("Framework", "Rendering");
+		
+		// ///////////////
+	}
 
-		while(gameThread.getState() != State.TERMINATED)
+	//
+	class GLRenderer extends GLSurfaceView implements Renderer, Runnable
+	{
+		private int width, height;
+		private float ratio;
+
+		public GLRenderer(Context context)
 		{
-			Log.e("Thread", "Waiting for terminate");
+			super(context);
+
+			this.setEGLContextClientVersion(2);
+			this.setRenderer(this);
+			this.setRenderMode(RENDERMODE_WHEN_DIRTY);
 		}
 		
-		gameThread.stop();
-		Log.e("Thread", "Thread is TERMINATED");
-	}
-	
-	public void addRunnable(Runnable runnable)
-	{
-		if(!runnables.contains(runnable))
+		@Override
+		protected void onDetachedFromWindow()
 		{
-			runnables.add(runnable);
+			// TODO Auto-generated method stub
+			super.onDetachedFromWindow();
+			
+			stop();
 		}
-	}
-	
-	public void removeRunnable(Runnable runnable)
-	{
-		if(runnables.contains(runnable))
-		{
-			runnables.remove(runnable);
-		}
-	}
-	
 
-	private static Framework instance = null;
-	static Framework getInstance()
-	{
-		return instance;
+		@Override
+		public void onSurfaceCreated(GL10 gl, EGLConfig config)
+		{
+			initialize();
+		}
+
+		@Override
+		public void onSurfaceChanged(GL10 gl, int width, int height)
+		{
+			this.width = width;
+			this.height = height;
+			this.ratio = (float) width / height;
+		}
+
+		@Override
+		public void onDrawFrame(GL10 gl)
+		{
+			update();
+			
+			//Rendering
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_CULL_FACE);
+
+			glViewport(0, 0, renderer.width, renderer.height);
+
+			glClearColor(1, 0, 0, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			
+			render();
+			
+			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_CULL_FACE);
+		}
+
+		@Override
+		public void run()
+		{
+			requestRender();
+		}
 	}
 }
 
@@ -107,5 +116,4 @@ interface IFramework
 	void initialize();
 	void update();
 	void render();
-	void destroy();
 }

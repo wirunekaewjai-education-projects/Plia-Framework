@@ -4,12 +4,12 @@ import java.util.Vector;
 
 import android.view.View;
 
-public abstract class Controller implements IController, Runnable
+public abstract class ViewController implements IController, Runnable
 {
 	private View mView = null;
 	private Vector<View> touchHoldList = null;
 	
-	public Controller(View view)
+	public ViewController(View view)
 	{
 		Framework.getInstance().addRunnable(this);
 		mView = view;
@@ -75,5 +75,5 @@ public abstract class Controller implements IController, Runnable
 
 interface IController
 {
-	void update(Controller observer, Object...objects);
+	void update(ViewController observer, Object...objects);
 }

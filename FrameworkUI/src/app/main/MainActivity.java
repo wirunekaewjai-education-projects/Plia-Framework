@@ -1,5 +1,6 @@
 package app.main;
 
+import plia.framework.Framework;
 import android.app.Activity;
 import android.os.Bundle;
 
@@ -11,8 +12,25 @@ public class MainActivity extends Activity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-
+        
+        Framework framework = new Framework(this)
+		{
+			
+			@Override
+			public void update()
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void initialize()
+			{
+				// TODO Auto-generated method stub
+				
+			}
+		};
+		framework.start();
     }
 
 }
