@@ -15,7 +15,6 @@
         android:id="@+id/button1"
         android:layout_width="94dp"
         android:layout_height="34dp"
-        android:onClick="onClick"
         android:text="Button 01" />
 
     <TextView
@@ -29,7 +28,6 @@
         android:id="@+id/button2"
         android:layout_width="93dp"
         android:layout_height="33dp"
-        android:onClick="onClick"
         android:text="Button 02" />
 
 </LinearLayout>

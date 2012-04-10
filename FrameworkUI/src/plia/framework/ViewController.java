@@ -2,6 +2,8 @@ package plia.framework;
 
 import java.util.Vector;
 
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 
 public abstract class ViewController implements IController, Runnable
@@ -14,6 +16,24 @@ public abstract class ViewController implements IController, Runnable
 		Framework.getInstance().addRunnable(this);
 		mView = view;
 		touchHoldList = new Vector<View>();
+	}
+	
+	public ViewController(Context context, int layoutResID)
+	{
+		Framework.getInstance().addRunnable(this);
+		View view = LayoutInflater.from(context).inflate(layoutResID, null);
+		mView = view;
+		touchHoldList = new Vector<View>();
+	}
+	
+	public View getView()
+	{
+		return mView;
+	}
+	
+	public View findViewById(int id)
+	{
+		return mView.findViewById(id);
 	}
 	
 	public void registerTouchHoldEvent(View view)
@@ -53,6 +73,15 @@ public abstract class ViewController implements IController, Runnable
 			touchHoldList.remove(view);
 		}
 	}
+	
+	//
+	public void changeView(int layoutResID, ViewController controller)
+	{
+		
+	}
+	
+	
+	//
 	
 	public void onTouchHoldEvent(View v)
 	{

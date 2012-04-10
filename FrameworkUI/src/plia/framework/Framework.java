@@ -10,21 +10,32 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-public abstract class Framework extends GameThread implements IFramework
+public abstract class Framework extends GameThread1 implements IFramework
 {
 	private FrameLayout baseLayout = null;
 	private GLRenderer renderer = null;
+	private FrameLayout guiLayout = null;
 	
 	public Framework(Context context)
 	{
 		super(context);
 		
+		Activity activity = ((Activity)context);
+		activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		
 		baseLayout = new FrameLayout(context);
 		renderer = new GLRenderer(context);
+		guiLayout = new FrameLayout(context);
 		
 		baseLayout.addView(renderer);
+		baseLayout.addView(guiLayout);
 		addRunnable(renderer);
 	}
 	
@@ -43,6 +54,16 @@ public abstract class Framework extends GameThread implements IFramework
 		Log.e("Framework", "Rendering");
 		
 		// ///////////////
+	}
+	
+	public void addView(ViewController controller)
+	{
+		guiLayout.addView(controller.getView());
+	}
+	
+	public void setOrientation(int requestedOrientation)
+	{
+		((Activity)getContext()).setRequestedOrientation(requestedOrientation);
 	}
 
 	//
@@ -66,7 +87,7 @@ public abstract class Framework extends GameThread implements IFramework
 			// TODO Auto-generated method stub
 			super.onDetachedFromWindow();
 			
-			stop();
+//			stop();
 		}
 
 		@Override

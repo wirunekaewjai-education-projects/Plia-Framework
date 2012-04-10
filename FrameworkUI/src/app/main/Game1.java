@@ -1,39 +1,34 @@
 package app.main;
 
-import android.content.Context;
-import plia.framework.Framework;
+import android.util.Log;
+import plia.game.Game;
 
-public class Game extends Framework
+public class Game1 extends Game
 {
-	
 
-	public Game(Context context)
+	public Game1()
 	{
-		super(context);
-		// TODO Auto-generated constructor stub
+		Log.e("State", "Starting");
 	}
 
 	@Override
 	public void initialize()
 	{
-		// TODO Auto-generated method stub
-
+		getGraphicsManager().getScreen().setColor(1, 1, 0.5f);
 	}
 
 	@Override
 	public void update()
 	{
 		// TODO Auto-generated method stub
-		
+		Log.e("State", "Updating");
 	}
 
 	@Override
 	public void render()
 	{
 		// TODO Auto-generated method stub
-		
+		Log.e("State", "Drawing");
 	}
-
-
 
 }
