@@ -20,8 +20,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-//        FbxPlugin plugin = new FbxPlugin(this);
-//		plugin.load("elementalist3.FBX");
+        FbxPlugin plugin = new FbxPlugin(this);
+		plugin.load("buffylow.FBX");
 		
 
     }
