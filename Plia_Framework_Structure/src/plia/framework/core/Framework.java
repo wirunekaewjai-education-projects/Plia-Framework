@@ -13,6 +13,7 @@ public class Framework
 {
 	private OpenGLSurfaceView surfaceView;
 	
+	private GameObjectManager gameObjectManager;
 	private UpdateManager updateManager;
 	private TouchEventManager touchEventManager;
 	private TextureManager textureManager;
@@ -24,8 +25,7 @@ public class Framework
 
 	private boolean isStarted = false;
 	private boolean isStopped = false;
-	private boolean isPaused = false;
-	
+
 	private Framework()
 	{
 		
@@ -37,6 +37,7 @@ public class Framework
 		{
 			this.surfaceView = surfaceView;
 			this.surfaceView.setRenderer(renderer);
+			((Activity)this.surfaceView.getContext()).setContentView(surfaceView);
 		}
 	}
 	
@@ -50,6 +51,7 @@ public class Framework
 		this.isStarted = false;
 		this.isStopped = false;
 		
+		this.gameObjectManager = GameObjectManager.getInstance();
 		this.updateManager = UpdateManager.getInstance();
 		this.touchEventManager = TouchEventManager.getInstance();
 		this.textureManager = TextureManager.getInstance();
@@ -72,24 +74,17 @@ public class Framework
 		currentScene = null;
 		touchEventManager.removeAll();
 		updateManager.removeAll();
+		gameObjectManager.removeAll();
 	}
 	
 	public void resume()
 	{
-		if(isPaused)
-		{
-			this.surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-			this.isPaused = false;
-		}	
+		this.surfaceView.onResume();
 	}
 	
 	public void pause()
 	{
-		if(!isPaused)
-		{
-			this.surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-			this.isPaused = true;
-		}
+		this.surfaceView.onPause();
 	}
 	
 	// //
@@ -117,6 +112,7 @@ public class Framework
 //				long start = System.nanoTime();
 				shaderManager.start(true);
 				textureManager.setContext(surfaceView.getContext());
+				gameObjectManager.setContext(surfaceView.getContext());
 //				long end = System.nanoTime() - start;
 //				Log.e("Usage Time to Create Shader", (end / 1000000f)+" ms");
 				
@@ -134,6 +130,8 @@ public class Framework
 				{
 					currentScene.update();
 				}
+				
+				gameObjectManager.render();
 			}
 			else
 			{

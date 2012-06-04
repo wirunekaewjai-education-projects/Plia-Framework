@@ -15,7 +15,6 @@ public class Activity extends android.app.Activity
 		
 		framework = Framework.getInstance();
 		surfaceView = new OpenGLSurfaceView(this);
-		setContentView(surfaceView);
 	}
 	
 	@Override
