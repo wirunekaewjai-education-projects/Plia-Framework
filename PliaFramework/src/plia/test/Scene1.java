@@ -15,11 +15,11 @@ import plia.framework.core.scene.component.AnimationClip;
 import plia.framework.core.scene.component.BoundingBox;
 import plia.framework.core.scene.component.Plane;
 import plia.framework.core.scene.component.PlaybackMode;
-import plia.framework.graphics.Color3;
 import plia.framework.math.Vector2;
 import plia.framework.math.Vector3;
 import plia.framework.scene.Layer;
 import plia.framework.scene.Scene;
+import plia.framework.scene.obj3d.shading.Color3;
 
 public class Scene1 extends Scene
 {

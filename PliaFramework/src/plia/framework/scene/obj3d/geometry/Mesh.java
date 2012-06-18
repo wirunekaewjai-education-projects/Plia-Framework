@@ -11,6 +11,15 @@ public class Mesh extends Geometry
 	
 	public Mesh(int normalsOffset, int uvOffset, int indicesCount)
 	{
+		super(Geometry.MESH);
+		INDICES_COUNT = indicesCount;
+		NORMALS_OFFSET = normalsOffset;
+		UV_OFFSET = uvOffset;
+	}
+	
+	protected Mesh(int type, int normalsOffset, int uvOffset, int indicesCount)
+	{
+		super(type);
 		INDICES_COUNT = indicesCount;
 		NORMALS_OFFSET = normalsOffset;
 		UV_OFFSET = uvOffset;

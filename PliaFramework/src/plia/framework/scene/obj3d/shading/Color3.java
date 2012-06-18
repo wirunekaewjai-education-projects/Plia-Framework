@@ -1,4 +1,4 @@
-package plia.framework.graphics;
+package plia.framework.scene.obj3d.shading;
 
 public final class Color3
 {
