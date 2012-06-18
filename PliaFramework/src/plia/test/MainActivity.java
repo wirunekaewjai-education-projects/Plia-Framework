@@ -2,8 +2,9 @@ package plia.test;
 
 import java.io.IOException;
 
+
 import plia.application.R;
-import plia.fbxsdk.fileio.FbxImporter;
+import plia.framework.fbxplugin.fileio.FbxImporter;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;

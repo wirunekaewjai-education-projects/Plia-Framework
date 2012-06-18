@@ -1,6 +1,6 @@
 package plia.framework.scene;
 
-import plia.framework.GameObject;
+import plia.framework.core.GameObject;
 
 @SuppressWarnings("rawtypes")
 public final class Layer<T extends Node> extends GameObject

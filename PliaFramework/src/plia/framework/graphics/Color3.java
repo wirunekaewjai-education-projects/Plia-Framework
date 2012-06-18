@@ -1,6 +1,6 @@
 package plia.framework.graphics;
 
-public class Color3
+public final class Color3
 {
 	public float r, g, b;
 	

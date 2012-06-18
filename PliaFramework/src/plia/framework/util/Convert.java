@@ -1,6 +1,6 @@
 package plia.framework.util;
 
-public class Convert
+public final class Convert
 {
 	public static short toShort(String s)
 	{

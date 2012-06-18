@@ -1,6 +1,6 @@
 package plia.framework.scene;
 
-import plia.framework.GameObject;
+import plia.framework.core.GameObject;
 
 @SuppressWarnings({"rawtypes"})
 public abstract class Scene extends GameObject implements IScene

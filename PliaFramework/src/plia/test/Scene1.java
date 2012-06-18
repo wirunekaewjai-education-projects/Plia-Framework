@@ -1,25 +1,25 @@
 package plia.test;
 
 import android.util.Log;
-import plia.framework.Game;
-import plia.framework.GameObjectManager;
-import plia.framework.GameTime;
-import plia.framework.debug.Debug;
+import plia.framework.core.Game;
+import plia.framework.core.GameObjectManager;
+import plia.framework.core.GameTime;
+import plia.framework.core.debug.Debug;
+import plia.framework.core.math.Matrix;
+import plia.framework.core.scene.Camera;
+import plia.framework.core.scene.Group;
+import plia.framework.core.scene.Light;
+import plia.framework.core.scene.Model;
+import plia.framework.core.scene.component.Animation;
+import plia.framework.core.scene.component.AnimationClip;
+import plia.framework.core.scene.component.BoundingBox;
+import plia.framework.core.scene.component.Plane;
+import plia.framework.core.scene.component.PlaybackMode;
 import plia.framework.graphics.Color3;
-import plia.framework.math.Matrix;
 import plia.framework.math.Vector2;
 import plia.framework.math.Vector3;
-import plia.framework.scene.Camera;
-import plia.framework.scene.Group;
 import plia.framework.scene.Layer;
-import plia.framework.scene.Light;
-import plia.framework.scene.Model;
 import plia.framework.scene.Scene;
-import plia.framework.scene.component.Animation;
-import plia.framework.scene.component.AnimationClip;
-import plia.framework.scene.component.BoundingBox;
-import plia.framework.scene.component.Plane;
-import plia.framework.scene.component.PlaybackMode;
 
 public class Scene1 extends Scene
 {

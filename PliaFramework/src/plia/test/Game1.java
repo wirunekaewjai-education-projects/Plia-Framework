@@ -4,8 +4,8 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
-import plia.framework.FbxDroid;
-import plia.framework.Game;
+import plia.framework.core.FbxDroid;
+import plia.framework.core.Game;
 
 public class Game1 extends Game
 {
