@@ -203,10 +203,6 @@ public class FbxImporter
 						{
 							int count = Convert.toInt(line.substring(11).split(" ")[0]);
 							mesh.setVertices(readFloatAttribute(list, count));
-							for (int i = count-1; i >= 0 ; i--)
-							{
-//								Log.e(""+i, mesh.getVertices()[i]+"");
-							}
 						} 
 						else if (line.startsWith("Poly"))
 						{
@@ -585,8 +581,6 @@ public class FbxImporter
 //					String[] t = line.substring(7).split(",");
 //					long video_id = Convert.toLong(t[0]);
 //					String video_name = t[1].split("\"")[1].substring(7);
-					
-					
 				}
 			}
 			
@@ -723,7 +717,6 @@ public class FbxImporter
 					FbxNode node = nodes.get(node_id);
 					FbxAnimCurveNode animCurveNode = animCurveNodes.get(anim_curve_node_id);
 
-					// TODO
 					char type = tmp0[0].charAt(tmp0[0].length()-1);
 					if(type == 'T')
 					{
@@ -737,7 +730,6 @@ public class FbxImporter
 					{
 						node.setLclScaling(animCurveNode);
 					}
-					//
 				}
 			}
 			else if (line.startsWith(";NodeAtt"))
@@ -764,9 +756,7 @@ public class FbxImporter
 				FbxDeformer deformer = (FbxDeformer) deformers.get(deformer_id);
 				FbxGeometry geometry = (FbxGeometry) geometries.get(geometry_id);
 
-				// TODO
 				geometry.addDeformer(deformer);
-				//
 			}
 			else if (line.startsWith(";AnimCurve:"))
 			{
