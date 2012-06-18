@@ -84,6 +84,21 @@ public final class Matrix3
 		return new Matrix3(this);
 	}
 	
+	public void set(float[] m)
+	{
+		m11 = m[0];
+		m12 = m[1];
+		m13 = m[2];
+
+		m21 = m[3];
+		m22 = m[4];
+		m23 = m[5];
+
+		m31 = m[6];
+		m32 = m[7];
+		m33 = m[8];
+	}
+	
 	public void copyTo(float[] m)
 	{
 		m[0] = m11;

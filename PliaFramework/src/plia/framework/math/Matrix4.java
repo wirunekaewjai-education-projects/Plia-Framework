@@ -119,6 +119,29 @@ public final class Matrix4
 		return new Matrix4(this);
 	}
 	
+	public void set(float[] m)
+	{
+		m11 = m[0];
+		m12 = m[1];
+		m13 = m[2];
+		m14 = m[3];
+		
+		m21 = m[4];
+		m22 = m[5];
+		m23 = m[6];
+		m24 = m[7];
+		
+		m31 = m[8];
+		m32 = m[9];
+		m33 = m[10];
+		m34 = m[11];
+		
+		m41 = m[12];
+		m42 = m[13];
+		m43 = m[14];
+		m44 = m[15];
+	}
+	
 	public void copyTo(float[] m)
 	{
 		m[0] = m11;
