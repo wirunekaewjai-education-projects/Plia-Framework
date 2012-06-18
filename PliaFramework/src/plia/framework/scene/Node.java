@@ -13,6 +13,12 @@ class Node<T extends Node> extends GameObject
 		// TODO Auto-generated constructor stub
 	}
 	
+	protected Node(String name)
+	{
+		// TODO Auto-generated constructor stub
+		super(name);
+	}
+	
 	private final int indexOf(T child)
 	{
 		for (int i = 0; i < children.length; i++)

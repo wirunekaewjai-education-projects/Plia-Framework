@@ -20,11 +20,11 @@ public final class BoundingPlane extends Bounds
 	}
 	
 	@Override
-	protected void updateTransform(boolean parentHasChanged)
+	protected void onUpdateHierarchy(boolean parentHasChanged)
 	{
 		boolean hasChanged = this.hasChanged;
 		
-		super.updateTransform(parentHasChanged);
+		super.onUpdateHierarchy(parentHasChanged);
 		
 		if(isActive() && hasChanged)
 		{

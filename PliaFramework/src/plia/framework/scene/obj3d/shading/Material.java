@@ -9,7 +9,7 @@ public class Material
 	
 	public Material()
 	{
-		super(mdl);
+
 	}
 	
 	public Shader getShader()

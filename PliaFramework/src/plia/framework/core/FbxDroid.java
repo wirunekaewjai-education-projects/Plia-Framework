@@ -87,6 +87,8 @@ public class FbxDroid
 			preRotation[9] = up.y;
 			preRotation[10] = up.z;
 			
+			Matrix4 axisRotation = new Matrix4(preRotation);
+			
 //			Log.e("Rotation : "+filename, Matrix.toString(preRotation));
 			
 			int geometryCount = scene.getGeometryCount();
@@ -98,7 +100,7 @@ public class FbxDroid
 				FbxDroid[] datas = new FbxDroid[geometryCount];
 				for (int i = 0; i < geometryCount; i++)
 				{
-					datas[i] = new FbxDroid(filename, (FbxMesh) scene.getGeometry(i), preRotation);
+					datas[i] = new FbxDroid(filename, (FbxMesh) scene.getGeometry(i), axisRotation);
 					datas[i].frameRate = fps;
 					
 //					Log.e("Geometry No. : "+i, "Name           : "+scene.getGeometry(i).getNode(0).getName());
@@ -171,7 +173,7 @@ public class FbxDroid
 	private Vector3 defaultRotation = new Vector3();
 	private Vector3 defaultScaling = new Vector3();
 	
-	private float[] axisRotation = { 1,0,0,0,	0,1,0,0,	0,0,1,0,	0,0,0,1 };
+	private Matrix4 axisRotation;
 	
 	// Bounding Box
 	private Vector3 max = new Vector3();
@@ -191,7 +193,7 @@ public class FbxDroid
 	// Skinned
 	private ArrayList<FbxCluster> clusters;
 	
-	private FbxDroid(String rootName, FbxMesh mesh, float[] axisRotation)
+	private FbxDroid(String rootName, FbxMesh mesh, Matrix4 axisRotation)
 	{
 		this.rootName = rootName;
 		this.mesh = mesh;
@@ -844,7 +846,7 @@ public class FbxDroid
 		return textureFileName;
 	}
 	
-	public float[] getAxisRotation()
+	public Matrix4 getAxisRotation()
 	{
 		return axisRotation;
 	}

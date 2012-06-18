@@ -18,17 +18,19 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
-import plia.framework.core.scene.Group;
-import plia.framework.core.scene.Model;
-import plia.framework.core.scene.component.Animation;
-import plia.framework.core.scene.component.Material;
-import plia.framework.core.scene.component.geometry.Mesh;
-import plia.framework.core.scene.component.geometry.SkinnedMesh;
-import plia.framework.math.Vector3;
-import plia.framework.math.Vector4;
+import plia.framework.scene.Object3D;
+import plia.framework.scene.obj3d.Model;
+import plia.framework.scene.obj3d.animation.Animation;
+import plia.framework.scene.obj3d.geometry.Mesh;
+import plia.framework.scene.obj3d.geometry.SkinnedMesh;
+import plia.framework.scene.obj3d.shading.Color4;
+import plia.framework.scene.obj3d.shading.Material;
+import plia.framework.scene.obj3d.shading.Shader;
+import plia.framework.scene.obj3d.shading.Texture2D;
 
 public class GameObjectManager
 {
@@ -137,7 +139,21 @@ public class GameObjectManager
 				fileName = file.substring(indexOfSlash+1);
 			}
 			
-			Texture2D texture = new Texture2D(fileName, tex[0], bitmap);
+			int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
+			Color4[] colors = new Color4[bitmap.getWidth() * bitmap.getHeight()];
+			
+			bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+			for (int i = 0; i < pixels.length; i++)
+			{
+				float r = Color.red(pixels[i]) / 255f;
+				float g = Color.green(pixels[i]) / 255f;
+				float b = Color.blue(pixels[i]) / 255f;
+				float a = Color.alpha(pixels[i]) / 255f;
+				colors[i] = new Color4(r, g, b, a);
+			}
+			
+			Texture2D texture = new Texture2D(fileName, tex[0], colors, bitmap.getWidth(), bitmap.getHeight());
 			return texture;
 		} 
 		catch (IOException e)
@@ -148,7 +164,7 @@ public class GameObjectManager
 		return null;
 	}
 
-	public static Group loadModel(String fbx_path)
+	public static Object3D loadModel(String fbx_path)
 	{
 		FbxDroid[] droids = FbxDroid.importScene(fbx_path, instance.context);
 		
@@ -168,22 +184,20 @@ public class GameObjectManager
 			if(droid.isSkinnedMesh())
 			{
 				int[] boneBuffers = genBonesBuffer(droid.getBoneWeights(), droid.getBoneIndices());
-				mesh = new SkinnedMesh(mdl, droid.getNormalOffset(), droid.getUVOffset(), droid.getIndices().length);
-				mesh.setBuffers(2, boneBuffers[0]);
-				mesh.setBuffers(3, boneBuffers[1]);
+				mesh = new SkinnedMesh(droid.getNormalOffset(), droid.getUVOffset(), droid.getIndices().length);
+				mesh.setBuffer(2, boneBuffers[0]);
+				mesh.setBuffer(3, boneBuffers[1]);
 			}
 			else
 			{
-				mesh = new Mesh(mdl, droid.getNormalOffset(), droid.getUVOffset(), droid.getIndices().length);
+				mesh = new Mesh(droid.getNormalOffset(), droid.getUVOffset(), droid.getIndices().length);
 			}
 			
-			mesh.setBuffers(0, meshBuffers[0]);
-			mesh.setBuffers(1, meshBuffers[1]);
+			mesh.setBuffer(0, meshBuffers[0]);
+			mesh.setBuffer(1, meshBuffers[1]);
 			
 			mdl.setGeometry(mesh);
-			
-			
-			
+
 			if(droid.hasAnimation())
 			{
 				mesh.setMatrixPalette(droid.getMatrixPalette());
@@ -197,45 +211,41 @@ public class GameObjectManager
 			}
 			else
 			{
-				Vector3 t = droid.getDefaultTranslation();
-				Vector3 r = droid.getDefaultRotation();
-				Vector3 s = droid.getDefaultScaling();
-				
-				mdl.setPosition(t.x, t.y, t.z);
-				mdl.setEulerAngles(r.x, r.y, r.z);
-				mdl.setScale(s.x, s.y, s.z);
+				mdl.setPosition(droid.getDefaultTranslation());
+				mdl.setEulerAngles(droid.getDefaultRotation());
+				mdl.setScale(droid.getDefaultScaling());
 			}
 			
-			mesh.setScaling(droid.getDefaultScaling());
-			mesh.setTranslation(droid.getDefaultTranslation());
-			mesh.setRotation(droid.getDefaultRotation());
-			
-			float[] TRS = new float[16];
-			Vector3 translation = mesh.getTranslation();
-			Vector3 rotation = mesh.getRotation();
-			Vector3 scaling = mesh.getScaling();
-			
-			Matrix.createTRS_zyx(TRS, translation.x, translation.y, translation.z, rotation.x, rotation.y, rotation.z, scaling.x, scaling.y, scaling.z);
-			
-			Vector4 bbmin = new Vector4();
-			Vector4 bbmax = new Vector4();
-			
-			Matrix.multiply(bbmin, TRS, new Vector4(droid.getMin().x, droid.getMin().y, droid.getMin().z, 0));
-			Matrix.multiply(bbmax, TRS, new Vector4(droid.getMax().x, droid.getMax().y, droid.getMax().z, 0));
-
-			Vector4 size = Vector4.subtract(bbmax, bbmin);
-			Vector4 extents = Vector4.scale(size, 0.5f);
-			Vector4 center = Vector4.add(extents, bbmin);
-			
-			mesh.getBounds().set(new Vector3(bbmin.x, bbmin.y, bbmin.z), new Vector3(bbmax.x, bbmax.y, bbmax.z));
+//			mesh.setScaling(droid.getDefaultScaling());
+//			mesh.setTranslation(droid.getDefaultTranslation());
+//			mesh.setRotation(droid.getDefaultRotation());
+//			
+//			float[] TRS = new float[16];
+//			Vector3 translation = mesh.getTranslation();
+//			Vector3 rotation = mesh.getRotation();
+//			Vector3 scaling = mesh.getScaling();
+//			
+//			Matrix.createTRS_zyx(TRS, translation.x, translation.y, translation.z, rotation.x, rotation.y, rotation.z, scaling.x, scaling.y, scaling.z);
+//			
+//			Vector4 bbmin = new Vector4();
+//			Vector4 bbmax = new Vector4();
+//			
+//			Matrix.multiply(bbmin, TRS, new Vector4(droid.getMin().x, droid.getMin().y, droid.getMin().z, 0));
+//			Matrix.multiply(bbmax, TRS, new Vector4(droid.getMax().x, droid.getMax().y, droid.getMax().z, 0));
+//
+//			Vector4 size = Vector4.subtract(bbmax, bbmin);
+//			Vector4 extents = Vector4.scale(size, 0.5f);
+//			Vector4 center = Vector4.add(extents, bbmin);
+//			
+//			mesh.getBounds().set(new Vector3(bbmin.x, bbmin.y, bbmin.z), new Vector3(bbmax.x, bbmax.y, bbmax.z));
 //			mesh.getBounds().setCenter(center.x, center.y, center.z);
 			
 //			Log.e("", Matrix.toString(TRS));
 //			Log.e(droid.getMin().toString(), droid.getMax().toString());
 //			Log.e(bbmin.toString(), bbmax.toString());
 
-			Material material = new Material(mdl);
-			material.setShader(Shader.DIFFUSE_SHADER);
+			Material material = new Material();
+			material.setShader(Shader.DIFFUSE);
 			
 //			Vector3 baseColor = droid.getBaseColor();
 //			material.setBaseColor(baseColor.x, baseColor.y, baseColor.z);
@@ -265,31 +275,31 @@ public class GameObjectManager
 			models.add(mdl);
 		}
 		
-		Group group = null;
+		Object3D object3d = null;
 		
 		if(models.size() == 1)
 		{
-			group = models.get(0);
-			group.setName(droids[0].getRootName());
-			group.setAxisRotation(droids[0].getAxisRotation());
+			object3d = models.get(0);
+			object3d.setName(droids[0].getRootName());
+			object3d.setAxisRotation(droids[0].getAxisRotation());
 
 		}
 		else if(models.size() > 1)
 		{
-			group = new Group(droids[0].getRootName());
-			group.setAxisRotation(droids[0].getAxisRotation());
+			object3d = new Object3D(droids[0].getRootName());
+			object3d.setAxisRotation(droids[0].getAxisRotation());
 
 			for (int i = 0; i < models.size(); i++)
 			{
-				group.addChild(models.get(i));
+				object3d.addChild(models.get(i));
 			}
 		}
 		
-		if(group != null && hasAnimation)
+		if(object3d != null && hasAnimation)
 		{
-			Animation animation = new Animation(group, 0, 100);
+			Animation animation = new Animation(0, 100);
 			animation.setFrameRate(fps);
-			group.setAnimation(animation);
+			object3d.setAnimation(animation);
 			
 			for (int i = 0; i < models.size(); i++)
 			{
@@ -301,7 +311,7 @@ public class GameObjectManager
 			}
 		}
 
-		return group;
+		return object3d;
 	}
 	
 	private static int[] createMeshBuffer(float[] vertices, float[] normals, float[] uv, int[] indices)
@@ -351,10 +361,10 @@ public class GameObjectManager
 		return buffers;
 	}
 	
-	private class Prefab
-	{
-		private Mesh mesh;
-		private Animation animation;
-//		private 
-	}
+//	private class Prefab
+//	{
+//		private Mesh mesh;
+//		private Animation animation;
+////		private 
+//	}
 }

@@ -3,11 +3,9 @@ package plia.framework.core;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import plia.framework.core.debug.Debug;
-import plia.framework.core.graphics.Shader;
-import plia.framework.core.math.Matrix;
-import plia.framework.core.scene.Camera;
 import plia.framework.scene.Scene;
+import plia.framework.scene.obj3d.Camera;
+import plia.framework.scene.obj3d.shading.Shader;
 
 import android.app.Activity;
 import android.opengl.GLES20;
@@ -43,9 +41,9 @@ public abstract class Game extends Activity implements IFramework
 
 		this.gameTime = GameTime.getInstance();
 		
-		this.debug = Debug.getInstance();
+//		this.debug = Debug.getInstance();
 
-		Scene.mainCamera = new Camera("Main Camera");
+//		Scene.mainCamera = new Camera("Main Camera");
 		
 		this.onInitialize(savedInstanceState);
 		this.glSurfaceView = new GLSurfaceView(this);
@@ -98,22 +96,22 @@ public abstract class Game extends Activity implements IFramework
 			GLES20.glClearColor(0.3f, 0.6f, 0.9f, 1);
 			GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-			Camera mainCamera = Scene.mainCamera;
-			
-			if(mainCamera.getProjectionType() == Camera.PERSPECTIVE)
-			{
-				Matrix.createFrustum(Scene.getProjectionMatrix(), -ratio, ratio, -1, 1, 1, Scene.mainCamera.getRange());
-			}
-			else
-			{
-				Matrix.createOrtho(Scene.getProjectionMatrix(), -ratio, ratio, -1, 1, 1, 10);
-			}
+//			Camera mainCamera = Scene.mainCamera;
+//			
+//			if(mainCamera.getProjectionType() == Camera.PERSPECTIVE)
+//			{
+//				Matrix.createFrustum(Scene.getProjectionMatrix(), -ratio, ratio, -1, 1, 1, Scene.mainCamera.getRange());
+//			}
+//			else
+//			{
+//				Matrix.createOrtho(Scene.getProjectionMatrix(), -ratio, ratio, -1, 1, 1, 10);
+//			}
 			
 			if(currentScene != null)
 			{
 				gameTime.update();
 				currentScene.update();
-				currentScene.drawScene();
+//				currentScene.drawScene();
 			}
 		}
 
@@ -126,7 +124,7 @@ public abstract class Game extends Activity implements IFramework
 		{
 			if(!isLoadedShader)
 			{
-				Shader.loadAllShader();
+				Shader.warmUpAllShader();
 				isLoadedShader = true;
 			}
 		}

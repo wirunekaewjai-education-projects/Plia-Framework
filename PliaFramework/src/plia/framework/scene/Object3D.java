@@ -6,6 +6,7 @@ import plia.framework.math.Vector3;
 import plia.framework.scene.obj3d.Camera;
 import plia.framework.scene.obj3d.Light;
 import plia.framework.scene.obj3d.Model;
+import plia.framework.scene.obj3d.animation.Animation;
 
 public class Object3D extends Node<Object3D>
 {
@@ -15,16 +16,26 @@ public class Object3D extends Node<Object3D>
 	protected Vector3 localScaling = new Vector3(1, 1, 1);
 	protected Matrix3 localRotation = new Matrix3();
 	
+	private Matrix4 axisRotation = new Matrix4();
+	
 	private Matrix4 local = new Matrix4();
 	private Matrix4 world = new Matrix4();
 	
 	protected boolean hasChanged = false;
 	
 	private Bounds bounds = null;
+	
+	private boolean hasAnimation = false;
+	private Animation animation;
 
-	protected Object3D()
+	public Object3D()
 	{
 		
+	}
+	
+	public Object3D(String name)
+	{
+		super(name);
 	}
 	
 	public Model asModel()
@@ -57,6 +68,27 @@ public class Object3D extends Node<Object3D>
 		return null;
 	}
 	
+	public boolean hasAnimation()
+	{
+		return hasAnimation;
+	}
+	
+	public Animation getAnimation()
+	{
+		return animation;
+	}
+	
+	public void setAnimation(Animation animation)
+	{
+		this.animation = animation;
+		this.hasAnimation = (animation != null);
+	}
+	
+	public void setHasAnimation(boolean hasAnimation)
+	{
+		this.hasAnimation = hasAnimation;
+	}
+	
 	public Bounds getBounds()
 	{
 		return bounds;
@@ -75,13 +107,18 @@ public class Object3D extends Node<Object3D>
 	@Override
 	protected void update()
 	{
-		this.updateTransform(false);
+		this.onUpdateHierarchy(false);
 	}
 	
-	protected void updateTransform(boolean parentHasChanged)
+	protected void onUpdateHierarchy(boolean parentHasChanged)
 	{
 		if(isActive())
 		{
+			if(hasAnimation && animation != null)
+			{
+				animation.update();
+			}
+			
 			if(hasChanged)
 			{
 				this.local.m11 = localRotation.m11 * localScaling.x;
@@ -113,7 +150,7 @@ public class Object3D extends Node<Object3D>
 			for (int i = 0; i < childCount; i++)
 			{
 				Object3D child = (Object3D) children[i];
-				child.updateTransform(parentHasChanged);
+				child.onUpdateHierarchy(parentHasChanged);
 			}
 		}
 	}
@@ -175,6 +212,16 @@ public class Object3D extends Node<Object3D>
 		}
 		
 		return b;
+	}
+	
+	public Matrix4 getAxisRotation()
+	{
+		return axisRotation;
+	}
+	
+	public void setAxisRotation(Matrix4 axisRotation)
+	{
+		this.axisRotation = axisRotation;
 	}
 
 	public Matrix4 getWorldMatrix()
