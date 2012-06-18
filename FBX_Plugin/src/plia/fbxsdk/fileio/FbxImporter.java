@@ -158,14 +158,7 @@ public class FbxImporter
 			}
 		}
 		
-		HashMap<Long, FbxGeometry> geometries = new HashMap<Long, FbxGeometry>();
-		HashMap<Long, FbxNode> nodes = new HashMap<Long, FbxNode>();
-		HashMap<Long, FbxNodeAttribute> nodeAttributes = new HashMap<Long, FbxNodeAttribute>();
-		HashMap<Long, FbxObject> deformers = new HashMap<Long, FbxObject>();
-		HashMap<Long, FbxAnimCurveNode> animCurveNodes = new HashMap<Long, FbxAnimCurveNode>();
-		HashMap<Long, FbxAnimCurve> animCurves = new HashMap<Long, FbxAnimCurve>();
-		HashMap<Long, FbxSurfaceMaterial> materials = new HashMap<Long, FbxSurfaceMaterial>();
-		HashMap<Long, FbxTexture> textures = new HashMap<Long, FbxTexture>();
+		HashMap<Long, FbxObject> maps = new HashMap<Long, FbxObject>();
 
 		// Object properties
 		int current_geometry_count = 0;
@@ -227,7 +220,7 @@ public class FbxImporter
 						}
 					}
 					
-					geometries.put(geometry_id, mesh);
+					maps.put(geometry_id, mesh);
 				}
 			}
 			
@@ -270,7 +263,7 @@ public class FbxImporter
 						nodeAttribute = new FbxSkeleton(node_attribute_id, skeletonType);
 					}
 
-					nodeAttributes.put(node_attribute_id, nodeAttribute);
+					maps.put(node_attribute_id, nodeAttribute);
 				}
 			}
 			// Load Nodes
@@ -345,7 +338,7 @@ public class FbxImporter
 						}
 					}
 
-					nodes.put(nodeID, node);
+					maps.put(nodeID, node);
 				}
 			}
 			// Load Deformers
@@ -361,7 +354,7 @@ public class FbxImporter
 					if (items[2].equals("Skin"))
 					{
 						FbxSkin skin = new FbxSkin(deformer_id);
-						deformers.put(deformer_id, skin);
+						maps.put(deformer_id, skin);
 					}
 					else
 					{
@@ -393,7 +386,7 @@ public class FbxImporter
 							}
 						}
 
-						deformers.put(deformer_id, cluster);
+						maps.put(deformer_id, cluster);
 					}
 				}
 			}
@@ -515,7 +508,7 @@ public class FbxImporter
 //						P: "Reflectivity", "double", "Number", "",0
 					}
 
-					materials.put(material_id, material);
+					maps.put(material_id, material);
 				}
 			}
 			
@@ -568,7 +561,7 @@ public class FbxImporter
 						}
 					}
 					
-					textures.put(texture_id, texture);
+					maps.put(texture_id, texture);
 				}
 			}
 			
@@ -593,7 +586,7 @@ public class FbxImporter
 					long anim_curve_node_id = Convert.toLong(line.substring(20).split(",")[0]);
 					FbxAnimCurveNode animCurveNode = new FbxAnimCurveNode(anim_curve_node_id);
 					
-					animCurveNodes.put(anim_curve_node_id, animCurveNode);
+					maps.put(anim_curve_node_id, animCurveNode);
 				}
 			}
 			// Load Animation Curves
@@ -635,8 +628,7 @@ public class FbxImporter
 					}
 					
 					animCurve.set(times, values);
-					
-					animCurves.put(anim_curve_id, animCurve);
+					maps.put(anim_curve_id, animCurve);
 				}
 			}
 			
@@ -656,7 +648,7 @@ public class FbxImporter
 				
 				long root_node_id = Convert.toLong(attribute.substring(0, attribute.length()-2));
 				
-				FbxNode node = nodes.get(root_node_id);
+				FbxNode node = (FbxNode) maps.get(root_node_id);
 
 				rootnodes.add(node);
 			}
@@ -668,8 +660,8 @@ public class FbxImporter
 				long node_id = Convert.toLong(attribute[0]);
 				long sub_deformer_id = Convert.toLong(attribute[1]);
 
-				FbxNode associateModel = nodes.get(node_id);
-				FbxCluster cluster = (FbxCluster) deformers.get(sub_deformer_id);
+				FbxNode associateModel = (FbxNode) maps.get(node_id);
+				FbxCluster cluster = (FbxCluster) maps.get(sub_deformer_id);
 
 				cluster.setAssociateModel(associateModel);
 			}
@@ -683,8 +675,8 @@ public class FbxImporter
 					long child_node_id = Convert.toLong(attribute[0]);
 					long parent_node_id = Convert.toLong(attribute[1]);
 
-					FbxNode child_node = nodes.get(child_node_id);
-					FbxNode parent_node = nodes.get(parent_node_id);
+					FbxNode child_node = (FbxNode) maps.get(child_node_id);
+					FbxNode parent_node = (FbxNode) maps.get(parent_node_id);
 
 					parent_node.addChild(child_node);
 					child_node.setParent(parent_node);
@@ -698,8 +690,8 @@ public class FbxImporter
 				long geometry_id = Convert.toLong(attribute[0]);
 				long node_id = Convert.toLong(attribute[1]);
 
-				FbxNode node = nodes.get(node_id);
-				FbxGeometry geometry = geometries.get(geometry_id);
+				FbxNode node = (FbxNode) maps.get(node_id);
+				FbxGeometry geometry = (FbxGeometry) maps.get(geometry_id);
 				node.setNodeAttribute(geometry);
 			}
 			else if (line.startsWith(";AnimCurveNode:"))
@@ -714,8 +706,8 @@ public class FbxImporter
 					long anim_curve_node_id = Convert.toLong(attribute[0]);
 					long node_id = Convert.toLong(attribute[1]);
 
-					FbxNode node = nodes.get(node_id);
-					FbxAnimCurveNode animCurveNode = animCurveNodes.get(anim_curve_node_id);
+					FbxNode node = (FbxNode) maps.get(node_id);
+					FbxAnimCurveNode animCurveNode = (FbxAnimCurveNode) maps.get(anim_curve_node_id);
 
 					char type = tmp0[0].charAt(tmp0[0].length()-1);
 					if(type == 'T')
@@ -740,8 +732,8 @@ public class FbxImporter
 				long node_attribute_id = Convert.toLong(attribute[0]);
 				long node_id = Convert.toLong(attribute[1]);
 
-				FbxNode node = nodes.get(node_id);
-				FbxNodeAttribute nodeAttribute = nodeAttributes.get(node_attribute_id);
+				FbxNode node = (FbxNode) maps.get(node_id);
+				FbxNodeAttribute nodeAttribute = (FbxNodeAttribute) maps.get(node_attribute_id);
 				
 				node.setNodeAttribute(nodeAttribute);
 			}
@@ -753,8 +745,8 @@ public class FbxImporter
 				long deformer_id = Convert.toLong(attribute[0]);
 				long geometry_id = Convert.toLong(attribute[1]);
 
-				FbxDeformer deformer = (FbxDeformer) deformers.get(deformer_id);
-				FbxGeometry geometry = (FbxGeometry) geometries.get(geometry_id);
+				FbxDeformer deformer = (FbxDeformer) maps.get(deformer_id);
+				FbxGeometry geometry = (FbxGeometry) maps.get(geometry_id);
 
 				geometry.addDeformer(deformer);
 			}
@@ -774,10 +766,10 @@ public class FbxImporter
 				long y_id = Convert.toLong(second_line[0]);
 				long z_id = Convert.toLong(third_line[0]);
 
-				FbxAnimCurveNode animCurveNode = animCurveNodes.get(anim_curve_node_id);
-				FbxAnimCurve animCurveX = animCurves.get(x_id);
-				FbxAnimCurve animCurveY = animCurves.get(y_id);
-				FbxAnimCurve animCurveZ = animCurves.get(z_id);
+				FbxAnimCurveNode animCurveNode = (FbxAnimCurveNode) maps.get(anim_curve_node_id);
+				FbxAnimCurve animCurveX = (FbxAnimCurve) maps.get(x_id);
+				FbxAnimCurve animCurveY = (FbxAnimCurve) maps.get(y_id);
+				FbxAnimCurve animCurveZ = (FbxAnimCurve) maps.get(z_id);
 
 				animCurveNode.set(animCurveX, animCurveY, animCurveZ);
 			}
@@ -789,8 +781,8 @@ public class FbxImporter
 				long sub_deformer_id = Convert.toLong(attribute[0]);
 				long deformer_id = Convert.toLong(attribute[1]);
 
-				FbxCluster cluster = (FbxCluster) deformers.get(sub_deformer_id);
-				FbxSkin deformer = (FbxSkin) deformers.get(deformer_id);
+				FbxCluster cluster = (FbxCluster) maps.get(sub_deformer_id);
+				FbxSkin deformer = (FbxSkin) maps.get(deformer_id);
 
 				deformer.addCluster(cluster);
 			}
@@ -802,8 +794,8 @@ public class FbxImporter
 				long material_id = Convert.toLong(attribute[0]);
 				long node_id = Convert.toLong(attribute[1]);
 
-				FbxSurfaceMaterial material = materials.get(material_id);
-				FbxNode node = nodes.get(node_id);
+				FbxSurfaceMaterial material = (FbxSurfaceMaterial) maps.get(material_id);
+				FbxNode node = (FbxNode) maps.get(node_id);
 				
 				node.setMaterial(material);
 			}
@@ -817,8 +809,8 @@ public class FbxImporter
 				
 				String target = attribute[2].trim().split("\"")[1];
 				
-				FbxTexture texture = textures.get(texture_id);
-				FbxSurfacePhong material = (FbxSurfacePhong) materials.get(material_id);
+				FbxTexture texture = (FbxTexture) maps.get(texture_id);
+				FbxSurfacePhong material = (FbxSurfacePhong) maps.get(material_id);
 				
 				if(target.equalsIgnoreCase("DiffuseColor"))
 				{
@@ -833,14 +825,16 @@ public class FbxImporter
 
 		FbxScene scene = new FbxScene();
 
-		for (FbxObject fbxObject : geometries.values())
+		for (FbxObject fbxObject : maps.values())
 		{
-			scene.addGeometry((FbxGeometry) fbxObject);
-		}
-		
-		for (FbxObject fbxObject : nodes.values())
-		{
-			scene.addNode((FbxNode) fbxObject);
+			if(fbxObject instanceof FbxGeometry)
+			{
+				scene.addGeometry((FbxGeometry) fbxObject);
+			}
+			else if(fbxObject instanceof FbxNode)
+			{
+				scene.addNode((FbxNode) fbxObject);
+			}
 		}
 		
 		FbxNode sceneRootNode = scene.getRootnodes();
