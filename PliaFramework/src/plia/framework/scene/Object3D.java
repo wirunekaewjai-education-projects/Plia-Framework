@@ -3,9 +3,6 @@ package plia.framework.scene;
 import plia.framework.math.Matrix3;
 import plia.framework.math.Matrix4;
 import plia.framework.math.Vector3;
-import plia.framework.scene.obj3d.Camera;
-import plia.framework.scene.obj3d.Light;
-import plia.framework.scene.obj3d.Model;
 import plia.framework.scene.obj3d.animation.Animation;
 
 public class Object3D extends Node<Object3D>

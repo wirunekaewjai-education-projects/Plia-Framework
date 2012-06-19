@@ -35,7 +35,7 @@ final class DiffuseShader extends Shader
 			"uniform vec4 lightColor[MAX_LIGHTS];" +
 			"uniform float lightRange[MAX_LIGHTS];" +
 			"uniform float lightIntensity[MAX_LIGHTS];" +
-			"uniform float numberOfLights;";
+			"uniform float lightCount;";
 	
 	private static final String vertexAndNormalAttribute = 
 			"attribute vec4 vertex;" +
@@ -86,7 +86,7 @@ final class DiffuseShader extends Shader
 			"vec3 N = normalMatrix * skinnedNormal;";
 	
 	private static String lightLoop = 
-			"	int count = int(numberOfLights);" +
+			"	int count = int(lightCount);" +
 			"	for(int i = 0; i<count; ++i)" +
 			"	{" +
 			"		vec4 lightDir = lightPosition[i];" +

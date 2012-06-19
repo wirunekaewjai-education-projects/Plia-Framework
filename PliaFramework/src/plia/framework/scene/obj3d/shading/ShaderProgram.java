@@ -143,7 +143,7 @@ public final class ShaderProgram
 			datas[LIGHT_POSITION_0+i] 	= GLES20.glGetUniformLocation(program, "lightPosition["+i+"]");
 			datas[LIGHT_COLOR_0+i] 		= GLES20.glGetUniformLocation(program, "lightColor["+i+"]");
 			datas[LIGHT_INTENSITY_0+i] 	= GLES20.glGetUniformLocation(program, "lightIntensity["+i+"]");
-			datas[LIGHT_RADIUS_0+i] 	= GLES20.glGetUniformLocation(program, "lightRadius["+i+"]");
+			datas[LIGHT_RANGE_0+i] 	= GLES20.glGetUniformLocation(program, "lightRange["+i+"]");
 		}
 	}
 
@@ -241,15 +241,15 @@ public final class ShaderProgram
 	public static final int LIGHT_COLOR_7				 = 48;
 	public static final int LIGHT_COLOR_8				 = 49;
 	
-	public static final int LIGHT_RADIUS_0				 = 51;
-	public static final int LIGHT_RADIUS_1				 = 52;
-	public static final int LIGHT_RADIUS_2				 = 53;
-	public static final int LIGHT_RADIUS_3				 = 54;
-	public static final int LIGHT_RADIUS_4				 = 55;
-	public static final int LIGHT_RADIUS_5				 = 56;
-	public static final int LIGHT_RADIUS_6				 = 57;
-	public static final int LIGHT_RADIUS_7				 = 58;
-	public static final int LIGHT_RADIUS_8				 = 59;
+	public static final int LIGHT_RANGE_0				 = 51;
+	public static final int LIGHT_RANGE_1				 = 52;
+	public static final int LIGHT_RANGE_2				 = 53;
+	public static final int LIGHT_RANGE_3				 = 54;
+	public static final int LIGHT_RANGE_4				 = 55;
+	public static final int LIGHT_RANGE_5				 = 56;
+	public static final int LIGHT_RANGE_6				 = 57;
+	public static final int LIGHT_RANGE_7				 = 58;
+	public static final int LIGHT_RANGE_8				 = 59;
 	
 	public static final int LIGHT_INTENSITY_0			 = 61;
 	public static final int LIGHT_INTENSITY_1			 = 62;

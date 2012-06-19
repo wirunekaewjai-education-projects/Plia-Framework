@@ -693,4 +693,80 @@ public final class Matrix3
 	    
 	    return result;
 	}
+	
+	public static Matrix3 createNormalMatrix(Matrix3 result, Matrix4 modelViewMatrix)
+	{
+		float m11 = modelViewMatrix.m11;
+		float m12 = modelViewMatrix.m12;
+		float m13 = modelViewMatrix.m13;
+		
+		float m21 = modelViewMatrix.m21;
+		float m22 = modelViewMatrix.m22;
+		float m23 = modelViewMatrix.m23;
+		
+		float m31 = modelViewMatrix.m31;
+		float m32 = modelViewMatrix.m32;
+		float m33 = modelViewMatrix.m33;
+		
+		float a11a22 = m11*m22;
+		float a11a23 = m11*m23;
+		
+		float a12a21 = m12*m21;
+		float a12a23 = m12*m23;
+		
+		float a13a21 = m13*m21;
+		float a13a22 = m13*m22;
+
+		float a21a32a44 = m21*m32;
+		float a21a33a44 = m21*m33;
+		float a22a31a44 = m22*m31;
+		float a22a33a44 = m22*m33;
+		float a23a31a44 = m23*m31;
+		float a23a32a44 = m23*m32;
+		
+		// Calculate DETERMINANT
+		float det =   (m11 * a22a33a44) + (m12 * a23a31a44) + (m13 * a21a32a44)
+					- (m11 * a23a32a44) - (m12 * a21a33a44) - (m13 * a22a31a44);
+		
+		// Calculate ADJOINT
+		float b11 = (a22a33a44) - (a23a32a44);
+		float b12 = (m13 * m32) - (m12 * m33);
+		float b13 = a12a23 - a13a22;
+		
+		float b21 = (a23a31a44) - (a21a33a44);
+		float b22 = (m11 * m33) - (m13 * m31);
+		float b23 = a13a21 - a11a23;
+		
+		float b31 = (a21a32a44) - (a22a31a44);
+		float b32 = (m12 * m31) - (m11 * m32);
+		float b33 = a11a22 - a12a21;
+		// Calculate Invert Matrix 3x3
+		
+		m11 = b11 / det;
+		m12 = b12 / det;
+		m13 = b13 / det;
+		
+		m21 = b21 / det;
+		m22 = b22 / det;
+		m23 = b23 / det;
+
+		m31 = b31 / det;
+		m32 = b32 / det;
+		m33 = b33 / det;
+		
+		// Transpose
+		result.m11 = m11;
+		result.m12 = m21;
+		result.m13 = m31;
+
+		result.m21 = m12;
+		result.m22 = m22;
+		result.m23 = m32;
+
+		result.m31 = m13;
+		result.m32 = m23;
+		result.m33 = m33;
+		
+		return result;
+	}
 }

@@ -1,10 +1,16 @@
 package plia.framework.core;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import plia.framework.math.Vector3;
+import plia.framework.scene.Camera;
+import plia.framework.scene.Light;
+import plia.framework.scene.Model;
 import plia.framework.scene.Scene;
-import plia.framework.scene.obj3d.Camera;
 import plia.framework.scene.obj3d.shading.Shader;
 
 import android.app.Activity;
@@ -118,6 +124,9 @@ public abstract class Game extends Activity implements IFramework
 		public void onSurfaceChanged(GL10 gl, int width, int height)
 		{
 			ratio = (float)width/ height;
+			
+			Screen.w = width;
+			Screen.h = height;
 		}
 
 		public void onSurfaceCreated(GL10 gl, EGLConfig config)

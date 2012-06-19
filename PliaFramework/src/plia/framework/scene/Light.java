@@ -1,6 +1,5 @@
-package plia.framework.scene.obj3d;
+package plia.framework.scene;
 
-import plia.framework.scene.Object3D;
 import plia.framework.scene.obj3d.shading.Color3;
 
 public class Light extends Object3D
