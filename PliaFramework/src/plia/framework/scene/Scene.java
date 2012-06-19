@@ -3,6 +3,7 @@ package plia.framework.scene;
 import java.util.ArrayList;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 import plia.framework.core.GameObject;
 import plia.framework.core.Screen;
@@ -32,7 +33,7 @@ public abstract class Scene extends GameObject implements IScene
 	
 	public void initialize()
 	{
-		if(isInitialized)
+		if(!isInitialized)
 		{
 			onInitialize();
 			isInitialized = true;
@@ -143,8 +144,7 @@ public abstract class Scene extends GameObject implements IScene
 	private static final Matrix4 modelViewProjectionMatrix = new Matrix4();
 	private static final Matrix4 modelViewMatrix = new Matrix4();
 	private static final Matrix4 projectionMatrix = new Matrix4();
-	
-	
+
 	private static final Matrix4 tempMV = new Matrix4();
 	private static final Matrix4 tempMVP = new Matrix4();
 	private static final Matrix4 tempInvertmMatrix = new Matrix4();
@@ -189,10 +189,12 @@ public abstract class Scene extends GameObject implements IScene
 			if(mainCamera.getProjectionType() == Camera.PERSPECTIVE)
 			{
 				Matrix4.createFrustum(projectionMatrix, -ratio, ratio, -1, 1, 1, mainCamera.getRange());
+				log("Set Frustum");
 			}
 			else
 			{
 				Matrix4.createOrtho(projectionMatrix, -ratio, ratio, -1, 1, 1, mainCamera.getRange());
+				log("Set Ortho");
 			}
 			
 			hasChangedProjection = false;
@@ -209,6 +211,8 @@ public abstract class Scene extends GameObject implements IScene
 			Vector3 up = mainCamera.getUp();
 			
 			Matrix4.createLookAt(modelViewMatrix, eye, target, up);
+			
+			log("Set LookAt");
 			
 			hasChangedModelView = false;
 		}
@@ -246,14 +250,16 @@ public abstract class Scene extends GameObject implements IScene
 			hasTexture = 2;
 		}
 		
-		ShaderProgram program = shader.getProgram(0);
+		int programIndx = 0;
 		
 		switch (geometryType)
 		{
-			case Geometry.MESH: program = shader.getProgram(0 + hasTexture); break;
-			case Geometry.SKINNED_MESH: program = shader.getProgram(1 + hasTexture); break;
+			case Geometry.MESH: programIndx = hasTexture; break;
+			case Geometry.SKINNED_MESH: programIndx = 1 + hasTexture; break;
 			default: break;
 		}
+		
+		ShaderProgram program = shader.getProgram(programIndx);
 
 		float[] matrixPalette = null;
 		
@@ -295,7 +301,7 @@ public abstract class Scene extends GameObject implements IScene
 		ArrayList<Light> ls = new ArrayList<Light>();
 		ls.addAll(lights);
 		
-		int lightCount = ls.size();
+		float lightCount = ls.size();
 		
 		program.use();
 		program.setUniform(ShaderProgram.LIGHT_COUNT, lightCount);
@@ -313,37 +319,43 @@ public abstract class Scene extends GameObject implements IScene
 			}
 			Matrix4.multiply(lightPos4, modelViewMatrix, lightPosTemp);
 			lightPos4.set(lightPos4.x, lightPos4.y, lightPos4.z, light.getLightType());
-			
-			Color3 lightC = light.getColor();
-			lightColorTemp.set(lightC.r, lightC.g, lightC.b, 1);
-			
-			program.setUniform(ShaderProgram.LIGHT_POSITION_0+i, lightPos4);
-			program.setUniform(ShaderProgram.LIGHT_COLOR_0+i, lightColorTemp);
-			program.setUniform(ShaderProgram.LIGHT_RANGE_0+i, light.getRange());
-			program.setUniform(ShaderProgram.LIGHT_INTENSITY_0+i, light.getIntensity());
+
+			program.setUniformLight(i, lightPos4, light.getColor(), light.getRange(), light.getIntensity());
 		}
 		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mesh.getBuffer(0));
-		GLES20.glEnableVertexAttribArray(ShaderProgram.VERTEX_ATTRIBUTE);
-		program.setAttribPointer(ShaderProgram.VERTEX_ATTRIBUTE, 3, 0, 0, ShaderProgram.VariableType.FLOAT);
+		program.setUniform(ShaderProgram.PROJECTION_MATRIX, projectionMatrix);
+		program.setUniform(ShaderProgram.MODELVIEW_MATRIX, tempTransformMatrix);
+		program.setUniform(ShaderProgram.NORMAL_MATRIX, tempNormalMatrix);
 		
-		GLES20.glEnableVertexAttribArray(ShaderProgram.NORMAL_ATTRIBUTE);
-		program.setAttribPointer(ShaderProgram.NORMAL_ATTRIBUTE, 3, 0, mesh.NORMALS_OFFSET, ShaderProgram.VariableType.FLOAT);
+		int meshBuffer0 = mesh.getBuffer(0);
+		ShaderProgram.VariableType attribF = ShaderProgram.VariableType.FLOAT;
+		
+		program.setAttribPointer(ShaderProgram.VERTEX_ATTRIBUTE, 3, 0, 0, meshBuffer0, attribF);
+		program.setAttribPointer(ShaderProgram.NORMAL_ATTRIBUTE, 3, 0, mesh.NORMALS_OFFSET, meshBuffer0, attribF);
 		
 		if(hasTexture == 2)
 		{
-			GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture.getTextureBuffer());
-			program.setUniform(ShaderProgram.DIFFUSE_MAP, 0);
+			program.setAttribPointer(ShaderProgram.UV_ATTRIBUTE, 2, 0, mesh.UV_OFFSET, meshBuffer0, attribF);
+			program.setUniformDiffuseMap(0, texture.getTextureBuffer());
 		}
 		else
 		{
-			Color3 baseColor3 = model.getMaterial().getBaseColor();
-			colorTemp.set(baseColor3.r, baseColor3.g, baseColor3.b, 1);
-			program.setUniform(ShaderProgram.COLOR, colorTemp);
+			program.setUniformColor(model.getMaterial().getBaseColor());
 		}
 		
+		if(geometryType == Geometry.SKINNED_MESH && hasAnimation)
+		{
+			program.setAttrib(ShaderProgram.BONE_COUNT, 4);
+			program.setAttribPointer(ShaderProgram.BONE_WEIGHTS_ATTRIBUTE, 4, 0, 0, mesh.getBuffer(2), attribF);
+			program.setAttribPointer(ShaderProgram.BONE_INDEXES_ATTRIBUTE, 4, 0, 0, mesh.getBuffer(3), ShaderProgram.VariableType.SHORT);
+			
+			if(matrixPalette != null)
+			{
+				program.setUniformMatrix4(ShaderProgram.MATRIX_PALETTE, matrixPalette);
+			}
+		}
 		
+		program.drawTriangleElements(mesh.getBuffer(1), mesh.INDICES_COUNT);
 	}
 	
 	private void recusiveLayer(Layer layer)
@@ -360,6 +372,7 @@ public abstract class Scene extends GameObject implements IScene
 	
 	private void recusiveObject3D(Object3D obj)
 	{
+		
 		if(obj instanceof Model)
 		{
 			models.add((Model) obj);

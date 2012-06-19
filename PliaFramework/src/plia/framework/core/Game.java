@@ -1,15 +1,9 @@
 package plia.framework.core;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import plia.framework.math.Vector3;
 import plia.framework.scene.Camera;
-import plia.framework.scene.Light;
-import plia.framework.scene.Model;
 import plia.framework.scene.Scene;
 import plia.framework.scene.obj3d.shading.Shader;
 
@@ -49,7 +43,7 @@ public abstract class Game extends Activity implements IFramework
 		
 //		this.debug = Debug.getInstance();
 
-//		Scene.mainCamera = new Camera("Main Camera");
+		Scene.setMainCamera(new Camera("Main Camera"));
 		
 		this.onInitialize(savedInstanceState);
 		this.glSurfaceView = new GLSurfaceView(this);
@@ -84,8 +78,6 @@ public abstract class Game extends Activity implements IFramework
 	
 	private class GLRenderer implements Renderer
 	{
-		private float ratio;
-
 		public void onDrawFrame(GL10 gl)
 		{
 //			Log.e("FPS", (1000f / GameTime.getElapsedGameTime().getMilliseconds())+"");
@@ -101,30 +93,17 @@ public abstract class Game extends Activity implements IFramework
 			
 			GLES20.glClearColor(0.3f, 0.6f, 0.9f, 1);
 			GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-
-//			Camera mainCamera = Scene.mainCamera;
-//			
-//			if(mainCamera.getProjectionType() == Camera.PERSPECTIVE)
-//			{
-//				Matrix.createFrustum(Scene.getProjectionMatrix(), -ratio, ratio, -1, 1, 1, Scene.mainCamera.getRange());
-//			}
-//			else
-//			{
-//				Matrix.createOrtho(Scene.getProjectionMatrix(), -ratio, ratio, -1, 1, 1, 10);
-//			}
 			
 			if(currentScene != null)
 			{
 				gameTime.update();
 				currentScene.update();
-//				currentScene.drawScene();
+				currentScene.drawScene();
 			}
 		}
 
 		public void onSurfaceChanged(GL10 gl, int width, int height)
 		{
-			ratio = (float)width/ height;
-			
 			Screen.w = width;
 			Screen.h = height;
 		}

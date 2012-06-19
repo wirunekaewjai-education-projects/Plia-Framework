@@ -272,9 +272,21 @@ public class Object3D extends Node<Object3D>
 		this.hasChanged = true;
 	}
 	
+	public void setPosition(float x, float y, float z)
+	{
+		this.localTranslation.set(x, y, z);
+		this.hasChanged = true;
+	}
+	
 	public void setScale(Vector3 scale)
 	{
 		this.localScaling.set(scale);
+		this.hasChanged = true;
+	}
+	
+	public void setScale(float x, float y, float z)
+	{
+		this.localScaling.set(x, y, z);
 		this.hasChanged = true;
 	}
 	
@@ -284,9 +296,21 @@ public class Object3D extends Node<Object3D>
 		this.hasChanged = true;
 	}
 	
+	public void setEulerAngles(float x, float y, float z)
+	{
+		this.localRotation.setEulerAngles(x, y, z);
+		this.hasChanged = true;
+	}
+	
 	public void setRight(Vector3 right)
 	{
 		this.localRotation.setRight(right);
+		this.hasChanged = true;
+	}
+	
+	public void setRight(float x, float y, float z)
+	{
+		this.localRotation.setRight(x, y, z);
 		this.hasChanged = true;
 	}
 	
@@ -296,15 +320,33 @@ public class Object3D extends Node<Object3D>
 		this.hasChanged = true;
 	}
 	
+	public void setForward(float x, float y, float z)
+	{
+		this.localRotation.setForward(x, y, z);
+		this.hasChanged = true;
+	}
+	
 	public void setUp(Vector3 up)
 	{
 		this.localRotation.setUp(up);
 		this.hasChanged = true;
 	}
 	
+	public void setUp(float x, float y, float z)
+	{
+		this.localRotation.setUp(x, y, z);
+		this.hasChanged = true;
+	}
+	
 	public void setLookAt(Vector3 target)
 	{
 		this.localRotation.setForward(Vector3.subtract(target, localTranslation));
+		this.hasChanged = true;
+	}
+	
+	public void setLookAt(Object3D target)
+	{
+		this.localRotation.setForward(Vector3.subtract(target.localTranslation, localTranslation));
 		this.hasChanged = true;
 	}
 	

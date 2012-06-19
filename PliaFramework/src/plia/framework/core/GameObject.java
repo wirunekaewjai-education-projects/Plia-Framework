@@ -1,5 +1,7 @@
 package plia.framework.core;
 
+import android.util.Log;
+
 public class GameObject
 {
 	protected String name;
@@ -38,5 +40,10 @@ public class GameObject
 	protected void update()
 	{
 		
+	}
+	
+	public void log(Object value)
+	{
+		Log.e("Plia Framework", value+"");
 	}
 }

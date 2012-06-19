@@ -106,9 +106,7 @@ final class DiffuseShader extends Shader
 	
 	private static final String initialUVCoordVarying = 
 			"	uvCoord = uv;";
-	
-	
-	
+
 	//
 	private static final String diffuseMap = 
 			"uniform sampler2D diffuseMap;";
@@ -198,7 +196,6 @@ final class DiffuseShader extends Shader
 				matrixUniform +
 				lightAttribute +
 				vertexNormalAndUVAttribute +
-				uvVarying +
 				iDifVarying +
 				uvVarying +
 				"" +

@@ -12,6 +12,11 @@ public class Camera extends Object3D
 		setName("Camera");
 	}
 	
+	public Camera(String name)
+	{
+		setName(name);
+	}
+	
 	@Override
 	protected void onUpdateHierarchy(boolean parentHasChanged)
 	{
