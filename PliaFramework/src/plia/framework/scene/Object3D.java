@@ -18,7 +18,7 @@ public class Object3D extends Node<Object3D>
 	private Matrix4 local = new Matrix4();
 	private Matrix4 world = new Matrix4();
 	
-	protected boolean hasChanged = false;
+	protected boolean hasChanged = true;
 	
 	private Bounds bounds = null;
 	
@@ -115,8 +115,8 @@ public class Object3D extends Node<Object3D>
 			{
 				animation.update();
 			}
-			
-			if(hasChanged)
+
+			if(this.hasChanged)
 			{
 				this.local.m11 = localRotation.m11 * localScaling.x;
 				this.local.m12 = localRotation.m12 * localScaling.y;

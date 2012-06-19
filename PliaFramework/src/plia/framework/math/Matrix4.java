@@ -1063,5 +1063,88 @@ public final class Matrix4
 		return result;
 	}
 	
+	public static Matrix4 createTRS_YZX(Matrix4 result, float tx, float ty, float tz, float ax, float ay, float az, float sx, float sy, float sz)
+	{
+		// Degreen to Radian
+		float rx = ax * 0.0174533f;
+		float ry = ay * 0.0174533f;
+		float rz = az * 0.0174533f;
+		
+		// Heading ( Yaw :: Y Axis ) ; First
+		float ch = (float) Math.cos(ry);
+		float sh = (float) Math.sin(ry);
+			    
+		// Attitude ( Pitch :: Z Axis ) ; Second
+		float ca = (float) Math.cos(rz);
+		float sa = (float) Math.sin(rz);
+		    
+		// Bank ( Roll :: X Axis ) ; Last
+		float cb = (float) Math.cos(rx);
+		float sb = (float) Math.sin(rx);
+
+		result.m11 = ( ch*ca ) * sx;
+		result.m12 = sa * sy;
+		result.m13 = ( -sh*ca ) * sz;
+		result.m14 = 0;
+
+		result.m21 = ( sh*sb - ch*sa*cb ) * sx;
+		result.m22 = ( ca*cb ) * sy;
+		result.m23 = ( sh*sa*cb + ch*sb ) * sz;
+		result.m24 = 0;
+
+		result.m31 = ( ch*sa*sb + sh*cb ) * sx;
+		result.m32 = ( -ca*sb ) * sy;
+		result.m33 = ( -sh*sa*sb + ch*cb ) * sz;
+		result.m34 = 0;
+		
+		result.m41 = tx;
+		result.m42 = ty;
+		result.m43 = tz;
+		result.m44 = 1;
+		
+		return result;
+	}
 	
+	public static Matrix4 createTRS_ZYX(Matrix4 result, float tx, float ty, float tz, float ax, float ay, float az, float sx, float sy, float sz)
+	{
+		// Degreen to Radian
+		float rx = ax * 0.0174533f;
+		float ry = ay * 0.0174533f;
+		float rz = az * 0.0174533f;
+		
+		// Heading ( Yaw :: Z Axis ) ; First
+		float ch = (float) Math.cos(rz);
+		float sh = (float) Math.sin(rz);
+
+		// Attitude ( Pitch :: Y Axis ) ; Second
+		float ca = (float) Math.cos(ry);
+		float sa = (float) Math.sin(ry);
+
+		// Bank ( Roll :: X Axis ) ; Last
+		float cb = (float) Math.cos(rx);
+		float sb = (float) Math.sin(rx);
+		//
+		//
+		result.m11 = (ch * ca) * sx;
+		result.m12 = (sh * ca) * sy;
+		result.m13 = -sa * sz;
+		result.m14 = 0;
+
+		result.m21 = ( (-sh * cb) + (sb * (sa*ch)) ) * sx;
+		result.m22 = ( (ch * cb) + (sb * (sa*sh)) ) * sy;
+		result.m23 = (sb * ca) * sz;
+		result.m24 = 0;
+
+		result.m31 = ( (-sb * -sh) + (cb * (sa*ch)) ) * sx;
+		result.m32 = ( (-sb * ch) + (cb * (sa*sh)) ) * sy;
+		result.m33 = (cb * ca) * sz;
+		result.m34 = 0;
+
+		result.m41 = tx;
+		result.m42 = ty;
+		result.m43 = tz;
+		result.m44 = 1;
+		
+		return result;
+	}
 }

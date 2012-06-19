@@ -96,7 +96,7 @@ public final class ShaderProgram
 			case INT: vtype = GLES20.GL_INT; break;
 			default: break;
 		}
-		
+
 		if(currentBuffer != buffer)
 		{
 			currentBuffer = buffer;
@@ -198,6 +198,8 @@ public final class ShaderProgram
 	
 	private void getLocation(int program)
 	{
+		GLES20.glUseProgram(program);
+		
 		for (int i = 0; i < datas.length; i++)
 		{
 			datas[i] = -2;
@@ -273,10 +275,10 @@ public final class ShaderProgram
 		return shader;
 	}
 	
-//	public int get(int index)
-//	{
-//		return datas[index];
-//	}
+	public int get(int index)
+	{
+		return datas[index];
+	}
 	
 	public enum VariableType
 	{

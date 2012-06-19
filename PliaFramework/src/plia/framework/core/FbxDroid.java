@@ -407,38 +407,48 @@ public class FbxDroid
 
 						if((n.getAnimCurveNodeT() == null))
 						{
-							translation.setIdentity();
+//							translation.setIdentity();
+							T[0] = 0;
+							T[1] = 0;
+							T[2] = 0;
 						}
 						else
 						{
 							n.getAnimCurveNodeT().getValue(T, frame);
-							translation.setTranslation(T[0], T[1], T[2]);
+//							translation.setTranslation(T[0], T[1], T[2]);
 						}
 						
 						if((n.getAnimCurveNodeR() == null))
 						{
-							rotation.setIdentity();
+							R[0] = 0;
+							R[1] = 0;
+							R[2] = 0;
+//							rotation.setIdentity();
 						}
 						else
 						{
 							n.getAnimCurveNodeR().getValue(R, frame);
-							rotation.setEulerAngles(R[0], R[1], R[2]);
+//							rotation.setEulerAngles(R[0], R[1], R[2]);
 						}
 						
 						if((n.getAnimCurveNodeS() == null))
 						{
-							scaling.setIdentity();
+							S[0] = 1;
+							S[1] = 1;
+							S[2] = 1;
+//							scaling.setIdentity();
 						}
 						else
 						{
 							n.getAnimCurveNodeS().getValue(S, frame);
-							scaling.m11 = S[0];
-							scaling.m22 = S[1];
-							scaling.m33 = S[2];
+//							scaling.m11 = S[0];
+//							scaling.m22 = S[1];
+//							scaling.m33 = S[2];
 						}
 						
-						Matrix4.multiply(TR, translation, rotation);
-						Matrix4.multiply(TRS, TR, scaling);
+						Matrix4.createTRS_ZYX(TRS, T[0], T[1], T[2], R[0], R[1], R[2], S[0], S[1], S[2]);
+//						Matrix4.multiply(TR, translation, rotation);
+//						Matrix4.multiply(TRS, TR, scaling);
 						TRS.copyTo(matrixPalette[i]);
 					}
 				}
@@ -691,39 +701,49 @@ public class FbxDroid
 
 		if((node.getAnimCurveNodeT() == null))
 		{
-			translation.setIdentity();
+//			translation.setIdentity();
+			T[0] = 0;
+			T[1] = 0;
+			T[2] = 0;
 		}
 		else
 		{
 			node.getAnimCurveNodeT().getValue(T, frame);
-			translation.setTranslation(T[0], T[1], T[2]);
+//			translation.setTranslation(T[0], T[1], T[2]);
 		}
 		
 		if((node.getAnimCurveNodeR() == null))
 		{
-			rotation.setIdentity();
+//			rotation.setIdentity();
+			R[0] = 0;
+			R[1] = 0;
+			R[2] = 0;
 		}
 		else
 		{
 			node.getAnimCurveNodeR().getValue(R, frame);
-			rotation.setEulerAngles(R[0], R[1], R[2]);
+//			rotation.setEulerAngles(R[0], R[1], R[2]);
 		}
 		
 		if((node.getAnimCurveNodeS() == null))
 		{
-			scaling.setIdentity();
+//			scaling.setIdentity();
+			S[0] = 1;
+			S[1] = 1;
+			S[2] = 1;
 		}
 		else
 		{
 			node.getAnimCurveNodeS().getValue(S, frame);
-			scaling.m11 = S[0];
-			scaling.m22 = S[1];
-			scaling.m33 = S[2];
+//			scaling.m11 = S[0];
+//			scaling.m22 = S[1];
+//			scaling.m33 = S[2];
 		}
 
-		Matrix4.multiply(TR, translation, rotation);
-		Matrix4.multiply(TRS, TR, scaling);
+//		Matrix4.multiply(TR, translation, rotation);
+//		Matrix4.multiply(TRS, TR, scaling);
 		
+		Matrix4.createTRS_ZYX(TRS, T[0], T[1], T[2], R[0], R[1], R[2], S[0], S[1], S[2]);
 		Matrix4.multiply(AbsoluteTransform, parentWorld, TRS);
 		
 		if(i != null)

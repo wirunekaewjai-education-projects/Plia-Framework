@@ -45,6 +45,7 @@ public abstract class Scene extends GameObject implements IScene
 	{
 		if(isActive())
 		{
+			onUpdate();
 			for (int i = 0; i < childCount; i++)
 			{
 				children[i].update();
