@@ -24,7 +24,6 @@ final class DiffuseShader extends Shader
 	}
 	
 	private static final String matrixUniform = 
-			"uniform mat4 modelViewProjectionMatrix;" +
 			"uniform mat4 modelViewMatrix;" +
 			"uniform mat4 projectionMatrix;" +
 			"uniform mat3 normalMatrix;";
@@ -46,10 +45,11 @@ final class DiffuseShader extends Shader
 			"attribute vec2 uv;";
 	
 	private static final String boneAttributeAndMatrixPaletteUniform = 
+			"const int MATRICES_SIZE = 96;" +
+			"uniform mat4 matrixPalette[MATRICES_SIZE];" +
 			"attribute vec4 boneIndices;" +
 			"attribute vec4 boneWeights;" +
-			"attribute float boneCount;" +
-			"uniform mat4 matrixPalette[96];";
+			"attribute float boneCount;";
 
 	private static final String iDifVarying = 
 			"varying vec4 Idif;";
@@ -65,12 +65,12 @@ final class DiffuseShader extends Shader
 			"	vec3 skinnedNormal = vec3(0.0);" +
 			"	" +
 			"	int bCount = int(boneCount);" +
-			"	for(int i = 0; i < bCount; i++)" +
+			"	for(int b = 0; b < bCount; ++b)" +
 			"	{" +
-			"		float wt = boneWeights[i];" +
+			"		float wt = boneWeights[b];" +
 			"		if(wt > 0.0)" +
 			"		{" +
-			"			int indx = int(boneIndices[i]);" +
+			"			int indx = int(boneIndices[b]);" +
 			"			mat4 matrix = matrixPalette[indx];" +
 			"			skinnedPosition += wt * vec4(vec3(matrix * vertex), vertex.w);" +
 			"			skinnedNormal += wt * vec3(mat3(matrix) * normal);" +

@@ -212,13 +212,12 @@ public abstract class Scene extends GameObject implements IScene
 			Vector3 up = mainCamera.getUp();
 			
 			Matrix4.createLookAt(modelViewMatrix, eye, target, up);
-			
 			log("Set LookAt");
 			
 			hasChangedModelView = false;
 		}
 		
-		Matrix4.multiply(modelViewProjectionMatrix, modelViewMatrix, projectionMatrix);
+		Matrix4.multiply(modelViewProjectionMatrix, projectionMatrix, modelViewMatrix);
 
 		for (int i = 0; i < getLayerCount(); i++)
 		{
@@ -304,8 +303,12 @@ public abstract class Scene extends GameObject implements IScene
 		
 		float lightCount = ls.size();
 		
-		program.use();
-		program.setUniform(ShaderProgram.LIGHT_COUNT, lightCount);
+//		program.use();
+//		program.setUniform(ShaderProgram.LIGHT_COUNT, lightCount);
+		
+		int prg = program.getProgramID();
+		GLES20.glUseProgram(prg);
+		GLES20.glUniform1f(GLES20.glGetUniformLocation(prg, "lightCount"), lightCount);
 
 		for (int i = 0; i < lightCount; i++)
 		{
@@ -321,42 +324,114 @@ public abstract class Scene extends GameObject implements IScene
 			Matrix4.multiply(lightPos4, modelViewMatrix, lightPosTemp);
 			lightPos4.set(lightPos4.x, lightPos4.y, lightPos4.z, light.getLightType());
 
-			program.setUniformLight(i, lightPos4, light.getColor(), light.getRange(), light.getIntensity());
+//			program.setUniformLight(i, lightPos4, light.getColor(), light.getRange(), light.getIntensity());
+			
+			GLES20.glUniform4f(GLES20.glGetUniformLocation(prg, "lightPosition["+i+"]"), lightPos4.x, lightPos4.y, lightPos4.z, light.getLightType());
+			
+			Color3 color = light.getColor();
+			GLES20.glUniform4f(GLES20.glGetUniformLocation(prg, "lightColor["+i+"]"), color.r, color.g, color.b, 1);
+			
+			GLES20.glUniform1f(GLES20.glGetUniformLocation(prg, "lightRange["+i+"]"), light.getRange());
+			GLES20.glUniform1f(GLES20.glGetUniformLocation(prg, "lightIntensity["+i+"]"), light.getIntensity());
 		}
 		
-		program.setUniform(ShaderProgram.PROJECTION_MATRIX, projectionMatrix);
-		program.setUniform(ShaderProgram.MODELVIEW_MATRIX, tempTransformMatrix);
-		program.setUniform(ShaderProgram.NORMAL_MATRIX, tempNormalMatrix);
+		float[] tm = new float[16];
+		projectionMatrix.copyTo(tm);
+		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "projectionMatrix"), 1, false, tm, 0);
 		
-		int meshBuffer0 = mesh.getBuffer(0);
-		ShaderProgram.VariableType attribF = ShaderProgram.VariableType.FLOAT;
+		tempTransformMatrix.copyTo(tm);
+		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "modelViewMatrix"), 1, false, tm, 0);
 		
-		program.setAttribPointer(ShaderProgram.VERTEX_ATTRIBUTE, 3, 0, 0, meshBuffer0, attribF);
-		program.setAttribPointer(ShaderProgram.NORMAL_ATTRIBUTE, 3, 0, mesh.NORMALS_OFFSET, meshBuffer0, attribF);
+		tempNormalMatrix.copyTo(tm);
+		GLES20.glUniformMatrix3fv(GLES20.glGetUniformLocation(prg, "normalMatrix"), 1, false, tm, 0);
+		
+//		program.setUniform(ShaderProgram.PROJECTION_MATRIX, projectionMatrix);
+//		program.setUniform(ShaderProgram.MODELVIEW_MATRIX, tempTransformMatrix);
+//		program.setUniform(ShaderProgram.NORMAL_MATRIX, tempNormalMatrix);
+		
+		int vh = GLES20.glGetAttribLocation(prg, "vertex");
+		int nh = GLES20.glGetAttribLocation(prg, "normal");
+		int uvh = GLES20.glGetAttribLocation(prg, "uv");
+		
+		int bwh = GLES20.glGetAttribLocation(prg, "boneWeights");
+		int bih = GLES20.glGetAttribLocation(prg, "boneIndices");
+		int bch = GLES20.glGetAttribLocation(prg, "boneCount");
+		
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mesh.getBuffer(0));
+		GLES20.glEnableVertexAttribArray(vh);
+		GLES20.glVertexAttribPointer(vh, 3, GLES20.GL_FLOAT, false, 0, 0);
+		
+		GLES20.glEnableVertexAttribArray(nh);
+		GLES20.glVertexAttribPointer(nh, 3, GLES20.GL_FLOAT, false, 0, mesh.NORMALS_OFFSET);
+		
+//		int meshBuffer0 = mesh.getBuffer(0);
+//		ShaderProgram.VariableType attribF = ShaderProgram.VariableType.FLOAT;
+		
+//		program.setAttribPointer(ShaderProgram.VERTEX_ATTRIBUTE, 3, 0, 0, meshBuffer0, attribF);
+//		program.setAttribPointer(ShaderProgram.NORMAL_ATTRIBUTE, 3, 0, mesh.NORMALS_OFFSET, meshBuffer0, attribF);
 		
 		if(hasTexture == 2)
 		{
-			program.setAttribPointer(ShaderProgram.UV_ATTRIBUTE, 2, 0, mesh.UV_OFFSET, meshBuffer0, attribF);
-			program.setUniformDiffuseMap(0, texture.getTextureBuffer());
+//			program.setAttribPointer(ShaderProgram.UV_ATTRIBUTE, 2, 0, mesh.UV_OFFSET, meshBuffer0, attribF);
+//			program.setUniformDiffuseMap(0, texture.getTextureBuffer());
+			
+			GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture.getTextureBuffer());
+			GLES20.glUniform1i(GLES20.glGetUniformLocation(prg, "diffuseMap"), 0);
+			
+			GLES20.glEnableVertexAttribArray(uvh);
+			GLES20.glVertexAttribPointer(uvh, 2, GLES20.GL_FLOAT, false, 0, mesh.UV_OFFSET);
 		}
 		else
 		{
-			program.setUniformColor(model.getMaterial().getBaseColor());
+//			program.setUniformColor(model.getMaterial().getBaseColor());
+			Color3 baseColor3 = model.getMaterial().getBaseColor();
+			GLES20.glUniform4f(GLES20.glGetUniformLocation(prg, "color"), baseColor3.r, baseColor3.g, baseColor3.b, 1);
 		}
 		
 		if(geometryType == Geometry.SKINNED_MESH && hasAnimation)
 		{
-			program.setAttrib(ShaderProgram.BONE_COUNT, 4);
-			program.setAttribPointer(ShaderProgram.BONE_WEIGHTS_ATTRIBUTE, 4, 0, 0, mesh.getBuffer(2), attribF);
-			program.setAttribPointer(ShaderProgram.BONE_INDEXES_ATTRIBUTE, 4, 0, 0, mesh.getBuffer(3), ShaderProgram.VariableType.SHORT);
+			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mesh.getBuffer(2));
+			GLES20.glEnableVertexAttribArray(bwh);
+			GLES20.glVertexAttribPointer(bwh, 4, GLES20.GL_FLOAT, false, 0, 0);
+			
+			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mesh.getBuffer(3));
+			GLES20.glEnableVertexAttribArray(bih);
+			GLES20.glVertexAttribPointer(bih, 4, GLES20.GL_SHORT, false, 0, 0);
+			
+			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+			GLES20.glVertexAttrib1f(bch, 4);
 			
 			if(matrixPalette != null)
 			{
-				program.setUniformMatrix4(ShaderProgram.MATRIX_PALETTE, matrixPalette);
+				int mp = GLES20.glGetUniformLocation(prg, "matrixPalette");
+				GLES20.glUniformMatrix4fv(mp, matrixPalette.length / 16, false, matrixPalette, 0);
 			}
+			
+//			program.setAttrib(ShaderProgram.BONE_COUNT, 4);
+//			program.setAttribPointer(ShaderProgram.BONE_WEIGHTS_ATTRIBUTE, 4, 0, 0, mesh.getBuffer(2), attribF);
+//			program.setAttribPointer(ShaderProgram.BONE_INDEXES_ATTRIBUTE, 4, 0, 0, mesh.getBuffer(3), ShaderProgram.VariableType.SHORT);
+//			
+//			if(matrixPalette != null)
+//			{
+//				program.setUniformMatrix4(ShaderProgram.MATRIX_PALETTE, matrixPalette);
+//			}
 		}
 		
-		program.drawTriangleElements(mesh.getBuffer(1), mesh.INDICES_COUNT);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mesh.getBuffer(1));
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, mesh.INDICES_COUNT, GLES20.GL_UNSIGNED_INT, 0);
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		
+		GLES20.glDisableVertexAttribArray(vh);
+		GLES20.glDisableVertexAttribArray(nh);
+		GLES20.glDisableVertexAttribArray(uvh);
+		GLES20.glDisableVertexAttribArray(bwh);
+		GLES20.glDisableVertexAttribArray(bih);
+		
+//		program.drawTriangleElements(mesh.getBuffer(1), mesh.INDICES_COUNT);
 	}
 	
 	private void recusiveLayer(Layer layer)

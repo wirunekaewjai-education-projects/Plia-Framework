@@ -141,7 +141,7 @@ public class Object3D extends Node<Object3D>
 				
 			if(parentHasChanged && parent != null)
 			{
-				Matrix4.multiply(world, getWorldMatrix(), local);
+				Matrix4.multiply(world, parent.getWorldMatrix(), local);
 			}
 			
 			for (int i = 0; i < childCount; i++)

@@ -24,13 +24,13 @@ public final class ShaderProgram
 	public ShaderProgram(String[] src)
 	{
 		datas[0] = createProgram(src[0], src[1]);
-		getLocation(datas[0]);
+//		getLocation(datas[0]);
 	}
 	
 	public ShaderProgram(String vs, String fs)
 	{
 		datas[0] = createProgram(vs, fs);
-		getLocation(datas[0]);
+//		getLocation(datas[0]);
 	}
 
 	public void use()
@@ -278,6 +278,11 @@ public final class ShaderProgram
 	public int get(int index)
 	{
 		return datas[index];
+	}
+	
+	public int getProgramID()
+	{
+		return datas[0];
 	}
 	
 	public enum VariableType

@@ -459,10 +459,10 @@ public final class Matrix4
 		float mm33 = m13*rhs.m31 +m23*rhs.m32 +m33*rhs.m33 +m43*rhs.m34;
 		float mm34 = m14*rhs.m31 +m24*rhs.m32 +m34*rhs.m33 +m44*rhs.m34;
 		
-		float mm41 = m11*rhs.m31 +m21*rhs.m42 +m31*rhs.m43 +m41*rhs.m44;
-		float mm42 = m12*rhs.m31 +m22*rhs.m42 +m32*rhs.m43 +m42*rhs.m44;
-		float mm43 = m13*rhs.m31 +m23*rhs.m42 +m33*rhs.m43 +m43*rhs.m44;
-		float mm44 = m14*rhs.m31 +m24*rhs.m42 +m34*rhs.m43 +m44*rhs.m44;
+		float mm41 = m11*rhs.m41 +m21*rhs.m42 +m31*rhs.m43 +m41*rhs.m44;
+		float mm42 = m12*rhs.m41 +m22*rhs.m42 +m32*rhs.m43 +m42*rhs.m44;
+		float mm43 = m13*rhs.m41 +m23*rhs.m42 +m33*rhs.m43 +m43*rhs.m44;
+		float mm44 = m14*rhs.m41 +m24*rhs.m42 +m34*rhs.m43 +m44*rhs.m44;
 		
 		m11 = mm11;
 		m12 = mm12;
@@ -794,10 +794,10 @@ public final class Matrix4
 		result.m33 = lhs.m13*rhs.m31 +lhs.m23*rhs.m32 +lhs.m33*rhs.m33 +lhs.m43*rhs.m34;
 		result.m34 = lhs.m14*rhs.m31 +lhs.m24*rhs.m32 +lhs.m34*rhs.m33 +lhs.m44*rhs.m34;
 		
-		result.m41 = lhs.m11*rhs.m31 +lhs.m21*rhs.m42 +lhs.m31*rhs.m43 +lhs.m41*rhs.m44;
-		result.m42 = lhs.m12*rhs.m31 +lhs.m22*rhs.m42 +lhs.m32*rhs.m43 +lhs.m42*rhs.m44;
-		result.m43 = lhs.m13*rhs.m31 +lhs.m23*rhs.m42 +lhs.m33*rhs.m43 +lhs.m43*rhs.m44;
-		result.m44 = lhs.m14*rhs.m31 +lhs.m24*rhs.m42 +lhs.m34*rhs.m43 +lhs.m44*rhs.m44;
+		result.m41 = lhs.m11*rhs.m41 +lhs.m21*rhs.m42 +lhs.m31*rhs.m43 +lhs.m41*rhs.m44;
+		result.m42 = lhs.m12*rhs.m41 +lhs.m22*rhs.m42 +lhs.m32*rhs.m43 +lhs.m42*rhs.m44;
+		result.m43 = lhs.m13*rhs.m41 +lhs.m23*rhs.m42 +lhs.m33*rhs.m43 +lhs.m43*rhs.m44;
+		result.m44 = lhs.m14*rhs.m41 +lhs.m24*rhs.m42 +lhs.m34*rhs.m43 +lhs.m44*rhs.m44;
 		
 		return result;
 	}
@@ -871,27 +871,35 @@ public final class Matrix4
 	
 	public static Matrix4 createFrustum(float left, float right, float bottom, float top, float near, float far)
 	{
-		float Zn = near;
-		float Zf = far;
-		float Vw = right-left;
-		float Vh = top-bottom;
-		
-		float _2Zn = (2.0f*Zn);
-		float w = _2Zn/Vw;
-		float h = _2Zn/Vh;
-		
-		float Q = Zf/(Zf-Zn);
-		
 		Matrix4 result = new Matrix4();
 		
-		result.m11 = w;
-
-		result.m22 = h;
-
-		result.m33 = Q;
+		float _2n = (2.0f*near);
+		float RsubL = right - left;
+		float TsubB = top - bottom;
+		float FsubN = far - near;
+		
+		float A = - ( (far + near) / FsubN );
+		float B = - ( (2 * far * near) / FsubN );
+		
+		result.m11 = _2n / RsubL;
+		result.m12 = 0;
+		result.m13 = 0;
+		result.m14 = 0;
+		
+		result.m21 = 0;
+		result.m22 = _2n / TsubB;
+		result.m23 = 0;
+		result.m24 = 0;
+		
+		result.m31 = (right + left) / RsubL;
+		result.m32 = (top + bottom) / TsubB;
+		result.m33 = A;
 		result.m34 = -1;
-
-		result.m43 = Q*Zn;
+		
+		result.m41 = 0;
+		result.m42 = 0;
+		result.m43 = B;
+		result.m44 = 0;
 		
 		return result;
 	}
@@ -964,10 +972,10 @@ public final class Matrix4
 		result.m33 = lhs.m13*rhs.m31 +lhs.m23*rhs.m32 +lhs.m33*rhs.m33 +lhs.m43*rhs.m34;
 		result.m34 = lhs.m14*rhs.m31 +lhs.m24*rhs.m32 +lhs.m34*rhs.m33 +lhs.m44*rhs.m34;
 		
-		result.m41 = lhs.m11*rhs.m31 +lhs.m21*rhs.m42 +lhs.m31*rhs.m43 +lhs.m41*rhs.m44;
-		result.m42 = lhs.m12*rhs.m31 +lhs.m22*rhs.m42 +lhs.m32*rhs.m43 +lhs.m42*rhs.m44;
-		result.m43 = lhs.m13*rhs.m31 +lhs.m23*rhs.m42 +lhs.m33*rhs.m43 +lhs.m43*rhs.m44;
-		result.m44 = lhs.m14*rhs.m31 +lhs.m24*rhs.m42 +lhs.m34*rhs.m43 +lhs.m44*rhs.m44;
+		result.m41 = lhs.m11*rhs.m41 +lhs.m21*rhs.m42 +lhs.m31*rhs.m43 +lhs.m41*rhs.m44;
+		result.m42 = lhs.m12*rhs.m41 +lhs.m22*rhs.m42 +lhs.m32*rhs.m43 +lhs.m42*rhs.m44;
+		result.m43 = lhs.m13*rhs.m41 +lhs.m23*rhs.m42 +lhs.m33*rhs.m43 +lhs.m43*rhs.m44;
+		result.m44 = lhs.m14*rhs.m41 +lhs.m24*rhs.m42 +lhs.m34*rhs.m43 +lhs.m44*rhs.m44;
 		
 		return result;
 	}
@@ -1038,27 +1046,33 @@ public final class Matrix4
 	
 	public static Matrix4 createFrustum(Matrix4 result, float left, float right, float bottom, float top, float near, float far)
 	{
-		float Zn = near;
-		float Zf = far;
-		float Vw = right-left;
-		float Vh = top-bottom;
+		float _2n = (2.0f*near);
+		float RsubL = right - left;
+		float TsubB = top - bottom;
+		float FsubN = far - near;
 		
-		float _2Zn = (2.0f*Zn);
-		float w = _2Zn/Vw;
-		float h = _2Zn/Vh;
+		float A = - ( (far + near) / FsubN );
+		float B = - ( (2 * far * near) / FsubN );
 		
-		float Q = Zf/(Zf-Zn);
-
-		result.setIdentity();
+		result.m11 = _2n / RsubL;
+		result.m12 = 0;
+		result.m13 = 0;
+		result.m14 = 0;
 		
-		result.m11 = w;
-
-		result.m22 = h;
-
-		result.m33 = Q;
+		result.m21 = 0;
+		result.m22 = _2n / TsubB;
+		result.m23 = 0;
+		result.m24 = 0;
+		
+		result.m31 = (right + left) / RsubL;
+		result.m32 = (top + bottom) / TsubB;
+		result.m33 = A;
 		result.m34 = -1;
-
-		result.m43 = Q*Zn;
+		
+		result.m41 = 0;
+		result.m42 = 0;
+		result.m43 = B;
+		result.m44 = 0;
 		
 		return result;
 	}
@@ -1146,5 +1160,134 @@ public final class Matrix4
 		result.m44 = 1;
 		
 		return result;
+	}
+	
+	public static void createTranslation(Matrix4 result, float x, float y, float z)
+	{
+		result.m11 = 1;
+		result.m12 = 0;
+		result.m13 = 0;
+		result.m14 = 0;
+		
+		result.m21 = 0;
+		result.m22 = 1;
+		result.m23 = 0;
+		result.m24 = 0;
+		
+		result.m31 = 0;
+		result.m32 = 0;
+		result.m33 = 1;
+		result.m34 = 0;
+		
+		result.m41 = x;
+		result.m42 = y;
+		result.m43 = z;
+		result.m44 = 1;
+	}
+	
+	public static void createRotationX(Matrix4 result, float degree)
+	{
+		float radian = degree * 0.0174533f;
+		float cos = (float) Math.cos(radian);
+		float sin = (float) Math.sin(radian);
+		
+		result.m11 = 1;
+		result.m12 = 0;
+		result.m13 = 0;
+		result.m14 = 0;
+		
+		result.m21 = 0;
+		result.m22 = cos;
+		result.m23 = sin;
+		result.m24 = 0;
+		
+		result.m31 = 0;
+		result.m32 = -sin;
+		result.m33 = cos;
+		result.m34 = 0;
+		
+		result.m41 = 0;
+		result.m42 = 0;
+		result.m43 = 0;
+		result.m44 = 1;
+	}
+	
+	public static void createRotationY(Matrix4 result, float degree)
+	{
+		float radian = degree * 0.0174533f;
+		float cos = (float) Math.cos(radian);
+		float sin = (float) Math.sin(radian);
+		
+		result.m11 = cos;
+		result.m12 = 0;
+		result.m13 = -sin;
+		result.m14 = 0;
+		
+		result.m21 = 0;
+		result.m22 = 1;
+		result.m23 = 0;
+		result.m24 = 0;
+		
+		result.m31 = sin;
+		result.m32 = 0;
+		result.m33 = cos;
+		result.m34 = 0;
+		
+		result.m41 = 0;
+		result.m42 = 0;
+		result.m43 = 0;
+		result.m44 = 1;
+	}
+	
+	public static void createRotationZ(Matrix4 result, float degree)
+	{
+		float radian = degree * 0.0174533f;
+		float cos = (float) Math.cos(radian);
+		float sin = (float) Math.sin(radian);
+		
+		result.m11 = cos;
+		result.m12 = sin;
+		result.m13 = 0;
+		result.m14 = 0;
+		
+		result.m21 = -sin;
+		result.m22 = cos;
+		result.m23 = 0;
+		result.m24 = 0;
+		
+		result.m31 = 0;
+		result.m32 = 0;
+		result.m33 = 1;
+		result.m34 = 0;
+		
+		result.m41 = 0;
+		result.m42 = 0;
+		result.m43 = 0;
+		result.m44 = 1;
+	}
+	
+	public static void createScale(Matrix4 result, float sx, float sy, float sz)
+	{
+		result.m11 = sx;
+		result.m22 = sy;
+		result.m33 = sz;
+		result.m44 = 1;
+		
+		result.m12 = 0;
+		result.m13 = 0;
+		result.m14 = 0;
+		
+		result.m21 = 0;
+		result.m23 = 0;
+		result.m24 = 0;
+		
+		result.m31 = 0;
+		result.m32 = 0;
+		result.m34 = 0;
+		
+		result.m41 = 0;
+		result.m42 = 0;
+		result.m43 = 0;
+		
 	}
 }

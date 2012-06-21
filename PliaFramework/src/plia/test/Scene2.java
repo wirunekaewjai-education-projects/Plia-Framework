@@ -1,11 +1,13 @@
 package plia.test;
 
 import plia.framework.core.GameObjectManager;
+import plia.framework.math.Vector3;
 import plia.framework.scene.Camera;
 import plia.framework.scene.Layer;
 import plia.framework.scene.Light;
 import plia.framework.scene.Object3D;
 import plia.framework.scene.Scene;
+import plia.framework.scene.obj3d.animation.PlaybackMode;
 
 public class Scene2 extends Scene
 {
@@ -23,7 +25,7 @@ public class Scene2 extends Scene
 
 		camera = Scene.getMainCamera();
 		camera.setPosition(100, 120, 100);
-		camera.setLookAt(model);
+		camera.setLookAt(new Vector3());
 		camera.setProjectionType(Camera.PERSPECTIVE);
 		camera.setRange(1000);
 		
@@ -31,11 +33,14 @@ public class Scene2 extends Scene
 		layer1.addChild(model);
 		layer1.addChild(camera);
 		layer1.addChild(skylight);
+		
+		model.getAnimation().getAnimationClip("idle").setPlaybackMode(PlaybackMode.LOOP);
+		model.getAnimation().play("idle");
 	}
 
 	public void onUpdate()
 	{
-		model.rotate(0, 0, 1);
+//		model.rotate(0, 0, 1);
 	}
 
 }

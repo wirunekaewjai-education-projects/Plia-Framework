@@ -45,7 +45,7 @@ public class FbxDroid
 			FbxScene scene = FbxImporter.importScene(context.getAssets().open(fbx));
 
 			float end = (System.nanoTime() - start)/ 1000000f;
-			Log.e("Load Time", end+" ms");
+//			Log.e("Load Time", end+" ms");
 			
 			int fps = scene.globalSetting().getTimeMode().getFrameRate();
 			
@@ -294,33 +294,33 @@ public class FbxDroid
 		this.uv = uv2;
 		this.indices = indices;
 		
-		FbxNode mn = mesh.getNode(0);
-		Vector3 defaultT = mn.getLclTranslation();
-		Vector3 defaultR = mn.getLclRotation();
-		Vector3 defaultS = mn.getLclScaling();
-		
-		defaultTranslation = new Vector3(defaultT.x, defaultT.y, defaultT.z);
-		defaultRotation = new Vector3(defaultR.x, defaultR.y, defaultR.z);
-		defaultScaling = new Vector3(defaultS.x, defaultS.y, defaultS.z);
-		
-		// Find Max Bounds
-		for (int i = 0; i < vertices2.length / 3; i++)
-		{
-			int indx = i * 3;
-			float x = vertices2[indx];
-			float y = vertices2[indx + 1];
-			float z = vertices2[indx + 2];
-			
-			max.x = Math.max(x, max.x);
-			max.y = Math.max(y, max.y);
-			max.z = Math.max(z, max.z);
-			
-			min.x = Math.min(x, min.x);
-			min.y = Math.min(y, min.y);
-			min.z = Math.min(z, min.z);
-			
-//			Log.e("Vertices : "+i, x+", "+ y+", "+z);
-		}
+//		FbxNode mn = mesh.getNode(0);
+//		Vector3 defaultT = mn.getLclTranslation();
+//		Vector3 defaultR = mn.getLclRotation();
+//		Vector3 defaultS = mn.getLclScaling();
+//		
+//		defaultTranslation = new Vector3(defaultT.x, defaultT.y, defaultT.z);
+//		defaultRotation = new Vector3(defaultR.x, defaultR.y, defaultR.z);
+//		defaultScaling = new Vector3(defaultS.x, defaultS.y, defaultS.z);
+//		
+//		// Find Max Bounds
+//		for (int i = 0; i < vertices2.length / 3; i++)
+//		{
+//			int indx = i * 3;
+//			float x = vertices2[indx];
+//			float y = vertices2[indx + 1];
+//			float z = vertices2[indx + 2];
+//			
+//			max.x = Math.max(x, max.x);
+//			max.y = Math.max(y, max.y);
+//			max.z = Math.max(z, max.z);
+//			
+//			min.x = Math.min(x, min.x);
+//			min.y = Math.min(y, min.y);
+//			min.z = Math.min(z, min.z);
+//			
+////			Log.e("Vertices : "+i, x+", "+ y+", "+z);
+//		}
 		
 		// Material Zone
 		FbxSurfaceMaterial material = mesh.getNode(0).getMaterial();
@@ -420,10 +420,10 @@ public class FbxDroid
 						
 						if((n.getAnimCurveNodeR() == null))
 						{
+//							rotation.setIdentity();
 							R[0] = 0;
 							R[1] = 0;
 							R[2] = 0;
-//							rotation.setIdentity();
 						}
 						else
 						{
@@ -433,10 +433,10 @@ public class FbxDroid
 						
 						if((n.getAnimCurveNodeS() == null))
 						{
+//							scaling.setIdentity();
 							S[0] = 1;
 							S[1] = 1;
 							S[2] = 1;
-//							scaling.setIdentity();
 						}
 						else
 						{
@@ -446,9 +446,18 @@ public class FbxDroid
 //							scaling.m33 = S[2];
 						}
 						
-						Matrix4.createTRS_ZYX(TRS, T[0], T[1], T[2], R[0], R[1], R[2], S[0], S[1], S[2]);
-//						Matrix4.multiply(TR, translation, rotation);
-//						Matrix4.multiply(TRS, TR, scaling);
+						Matrix4.createTranslation(translation, T[0], T[1], T[2]);
+						Matrix4.createRotationX(rx, R[0]);
+						Matrix4.createRotationY(ry, R[1]);
+						Matrix4.createRotationZ(rz, R[2]);
+						
+						Matrix4.multiply(rzy, rz, ry);
+						Matrix4.multiply(rotation, rzy, rx);
+						Matrix4.createScale(scaling, S[0], S[1], S[2]);
+
+						Matrix4.multiply(TR, translation, rotation);
+						Matrix4.multiply(TRS, TR, scaling);
+
 						TRS.copyTo(matrixPalette[i]);
 					}
 				}
@@ -629,18 +638,6 @@ public class FbxDroid
 		
 		this.boneWeights = boneWeightTable;
 		this.boneIndices = boneIndexTable;
-
-//		for (int i = 0; i < clusters.size(); i++)
-//		{
-//			Log.e(i+"", clusters.get(i).getAssociateModel().getName());
-//		}
-		
-//		Log.e(mesh.getNode(0).getName(), clusters.size()+"");
-//		
-//		for (int i = 0; i < rootnode.size(); i++)
-//		{
-//			Log.e(i+"", rootnode.get(i).getName());
-//		}
 		
 		clustersArr = new FbxCluster[clusters.size()];
 		clusters.toArray(clustersArr);
@@ -656,7 +653,7 @@ public class FbxDroid
 				for (int j = 0; j < rootnode.size(); j++)
 				{
 					FbxNode node = rootnode.get(j);
-					recursive(frame, node, identity);
+					recursive(frame, node, new Matrix4());
 				}
 			}
 		}
@@ -681,10 +678,10 @@ public class FbxDroid
 	private static float[] R = new float[3];
 	private static float[] S = new float[3];
 	
-//	private static float[] rx = new float[16];
-//	private static float[] ry = new float[16];
-//	private static float[] rz = new float[16];
-//	private static float[] rzy = new float[16];
+	private static Matrix4 rx = new Matrix4();
+	private static Matrix4 ry = new Matrix4();
+	private static Matrix4 rz = new Matrix4();
+	private static Matrix4 rzy = new Matrix4();
 	
 	private static Matrix4 translation = new Matrix4();
 	private static Matrix4 rotation = new Matrix4();
@@ -739,12 +736,23 @@ public class FbxDroid
 //			scaling.m22 = S[1];
 //			scaling.m33 = S[2];
 		}
-
-//		Matrix4.multiply(TR, translation, rotation);
-//		Matrix4.multiply(TRS, TR, scaling);
 		
-		Matrix4.createTRS_ZYX(TRS, T[0], T[1], T[2], R[0], R[1], R[2], S[0], S[1], S[2]);
+		Matrix4.createTranslation(translation, T[0], T[1], T[2]);
+		Matrix4.createRotationX(rx, R[0]);
+		Matrix4.createRotationY(ry, R[1]);
+		Matrix4.createRotationZ(rz, R[2]);
+		
+		Matrix4.multiply(rzy, rz, ry);
+		Matrix4.multiply(rotation, rzy, rx);
+		Matrix4.createScale(scaling, S[0], S[1], S[2]);
+
+		Matrix4.multiply(TR, translation, rotation);
+		Matrix4.multiply(TRS, TR, scaling);
+		
+//		Matrix4.createTRS_ZYX(TRS, T[0], T[1], T[2], R[0], R[1], R[2], S[0], S[1], S[2]);
 		Matrix4.multiply(AbsoluteTransform, parentWorld, TRS);
+		
+		
 		
 		if(i != null)
 		{
@@ -753,6 +761,11 @@ public class FbxDroid
 			
 			Transform.copyTo(temp);
 			System.arraycopy(temp, 0, matrixPalette[(frame - startFrame)], i * 16, 16);
+			
+//			if(frame == 1)
+//			{
+//				Log.e(node.getName(), Transform.toString());
+//			}
 		}
 		
 		for (int j = 0; j < node.getChildCount(); j++)

@@ -206,6 +206,7 @@ public class FbxImporter
 						else if (line.startsWith("Normals"))
 						{
 							int count = Convert.toInt(line.substring(10).split(" ")[0]);
+
 							mesh.setNormals(readFloatAttribute(list, count));
 						} 
 						else if (line.startsWith("UV:"))
@@ -992,7 +993,6 @@ public class FbxImporter
 
 		int result = 0;
 		int p = 1;
-		int lastPow = 1;
 		byte sign = 1;
 		
 		int index = count-1;
@@ -1009,13 +1009,13 @@ public class FbxImporter
 			else if(c == '-')
 			{
 				sign = -1;
+//				result = ((result * -1) - 1);
 			}
 			else
 			{
-				items[index--] = result * lastPow * sign;
+				items[index--] = result * sign;
 				result = 0;
 				p = 1;
-				lastPow = 1;
 				sign = 1;
 				
 				if(index < 0)
@@ -1047,7 +1047,6 @@ public class FbxImporter
 
 		int result = 0;
 		int p = 1;
-		int lastPow = 1;
 		byte sign = 1;
 		
 		int index = count-1;
@@ -1067,10 +1066,9 @@ public class FbxImporter
 			}
 			else
 			{
-				items[index--] = result * lastPow * sign;
+				items[index--] = result * sign;
 				result = 0;
 				p = 1;
-				lastPow = 1;
 				sign = 1;
 				
 				if(index < 0)
@@ -1102,7 +1100,6 @@ public class FbxImporter
 
 		int result = 0;
 		int p = 1;
-		int lastPow = 1;
 		byte sign = 1;
 		
 		int index = count-1;
@@ -1122,10 +1119,9 @@ public class FbxImporter
 			}
 			else
 			{
-				items[index--] = result * lastPow * sign;
+				items[index--] = result * sign;
 				result = 0;
 				p = 1;
-				lastPow = 1;
 				sign = 1;
 				
 				if(index < 0)
@@ -1157,7 +1153,6 @@ public class FbxImporter
 
 		long result = 0;
 		long p = 1;
-		long lastPow = 1;
 		byte sign = 1;
 		
 		int index = count-1;
@@ -1177,10 +1172,9 @@ public class FbxImporter
 			}
 			else
 			{
-				items[index--] = result * lastPow * sign;
+				items[index--] = result * sign;
 				result = 0;
 				p = 1;
-				lastPow = 1;
 				sign = 1;
 				
 				if(index < 0)
@@ -1199,7 +1193,6 @@ public class FbxImporter
 	{
 		long result = 0;
 		long p = 1;
-		long lastPow = 1;
 		byte sign = 1;
 		
 		for (int i = line.length()-1; i >= 0; i--)
@@ -1213,7 +1206,7 @@ public class FbxImporter
 			}
 			else if(c == ',' || i == 0)
 			{
-				return result * lastPow * sign;
+				return result * sign;
 			}
 			else if(c == '-')
 			{
@@ -1228,7 +1221,6 @@ public class FbxImporter
 	{
 		int result = 0;
 		int p = 1;
-		int lastPow = 1;
 		int sign = 1;
 		
 		for (int i = line.length()-1; i >= 0; i--)
@@ -1242,7 +1234,7 @@ public class FbxImporter
 			}
 			else if(c == ',' || i == 0)
 			{
-				return result * lastPow * sign;
+				return result * sign;
 			}
 			else if(c == '-')
 			{
