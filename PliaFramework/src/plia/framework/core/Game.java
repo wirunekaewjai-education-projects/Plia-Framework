@@ -3,6 +3,7 @@ package plia.framework.core;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import plia.framework.debug.Debug;
 import plia.framework.scene.Camera;
 import plia.framework.scene.Scene;
 import plia.framework.scene.obj3d.shading.Shader;
@@ -18,7 +19,7 @@ public abstract class Game extends Activity implements IFramework
 	private GameObjectManager gameObjectManager;
 	private GameTime gameTime;
 	
-//	private Debug debug;
+	private Debug debug;
 	
 	private GLSurfaceView glSurfaceView;
 	private boolean isInitialized = false;
@@ -40,7 +41,7 @@ public abstract class Game extends Activity implements IFramework
 
 		this.gameTime = GameTime.getInstance();
 		
-//		this.debug = Debug.getInstance();
+		this.debug = Debug.getInstance();
 
 		Scene.setMainCamera(new Camera("Main Camera"));
 		
