@@ -672,7 +672,7 @@ public class FbxDroid
 	}
 	
 	private static Matrix4 AbsoluteTransform = new Matrix4();
-	private static Matrix4 Transform = new Matrix4();
+//	private static Matrix4 Transform = new Matrix4();
 	private static Matrix4 TRS = new Matrix4();
 	private static float[] T = new float[3];
 	private static float[] R = new float[3];
@@ -688,7 +688,6 @@ public class FbxDroid
 	private static Matrix4 scaling = new Matrix4();
 	
 	private static Matrix4 TR = new Matrix4();
-	private static Matrix4 identity = new Matrix4();
 	private static Matrix4 clusterTransform = new Matrix4();
 	private static float[] temp = new float[16];
 	

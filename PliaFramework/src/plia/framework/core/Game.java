@@ -12,7 +12,6 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
-import android.util.Log;
 
 public abstract class Game extends Activity implements IFramework
 {
@@ -74,6 +73,13 @@ public abstract class Game extends Activity implements IFramework
 		// TODO Auto-generated method stub
 		super.onResume();
 		this.glSurfaceView.onResume();
+	}
+	
+	@Override
+	protected void onDestroy()
+	{
+		super.onDestroy();
+		this.gameObjectManager.destroy();
 	}
 	
 	private class GLRenderer implements Renderer

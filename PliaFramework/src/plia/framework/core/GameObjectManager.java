@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
+//import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
@@ -27,7 +27,7 @@ import plia.framework.scene.Object3D;
 import plia.framework.scene.obj3d.animation.Animation;
 import plia.framework.scene.obj3d.geometry.Mesh;
 import plia.framework.scene.obj3d.geometry.SkinnedMesh;
-import plia.framework.scene.obj3d.shading.Color4;
+//import plia.framework.scene.obj3d.shading.Color4;
 import plia.framework.scene.obj3d.shading.Material;
 import plia.framework.scene.obj3d.shading.Shader;
 import plia.framework.scene.obj3d.shading.Texture2D;
@@ -47,13 +47,19 @@ public class GameObjectManager
 		this.loadAllFilesInAssets("");
 	}
 	
+	public void destroy()
+	{
+		assetFileNames.clear();
+	}
+	
 	private void loadAllFilesInAssets(String foldername)
 	{
 		String[] filelist = null;
 		try
 		{
 			filelist = context.getAssets().list(foldername);
-		} catch (IOException e)
+		} 
+		catch (IOException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -100,6 +106,8 @@ public class GameObjectManager
     	}
 	}
 	
+	
+	
 	private static GameObjectManager instance = new GameObjectManager();
 	static GameObjectManager getInstance()
 	{
@@ -140,20 +148,20 @@ public class GameObjectManager
 			}
 			
 			int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
-			Color4[] colors = new Color4[bitmap.getWidth() * bitmap.getHeight()];
+//			Color4[] colors = new Color4[bitmap.getWidth() * bitmap.getHeight()];
 			
 			bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
 
-			for (int i = 0; i < pixels.length; i++)
-			{
-				float r = Color.red(pixels[i]) / 255f;
-				float g = Color.green(pixels[i]) / 255f;
-				float b = Color.blue(pixels[i]) / 255f;
-				float a = Color.alpha(pixels[i]) / 255f;
-				colors[i] = new Color4(r, g, b, a);
-			}
+//			for (int i = 0; i < pixels.length; i++)
+//			{
+//				float r = Color.red(pixels[i]) / 255f;
+//				float g = Color.green(pixels[i]) / 255f;
+//				float b = Color.blue(pixels[i]) / 255f;
+//				float a = Color.alpha(pixels[i]) / 255f;
+//				colors[i] = new Color4(r, g, b, a);
+//			}
 			
-			Texture2D texture = new Texture2D(fileName, tex[0], colors, bitmap.getWidth(), bitmap.getHeight());
+			Texture2D texture = new Texture2D(fileName, tex[0], pixels, bitmap.getWidth(), bitmap.getHeight());
 			return texture;
 		} 
 		catch (IOException e)
@@ -251,12 +259,15 @@ public class GameObjectManager
 //			Vector3 baseColor = droid.getBaseColor();
 //			material.setBaseColor(baseColor.x, baseColor.y, baseColor.z);
 			
+			long start = System.nanoTime();
+
+			
 			String textureFileName = droid.getTextureFileName();
 			if(textureFileName != null && !textureFileName.isEmpty())
 			{
 				for (int j = 0; j < instance.assetFileNames.size(); j++)
 				{
-					String path = instance.assetFileNames.get(i);
+					String path = instance.assetFileNames.get(j);
 					if(path.contains(textureFileName))
 					{
 						Texture2D texture = loadTexture2D(path);
@@ -264,13 +275,16 @@ public class GameObjectManager
 						if(texture != null)
 						{
 							material.setBaseTexture(texture);
-//							Log.e("Name", path);
+							
 						}
 						
 						break;
 					}
 				}
 			}
+			
+			float end = (System.nanoTime() - start)/ 1000000f;
+			Log.e("Load Time", end+" ms");
 			
 			mdl.setMaterial(material);
 			models.add(mdl);
