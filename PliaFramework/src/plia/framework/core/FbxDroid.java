@@ -36,15 +36,15 @@ public class FbxDroid
 				filename = filename.substring(indexOfSlash+1, filename.length());
 			}
 			
-//			Log.e("=================", "=====================");
-//			Log.e("Fbx Data", " ");
-//			Log.e("", "Root Name      : "+filename);
+			Log.e("=================", "=====================");
+			Log.e("Fbx Data", " ");
+			Log.e("", "Root Name      : "+filename);
 			
-			long start = System.nanoTime();
+//			long start = System.nanoTime();
 			
 			FbxScene scene = FbxImporter.importScene(context.getAssets().open(fbx));
 
-			float end = (System.nanoTime() - start)/ 1000000f;
+//			float end = (System.nanoTime() - start)/ 1000000f;
 //			Log.e("Load Time", end+" ms");
 			
 			int fps = scene.globalSetting().getTimeMode().getFrameRate();
@@ -94,8 +94,8 @@ public class FbxDroid
 			int geometryCount = scene.getGeometryCount();
 			if(geometryCount > 0)
 			{
-//				Log.e("", "Geometry Count : "+geometryCount);
-//				Log.e("=================", "=====================");
+				Log.e("", "Geometry Count : "+geometryCount);
+				Log.e("=================", "=====================");
 				
 				FbxDroid[] datas = new FbxDroid[geometryCount];
 				for (int i = 0; i < geometryCount; i++)
@@ -103,28 +103,28 @@ public class FbxDroid
 					datas[i] = new FbxDroid(filename, (FbxMesh) scene.getGeometry(i), axisRotation);
 					datas[i].frameRate = fps;
 					
-//					Log.e("Geometry No. : "+i, "Name           : "+scene.getGeometry(i).getNode(0).getName());
-//					Log.e("Mesh"			 , " ");
-//					Log.e(""				 , "Vertices       : "+datas[i].vertices.length);
-//					Log.e(""				 , "Normals        : "+datas[i].normals.length);
-//					Log.e(""				 , "UV             : "+datas[i].uv.length);
-//					Log.e(""				 , "Indices        : "+datas[i].indices.length);
-//					
-//					if(datas[i].isSkinnedMesh)
-//					{
-//						Log.e("Skinned Mesh", " ");
-//						Log.e("", "Bone Weights   : "+datas[i].boneWeights.length);
-//						Log.e("", "Bone Indices   : "+datas[i].boneIndices.length);
-//					}
-//					
-//					if(datas[i].hasAnimation)
-//					{
-//						Log.e("Animation", "  ");
-//						Log.e("", "First Keyframe : "+datas[i].startFrame);
-//						Log.e("", "Last Keyframe  : "+datas[i].endFrame);
-//						Log.e("", "Total Keyframe : "+datas[i].totalFrame);
-//					}
-//					Log.e("=================", "=====================");
+					Log.e("Geometry No. : "+i, "Name           : "+scene.getGeometry(i).getNode(0).getName());
+					Log.e("Mesh"			 , " ");
+					Log.e(""				 , "Vertices       : "+datas[i].vertices.length);
+					Log.e(""				 , "Normals        : "+datas[i].normals.length);
+					Log.e(""				 , "UV             : "+datas[i].uv.length);
+					Log.e(""				 , "Indices        : "+datas[i].indices.length);
+					
+					if(datas[i].isSkinnedMesh)
+					{
+						Log.e("Skinned Mesh", " ");
+						Log.e("", "Bone Weights   : "+datas[i].boneWeights.length);
+						Log.e("", "Bone Indices   : "+datas[i].boneIndices.length);
+					}
+					
+					if(datas[i].hasAnimation)
+					{
+						Log.e("Animation", "  ");
+						Log.e("", "First Keyframe : "+datas[i].startFrame);
+						Log.e("", "Last Keyframe  : "+datas[i].endFrame);
+						Log.e("", "Total Keyframe : "+datas[i].totalFrame);
+					}
+					Log.e("=================", "=====================");
 				}
 
 				return datas;
@@ -294,14 +294,14 @@ public class FbxDroid
 		this.uv = uv2;
 		this.indices = indices;
 		
-//		FbxNode mn = mesh.getNode(0);
-//		Vector3 defaultT = mn.getLclTranslation();
-//		Vector3 defaultR = mn.getLclRotation();
-//		Vector3 defaultS = mn.getLclScaling();
-//		
-//		defaultTranslation = new Vector3(defaultT.x, defaultT.y, defaultT.z);
-//		defaultRotation = new Vector3(defaultR.x, defaultR.y, defaultR.z);
-//		defaultScaling = new Vector3(defaultS.x, defaultS.y, defaultS.z);
+		FbxNode mn = mesh.getNode(0);
+		Vector3 defaultT = mn.getLclTranslation();
+		Vector3 defaultR = mn.getLclRotation();
+		Vector3 defaultS = mn.getLclScaling();
+		
+		defaultTranslation = new Vector3(defaultT.x, defaultT.y, defaultT.z);
+		defaultRotation = new Vector3(defaultR.x, defaultR.y, defaultR.z);
+		defaultScaling = new Vector3(defaultS.x, defaultS.y, defaultS.z);
 //		
 //		// Find Max Bounds
 //		for (int i = 0; i < vertices2.length / 3; i++)
@@ -698,79 +698,64 @@ public class FbxDroid
 
 		if((node.getAnimCurveNodeT() == null))
 		{
-//			translation.setIdentity();
-			T[0] = 0;
-			T[1] = 0;
-			T[2] = 0;
+			translation.setIdentity();
 		}
 		else
 		{
 			node.getAnimCurveNodeT().getValue(T, frame);
-//			translation.setTranslation(T[0], T[1], T[2]);
+			translation.setTranslation(T[0], T[1], T[2]);
 		}
 		
 		if((node.getAnimCurveNodeR() == null))
 		{
-//			rotation.setIdentity();
-			R[0] = 0;
-			R[1] = 0;
-			R[2] = 0;
+			rotation.setIdentity();
 		}
 		else
 		{
 			node.getAnimCurveNodeR().getValue(R, frame);
-//			rotation.setEulerAngles(R[0], R[1], R[2]);
+			Matrix4.createRotationX(rx, R[0]);
+			Matrix4.createRotationY(ry, R[1]);
+			Matrix4.createRotationZ(rz, R[2]);
+			
+			Matrix4.multiply(rzy, rz, ry);
+			Matrix4.multiply(rotation, rzy, rx);
 		}
 		
 		if((node.getAnimCurveNodeS() == null))
 		{
-//			scaling.setIdentity();
-			S[0] = 1;
-			S[1] = 1;
-			S[2] = 1;
+			scaling.setIdentity();
 		}
 		else
 		{
 			node.getAnimCurveNodeS().getValue(S, frame);
-//			scaling.m11 = S[0];
-//			scaling.m22 = S[1];
-//			scaling.m33 = S[2];
+			Matrix4.createScale(scaling, S[0], S[1], S[2]);
 		}
-		
-		Matrix4.createTranslation(translation, T[0], T[1], T[2]);
-		Matrix4.createRotationX(rx, R[0]);
-		Matrix4.createRotationY(ry, R[1]);
-		Matrix4.createRotationZ(rz, R[2]);
-		
-		Matrix4.multiply(rzy, rz, ry);
-		Matrix4.multiply(rotation, rzy, rx);
-		Matrix4.createScale(scaling, S[0], S[1], S[2]);
 
 		Matrix4.multiply(TR, translation, rotation);
 		Matrix4.multiply(TRS, TR, scaling);
 		
 //		Matrix4.createTRS_ZYX(TRS, T[0], T[1], T[2], R[0], R[1], R[2], S[0], S[1], S[2]);
 		Matrix4.multiply(AbsoluteTransform, parentWorld, TRS);
-		
-		
-		
+
 		if(i != null)
 		{
 			clusterTransform.set(clustersArr[i].getTransform());
+			
+			Matrix4 Transform = new Matrix4();
 			Matrix4.multiply(Transform, AbsoluteTransform, clusterTransform);
 			
 			Transform.copyTo(temp);
 			System.arraycopy(temp, 0, matrixPalette[(frame - startFrame)], i * 16, 16);
 			
-//			if(frame == 1)
+//			if(frame == 10)
 //			{
-//				Log.e(node.getName(), Transform.toString());
+//				Log.e(node.getName(), parentWorld.toString());
 //			}
 		}
 		
 		for (int j = 0; j < node.getChildCount(); j++)
 		{
-			recursive(frame, node.getChild(j), AbsoluteTransform);
+			recursive(frame, node.getChild(j), new Matrix4(AbsoluteTransform));
 		}
 	}
 	

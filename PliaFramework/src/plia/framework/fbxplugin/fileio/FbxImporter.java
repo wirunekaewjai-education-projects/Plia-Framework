@@ -326,19 +326,27 @@ public class FbxImporter
 					FbxNode node = new FbxNode(nodeID);
 					node.setName(nodeName);
 
+					Vector3 lclT = new Vector3();
+					Vector3 lclR = new Vector3();
+					Vector3 lclS = new Vector3(1,1,1);
+					
 					while(!(line = list[index++]).contains("}"))
 					{
 						if (line.contains("Lcl Translation"))
 						{
-							node.setLclTranslation(new Vector3(splitCommaToFloatArray(line, 3)));
+							lclT = new Vector3(splitCommaToFloatArray(line, 3));
 						} else if (line.contains("Lcl Rotation"))
 						{
-							node.setLclRotation(new Vector3(splitCommaToFloatArray(line, 3)));
+							lclR = new Vector3(splitCommaToFloatArray(line, 3));
 						} else if (line.contains("Lcl Scaling"))
 						{
-							node.setLclScaling(new Vector3(splitCommaToFloatArray(line, 3)));
+							lclS = new Vector3(splitCommaToFloatArray(line, 3));
 						}
 					}
+
+					node.setLclTranslation(lclT);
+					node.setLclRotation(lclR);
+					node.setLclScaling(lclS);
 
 					maps.put(nodeID, node);
 				}

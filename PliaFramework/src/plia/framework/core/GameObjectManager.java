@@ -198,6 +198,7 @@ public class GameObjectManager
 			
 			mdl.setGeometry(mesh);
 
+//			Log.e(droid.getName(), droid.hasAnimation()+"");
 			if(droid.hasAnimation())
 			{
 				mesh.setMatrixPalette(droid.getMatrixPalette());

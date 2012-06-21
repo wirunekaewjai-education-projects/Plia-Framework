@@ -18,7 +18,10 @@ public class Scene2 extends Scene
 
 	public void onInitialize()
 	{
-		model = GameObjectManager.loadModel("elementalist31.FBX");
+		long start = System.nanoTime();
+		model = GameObjectManager.loadModel("scene02.FBX");
+		float end = (System.nanoTime() - start)/ 1000000f;
+		log("Load Time : "+end+" ms");
 		
 		skylight = new Light();
 		skylight.setForward(0, -1, 0);
@@ -35,12 +38,13 @@ public class Scene2 extends Scene
 		layer1.addChild(skylight);
 		
 		model.getAnimation().getAnimationClip("idle").setPlaybackMode(PlaybackMode.LOOP);
+		model.getAnimation().getAnimationClip("idle").setEnd(100);
 		model.getAnimation().play("idle");
 	}
 
 	public void onUpdate()
 	{
-//		model.rotate(0, 0, 1);
+		model.rotate(0, 0, 1);
 	}
 
 }
