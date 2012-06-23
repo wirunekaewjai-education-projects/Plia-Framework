@@ -19,7 +19,7 @@ public class Scene1 extends Scene
 	public void onInitialize()
 	{
 		long start = System.nanoTime();
-		model = GameObjectManager.loadModel("elementalist31.FBX");
+		model = GameObjectManager.loadModel("scene02.FBX");
 		float end = (System.nanoTime() - start)/ 1000000f;
 		log("Load Time : "+end+" ms");
 
@@ -44,7 +44,7 @@ public class Scene1 extends Scene
 
 	public void onUpdate()
 	{
-		model.rotate(0, 0, 1);
+//		model.rotate(0, 0, 1);
 	}
 
 }

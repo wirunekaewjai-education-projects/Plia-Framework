@@ -14,6 +14,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -22,6 +23,7 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
+import plia.framework.math.Matrix4;
 import plia.framework.scene.Model;
 import plia.framework.scene.Object3D;
 import plia.framework.scene.obj3d.animation.Animation;
@@ -36,6 +38,8 @@ public class GameObjectManager
 {
 	private Context context;
 	private ArrayList<String> assetFileNames = new ArrayList<String>();
+	private HashMap<String, Texture2D> texturesList = new HashMap<String, Texture2D>();
+	private HashMap<String, ArrayList<MeshPrefab>> prefabList = new HashMap<String, ArrayList<MeshPrefab>>();
 	
 	public void setContext(Context context)
 	{
@@ -116,6 +120,11 @@ public class GameObjectManager
 	
 	public static Texture2D loadTexture2D(String file)
 	{
+		if(instance.texturesList.containsKey(file))
+		{
+			return instance.texturesList.get(file);
+		}
+		
 		try
 		{
 			Bitmap bitmap = BitmapFactory.decodeStream(instance.context.getAssets().open(file));
@@ -162,6 +171,8 @@ public class GameObjectManager
 //			}
 			
 			Texture2D texture = new Texture2D(fileName, tex[0], pixels, bitmap.getWidth(), bitmap.getHeight());
+			instance.texturesList.put(file, texture);
+			
 			return texture;
 		} 
 		catch (IOException e)
@@ -174,18 +185,23 @@ public class GameObjectManager
 
 	public static Object3D loadModel(String fbx_path)
 	{
+		if(instance.prefabList.containsKey(fbx_path))
+		{
 		FbxDroid[] droids = FbxDroid.importScene(fbx_path, instance.context);
 		
-		ArrayList<Model> models = new ArrayList<Model>();
+//		ArrayList<Model> models = new ArrayList<Model>();
 
-		boolean hasAnimation = false;
+//		boolean hasAnimation = false;
 		int fps = 30;
+		
+		ArrayList<MeshPrefab> mpl = new ArrayList<GameObjectManager.MeshPrefab>();
 
 		for (int i = 0; i < droids.length; i++)
 		{
 			FbxDroid droid = droids[i];
-			Model mdl = new Model(droid.getName());
+//			Model mdl = new Model(droid.getName());
 			Mesh mesh = null;
+			MeshPrefab mp = new MeshPrefab();
 
 			int[] meshBuffers = createMeshBuffer(droid.getVertices(), droid.getNormals(), droid.getUV(), droid.getIndices());
 
@@ -204,54 +220,26 @@ public class GameObjectManager
 			mesh.setBuffer(0, meshBuffers[0]);
 			mesh.setBuffer(1, meshBuffers[1]);
 			
-			mdl.setGeometry(mesh);
+//			mdl.setGeometry(mesh);
 
 //			Log.e(droid.getName(), droid.hasAnimation()+"");
 			if(droid.hasAnimation())
 			{
 				mesh.setMatrixPalette(droid.getMatrixPalette());
 				mesh.setMatrixPaletteIndexOffset(droid.getStartFrame());
-				mdl.setHasAnimation(true);
+//				mdl.setHasAnimation(true);
 				
-				hasAnimation = true;
+//				hasAnimation = true;
 				fps = droid.getFrameRate();
 //				mdl.setAnimation(new Animation(mdl, droid.getStartFrame(), droid.getTotalFrame()));
 //				mdl.getAnimation().setFrameRate(droid.getFrameRate());
 			}
-			else
-			{
-				mdl.setPosition(droid.getDefaultTranslation());
-				mdl.setEulerAngles(droid.getDefaultRotation());
-				mdl.setScale(droid.getDefaultScaling());
-			}
-			
-//			mesh.setScaling(droid.getDefaultScaling());
-//			mesh.setTranslation(droid.getDefaultTranslation());
-//			mesh.setRotation(droid.getDefaultRotation());
-//			
-//			float[] TRS = new float[16];
-//			Vector3 translation = mesh.getTranslation();
-//			Vector3 rotation = mesh.getRotation();
-//			Vector3 scaling = mesh.getScaling();
-//			
-//			Matrix.createTRS_zyx(TRS, translation.x, translation.y, translation.z, rotation.x, rotation.y, rotation.z, scaling.x, scaling.y, scaling.z);
-//			
-//			Vector4 bbmin = new Vector4();
-//			Vector4 bbmax = new Vector4();
-//			
-//			Matrix.multiply(bbmin, TRS, new Vector4(droid.getMin().x, droid.getMin().y, droid.getMin().z, 0));
-//			Matrix.multiply(bbmax, TRS, new Vector4(droid.getMax().x, droid.getMax().y, droid.getMax().z, 0));
-//
-//			Vector4 size = Vector4.subtract(bbmax, bbmin);
-//			Vector4 extents = Vector4.scale(size, 0.5f);
-//			Vector4 center = Vector4.add(extents, bbmin);
-//			
-//			mesh.getBounds().set(new Vector3(bbmin.x, bbmin.y, bbmin.z), new Vector3(bbmax.x, bbmax.y, bbmax.z));
-//			mesh.getBounds().setCenter(center.x, center.y, center.z);
-			
-//			Log.e("", Matrix.toString(TRS));
-//			Log.e(droid.getMin().toString(), droid.getMax().toString());
-//			Log.e(bbmin.toString(), bbmax.toString());
+//			else
+//			{
+//				mdl.setPosition(droid.getDefaultTranslation());
+//				mdl.setEulerAngles(droid.getDefaultRotation());
+//				mdl.setScale(droid.getDefaultScaling());
+//			}
 
 			Material material = new Material();
 			material.setShader(Shader.DIFFUSE);
@@ -259,7 +247,7 @@ public class GameObjectManager
 //			Vector3 baseColor = droid.getBaseColor();
 //			material.setBaseColor(baseColor.x, baseColor.y, baseColor.z);
 			
-			long start = System.nanoTime();
+//			long start = System.nanoTime();
 
 			
 			String textureFileName = droid.getTextureFileName();
@@ -283,11 +271,36 @@ public class GameObjectManager
 				}
 			}
 			
-			float end = (System.nanoTime() - start)/ 1000000f;
-			Log.e("Load Time", end+" ms");
+//			float end = (System.nanoTime() - start)/ 1000000f;
+//			Log.e("Load Time", end+" ms");
+//			
+//			mdl.setMaterial(material);
+//			models.add(mdl);
 			
-			mdl.setMaterial(material);
-			models.add(mdl);
+			mp.rootName = droid.getRootName();
+			mp.name = droid.getName();
+			mp.mesh = mesh;
+			mp.hasAnimation = droid.hasAnimation();
+			mp.material = material;
+			mp.axisRotation = droid.getAxisRotation();
+			
+			mpl.add(mp);
+		}
+		//
+		}
+		
+		ArrayList<MeshPrefab> mpl = instance.prefabList.get(fbx_path);
+		
+		ArrayList<Model> models = new ArrayList<Model>();
+		boolean hasAnimation = false;
+		
+		for (int i = 0; i < mpl.size(); i++)
+		{
+			MeshPrefab mp = mpl.get(i);
+			Model mdl = new Model(mp.name);
+			
+			mdl.setGeometry(mp.mesh);
+			mdl.setMaterial(mp.material);
 		}
 		
 		Object3D object3d = null;
@@ -295,14 +308,14 @@ public class GameObjectManager
 		if(models.size() == 1)
 		{
 			object3d = models.get(0);
-			object3d.setName(droids[0].getRootName());
-			object3d.setAxisRotation(droids[0].getAxisRotation());
+			object3d.setName(mpl.get(0).rootName);
+			object3d.setAxisRotation(mpl.get(0).axisRotation);
 
 		}
 		else if(models.size() > 1)
 		{
-			object3d = new Object3D(droids[0].getRootName());
-			object3d.setAxisRotation(droids[0].getAxisRotation());
+			object3d = new Object3D(mpl.get(0).rootName);
+			object3d.setAxisRotation(mpl.get(0).axisRotation);
 
 			for (int i = 0; i < models.size(); i++)
 			{
@@ -376,10 +389,14 @@ public class GameObjectManager
 		return buffers;
 	}
 	
-//	private class Prefab
-//	{
-//		private Mesh mesh;
-//		private Animation animation;
-////		private 
-//	}
+	private class MeshPrefab
+	{
+		private String rootName;
+		private String name;
+		private Mesh mesh;
+		private boolean hasAnimation;
+		private Material material;
+		private Matrix4 axisRotation;
+//		private 
+	}
 }

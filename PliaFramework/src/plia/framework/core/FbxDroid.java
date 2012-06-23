@@ -183,6 +183,7 @@ public class FbxDroid
 	private String textureFileName = "";
 	private Vector3 baseColor = new Vector3();
 	
+	
 	// Additional
 	private ArrayList<Integer> oi = new ArrayList<Integer>();
 	private ArrayList<Integer> ni = new ArrayList<Integer>();

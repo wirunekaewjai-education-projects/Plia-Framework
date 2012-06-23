@@ -41,7 +41,7 @@ public abstract class Game extends Activity implements IFramework
 
 		this.gameTime = GameTime.getInstance();
 		
-//		this.debug = Debug.getInstance();
+		this.debug = Debug.getInstance();
 
 		Scene.setMainCamera(new Camera("Main Camera"));
 		

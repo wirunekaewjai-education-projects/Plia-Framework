@@ -17,6 +17,7 @@ import plia.framework.scene.obj3d.geometry.Mesh;
 import plia.framework.scene.obj3d.shading.Color3;
 import plia.framework.scene.obj3d.shading.Shader;
 import plia.framework.scene.obj3d.shading.ShaderProgram;
+import plia.framework.scene.obj3d.shading.ShaderProgram.VariableType;
 import plia.framework.scene.obj3d.shading.Texture2D;
 
 @SuppressWarnings({"rawtypes"})
@@ -25,6 +26,8 @@ public abstract class Scene extends GameObject implements IScene
 	private Layer[] children = new Layer[32];
 	private int childCount = 0;
 	private boolean isInitialized = false;
+	
+	private long start = System.nanoTime();
 	
 	public Scene()
 	{
@@ -37,6 +40,7 @@ public abstract class Scene extends GameObject implements IScene
 		{
 			onInitialize();
 			isInitialized = true;
+			start = System.nanoTime();
 		}
 	}
 	
@@ -183,6 +187,7 @@ public abstract class Scene extends GameObject implements IScene
 	// Draw State
 	public void drawScene()
 	{
+		
 		if(hasChangedProjection)
 		{
 			ratio = (float)Screen.getWidth() / Screen.getHeight();
@@ -232,6 +237,10 @@ public abstract class Scene extends GameObject implements IScene
 
 		models.clear();
 		lights.clear();
+
+		float end = (System.nanoTime() - start) / 1000000f;
+		Log.d("Usage Time", (1000f / end)+" ms");
+		start = System.nanoTime();
 	}
 	
 	private void drawModel(Model model)
@@ -306,6 +315,8 @@ public abstract class Scene extends GameObject implements IScene
 		int prg = program.getProgramID();
 		GLES20.glUseProgram(prg);
 		GLES20.glUniform1f(GLES20.glGetUniformLocation(prg, "lightCount"), lightCount);
+//		program.use();
+//		program.setUniform(ShaderProgram.LIGHT_COUNT, lightCount);
 
 		for (int i = 0; i < lightCount; i++)
 		{
@@ -329,6 +340,8 @@ public abstract class Scene extends GameObject implements IScene
 			
 			GLES20.glUniform1f(GLES20.glGetUniformLocation(prg, "lightRange["+i+"]"), light.getRange());
 			GLES20.glUniform1f(GLES20.glGetUniformLocation(prg, "lightIntensity["+i+"]"), light.getIntensity());
+			
+//			program.setUniformLight(i, lightPos4, light.getColor(), light.getRange(), light.getIntensity());
 		}
 		
 		float[] tm = new float[16];
@@ -340,6 +353,10 @@ public abstract class Scene extends GameObject implements IScene
 		
 		tempNormalMatrix.copyTo(tm);
 		GLES20.glUniformMatrix3fv(GLES20.glGetUniformLocation(prg, "normalMatrix"), 1, false, tm, 0);
+		
+//		program.setUniform(ShaderProgram.PROJECTION_MATRIX, projectionMatrix);
+//		program.setUniform(ShaderProgram.MODELVIEW_MATRIX, tempTransformMatrix);
+//		program.setUniform(ShaderProgram.NORMAL_MATRIX, tempNormalMatrix);
 
 		int vh = GLES20.glGetAttribLocation(prg, "vertex");
 		int nh = GLES20.glGetAttribLocation(prg, "normal");
@@ -356,6 +373,9 @@ public abstract class Scene extends GameObject implements IScene
 		
 		GLES20.glEnableVertexAttribArray(nh);
 		GLES20.glVertexAttribPointer(nh, 3, GLES20.GL_FLOAT, false, 0, mesh.NORMALS_OFFSET);
+		
+//		program.setAttribPointer(ShaderProgram.VERTEX_ATTRIBUTE, 3, 0, 0, mesh.getBuffer(0), VariableType.FLOAT);
+//		program.setAttribPointer(ShaderProgram.NORMAL_ATTRIBUTE, 3, 0, mesh.NORMALS_OFFSET, mesh.getBuffer(0), VariableType.FLOAT);
 
 		if(hasTexture == 2)
 		{
@@ -365,11 +385,16 @@ public abstract class Scene extends GameObject implements IScene
 			
 			GLES20.glEnableVertexAttribArray(uvh);
 			GLES20.glVertexAttribPointer(uvh, 2, GLES20.GL_FLOAT, false, 0, mesh.UV_OFFSET);
+			
+//			program.setAttribPointer(ShaderProgram.UV_ATTRIBUTE, 2, 0, mesh.UV_OFFSET, mesh.getBuffer(0), VariableType.FLOAT);
+//			program.setUniformDiffuseMap(ShaderProgram.DIFFUSE_MAP, texture.getTextureBuffer());
 		}
 		else
 		{
 			Color3 baseColor3 = model.getMaterial().getBaseColor();
 			GLES20.glUniform4f(GLES20.glGetUniformLocation(prg, "color"), baseColor3.r, baseColor3.g, baseColor3.b, 1);
+			
+//			program.setUniformColor(model.getMaterial().getBaseColor());
 		}
 		
 		if(geometryType == Geometry.SKINNED_MESH && hasAnimation)
@@ -384,10 +409,16 @@ public abstract class Scene extends GameObject implements IScene
 
 			GLES20.glVertexAttrib1f(bch, 4);
 			
+//			program.setAttribPointer(ShaderProgram.BONE_WEIGHTS_ATTRIBUTE, 4, 0, 0, mesh.getBuffer(2), VariableType.FLOAT);
+//			program.setAttribPointer(ShaderProgram.BONE_INDEXES_ATTRIBUTE, 4, 0, 0, mesh.getBuffer(3), VariableType.SHORT);
+//			program.setAttrib(ShaderProgram.BONE_COUNT, 4);
+			
 			if(matrixPalette != null)
 			{
 				int mp = GLES20.glGetUniformLocation(prg, "matrixPalette");
 				GLES20.glUniformMatrix4fv(mp, matrixPalette.length / 16, false, matrixPalette, 0);
+				
+//				program.setUniformMatrix4(ShaderProgram.MATRIX_PALETTE, matrixPalette);
 			}
 		}
 		
@@ -402,6 +433,8 @@ public abstract class Scene extends GameObject implements IScene
 		GLES20.glDisableVertexAttribArray(uvh);
 		GLES20.glDisableVertexAttribArray(bwh);
 		GLES20.glDisableVertexAttribArray(bih);
+		
+//		program.drawTriangleElements(mesh.getBuffer(1), mesh.INDICES_COUNT);
 	}
 	
 	private void recusiveLayer(Layer layer)
