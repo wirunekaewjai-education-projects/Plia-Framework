@@ -3,6 +3,7 @@ package plia.framework.core;
 import plia.framework.math.Matrix4;
 import plia.framework.scene.obj3d.animation.Animation;
 import plia.framework.scene.obj3d.shading.Material;
+import plia.framework.scene.obj3d.shading.Shader;
 
 public class ScenePrefab
 {
@@ -13,6 +14,13 @@ public class ScenePrefab
 	
 	private NodePrefab[] nodePrefabs;
 	private Material[] materials;
+	
+	private Material defaultMaterial = new Material();
+	
+	public ScenePrefab()
+	{
+		defaultMaterial.setShader(Shader.DIFFUSE);
+	}
 	
 	public String getRootName()
 	{
@@ -62,5 +70,10 @@ public class ScenePrefab
 	public void setMaterials(Material[] materials)
 	{
 		this.materials = materials;
+	}
+	
+	public Material getDefaultMaterial()
+	{
+		return defaultMaterial;
 	}
 }

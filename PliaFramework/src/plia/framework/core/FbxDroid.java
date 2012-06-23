@@ -419,8 +419,7 @@ public class FbxDroid
 		
 		if(material == null)
 		{
-			material = new Material();
-			material.setShader(Shader.DIFFUSE);
+			material = scenePrefab.getDefaultMaterial();
 		}
 		
 //		FbxSurfaceMaterial material = mesh.getNode(0).getMaterial();

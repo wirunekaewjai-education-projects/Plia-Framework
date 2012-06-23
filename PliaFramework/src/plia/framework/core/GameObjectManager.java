@@ -7,7 +7,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -19,15 +18,12 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
-import plia.framework.math.Matrix4;
 import plia.framework.scene.Model;
 import plia.framework.scene.Object3D;
 import plia.framework.scene.Terrain;
 import plia.framework.scene.obj3d.animation.Animation;
-import plia.framework.scene.obj3d.geometry.Mesh;
 import plia.framework.scene.obj3d.geometry.Plane;
 //import plia.framework.scene.obj3d.shading.Color4;
-import plia.framework.scene.obj3d.shading.Material;
 import plia.framework.scene.obj3d.shading.Shader;
 import plia.framework.scene.obj3d.shading.ShaderProgram;
 import plia.framework.scene.obj3d.shading.Texture2D;
@@ -287,53 +283,6 @@ public class GameObjectManager
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 	
-	private static int[] createMeshBuffer(float[] vertices, float[] normals, float[] uv, int[] indices)
-	{
-		int[] buffers = new int[2];
-
-		int capacity = (vertices.length + vertices.length + uv.length) * 4;
-		
-		FloatBuffer fb = ByteBuffer.allocateDirect(capacity).order(ByteOrder.nativeOrder()).asFloatBuffer();
-		fb.put(vertices).put(normals).put(uv).position(0);
-		
-		IntBuffer ib = ByteBuffer.allocateDirect(indices.length * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
-		ib.put(indices).position(0);
-
-		glGenBuffers(buffers.length, buffers, 0);
-		
-		glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-		glBufferData(GL_ARRAY_BUFFER, fb.capacity() * 4, fb, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[1]);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, ib.capacity() * 4, ib, GL_STATIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-		return buffers;
-	}
-	
-	private static int[] genBonesBuffer(float[] boneWeights, short[] boneIndices)
-	{
-		int[] buffers = new int[2];
-		FloatBuffer fb = ByteBuffer.allocateDirect(boneWeights.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
-		fb.put(boneWeights).position(0);
-		
-		ShortBuffer ib = ByteBuffer.allocateDirect(boneIndices.length * 2).order(ByteOrder.nativeOrder()).asShortBuffer();
-		ib.put(boneIndices).position(0);
-		
-		glGenBuffers(buffers.length, buffers, 0);
-		
-		glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-		glBufferData(GL_ARRAY_BUFFER, fb.capacity() * 4, fb, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		
-		glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
-		glBufferData(GL_ARRAY_BUFFER, ib.capacity() * 2, ib, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		
-		return buffers;
-	}
-	
 	public Texture2D createTerrainNormalMap(Terrain terrain)
 	{
 		int segment = Plane.getInstance().getSegment();
@@ -440,16 +389,5 @@ public class GameObjectManager
 		Texture2D normalmap = new Texture2D("normals", renderTextureBuffer[0], pixels, segment, segment);
 		
 		return normalmap;
-	}
-	
-	private class MeshPrefab
-	{
-		private String rootName;
-		private String name;
-		private Mesh mesh;
-		private boolean hasAnimation;
-		private Material material;
-		private Matrix4 axisRotation;
-//		private 
 	}
 }
