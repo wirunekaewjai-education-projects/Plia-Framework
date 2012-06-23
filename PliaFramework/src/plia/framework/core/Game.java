@@ -17,6 +17,7 @@ import android.os.Bundle;
 public abstract class Game extends Activity implements IFramework
 {
 	private GameObjectManager gameObjectManager;
+	private AnimationPlayer animationPlayer;
 	private GameTime gameTime;
 	
 	private Debug debug;
@@ -37,7 +38,8 @@ public abstract class Game extends Activity implements IFramework
 		
 		this.gameObjectManager = GameObjectManager.getInstance();
 		this.gameObjectManager.setContext(this);
-		this.gameObjectManager.initialize();
+		
+		this.animationPlayer = AnimationPlayer.getInstance();
 
 		this.gameTime = GameTime.getInstance();
 		
@@ -91,6 +93,8 @@ public abstract class Game extends Activity implements IFramework
 
 			if(!isInitialized)
 			{
+				gameObjectManager.initialize();
+				
 				if(currentScene != null)
 				{
 					currentScene.initialize();
@@ -107,6 +111,8 @@ public abstract class Game extends Activity implements IFramework
 				currentScene.update();
 				currentScene.drawScene();
 			}
+			
+			animationPlayer.update();
 		}
 
 		public void onSurfaceChanged(GL10 gl, int width, int height)

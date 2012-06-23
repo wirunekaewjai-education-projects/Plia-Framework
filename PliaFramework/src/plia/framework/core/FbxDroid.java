@@ -1,6 +1,18 @@
 package plia.framework.core;
 
+import static android.opengl.GLES20.GL_ARRAY_BUFFER;
+import static android.opengl.GLES20.GL_ELEMENT_ARRAY_BUFFER;
+import static android.opengl.GLES20.GL_STATIC_DRAW;
+import static android.opengl.GLES20.glBindBuffer;
+import static android.opengl.GLES20.glBufferData;
+import static android.opengl.GLES20.glGenBuffers;
+
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -13,28 +25,39 @@ import plia.framework.fbxplugin.scene.geometry.FbxMesh;
 import plia.framework.fbxplugin.scene.geometry.FbxNode;
 import plia.framework.fbxplugin.scene.geometry.FbxSkin;
 import plia.framework.fbxplugin.scene.shading.FbxFileTexture;
+import plia.framework.fbxplugin.scene.shading.FbxSurfaceLambert;
 import plia.framework.fbxplugin.scene.shading.FbxSurfaceMaterial;
-import plia.framework.fbxplugin.scene.shading.FbxSurfacePhong;
 import plia.framework.fbxplugin.scene.shading.FbxTexture;
 import plia.framework.math.Matrix4;
 import plia.framework.math.Vector3;
+import plia.framework.scene.obj3d.animation.Animation;
+import plia.framework.scene.obj3d.geometry.Mesh;
+import plia.framework.scene.obj3d.geometry.SkinnedMesh;
+import plia.framework.scene.obj3d.shading.Material;
+import plia.framework.scene.obj3d.shading.Shader;
+import plia.framework.scene.obj3d.shading.Texture2D;
 import android.content.Context;
 import android.util.Log;
 
 public class FbxDroid
 {
-	public static FbxDroid[] importScene(String fbx, Context context)
+	
+	
+	public static ScenePrefab importScene(String fbx, Context context)
 	{
+		ScenePrefab scenePrefab = new ScenePrefab();
+		
 		try
 		{
-			
-			
+
 			String filename = fbx.substring(0, fbx.length() - 4);
 			int indexOfSlash = filename.lastIndexOf("/");
 			if(indexOfSlash > -1)
 			{
 				filename = filename.substring(indexOfSlash+1, filename.length());
 			}
+			
+			
 			
 			Log.e("=================", "=====================");
 			Log.e("Fbx Data", " ");
@@ -89,7 +112,42 @@ public class FbxDroid
 			
 			Matrix4 axisRotation = new Matrix4(preRotation);
 			
+			scenePrefab.setRootName(filename);
+			scenePrefab.setAxisRotation(axisRotation);
+			
+			boolean hasAnimation = false;
+			
 //			Log.e("Rotation : "+filename, Matrix.toString(preRotation));
+			
+			int materialCount = scene.getMaterialCount();
+			Material[] materials = new Material[materialCount];
+			scenePrefab.setMaterials(materials);
+			
+			for (int i = 0; i < materialCount; i++)
+			{
+				FbxSurfaceMaterial surfaceMaterial = scene.getMaterial(i);
+				materials[i] = new Material();
+				materials[i].setShader(Shader.DIFFUSE);
+				
+				if(surfaceMaterial instanceof FbxSurfaceLambert)
+				{
+					Vector3 diffuse = ((FbxSurfaceLambert) surfaceMaterial).getDiffuse();
+					materials[i].setBaseColor(diffuse.x, diffuse.y, diffuse.z);
+
+					FbxTexture texture = ((FbxSurfaceLambert) surfaceMaterial).getDiffuseTexture();
+					if(texture instanceof FbxFileTexture)
+					{
+						String textureFileName = ((FbxFileTexture) texture).getFileName();
+						
+						Texture2D texture2d = GameObjectManager.loadTexture2DWithFileName(textureFileName);
+						
+						if(texture2d != null)
+						{
+							materials[i].setBaseTexture(texture2d);
+						}
+					}
+				}
+			}
 			
 			int geometryCount = scene.getGeometryCount();
 			if(geometryCount > 0)
@@ -97,11 +155,19 @@ public class FbxDroid
 				Log.e("", "Geometry Count : "+geometryCount);
 				Log.e("=================", "=====================");
 				
+				
+				scenePrefab.setNodePrefabs(new NodePrefab[geometryCount]);
+				
 				FbxDroid[] datas = new FbxDroid[geometryCount];
 				for (int i = 0; i < geometryCount; i++)
 				{
-					datas[i] = new FbxDroid(filename, (FbxMesh) scene.getGeometry(i), axisRotation);
-					datas[i].frameRate = fps;
+					datas[i] = new FbxDroid(scene, scenePrefab, (FbxMesh) scene.getGeometry(i));
+					scenePrefab.getNodePrefabs()[i] = datas[i].nodePrefab;
+
+					if(datas[i].hasAnimation)
+					{
+						hasAnimation = true;
+					}
 					
 					Log.e("Geometry No. : "+i, "Name           : "+scene.getGeometry(i).getNode(0).getName());
 					Log.e("Mesh"			 , " ");
@@ -126,8 +192,17 @@ public class FbxDroid
 					}
 					Log.e("=================", "=====================");
 				}
+				
+				
+				if(hasAnimation)
+				{
+					Animation animation = new Animation(0, 100);
+					animation.setFrameRate(fps);
 
-				return datas;
+					scenePrefab.setAnimation(animation);
+				}
+				
+				return scenePrefab;
 			}
 			else
 			{
@@ -139,14 +214,14 @@ public class FbxDroid
 			Log.e("Error", e.getMessage());
 		}
 		
-		return new FbxDroid[0];
+		return null;
 	}
 	
 	//
-	private String rootName;
 	private FbxMesh mesh;
-	
-	private int frameRate;
+
+	// Scene
+	private FbxScene scene;
 	
 	// Type
 	private boolean isSkinnedMesh = false;
@@ -157,6 +232,11 @@ public class FbxDroid
 	private float[] normals;
 	private float[] uv;
 	private int[] indices;
+	
+	private int[] meshBuffers;
+	private int[] boneBuffers;
+	
+	private Mesh meshObject;
 	
 	// Skinned Mesh
 	private float[] boneWeights;
@@ -172,17 +252,10 @@ public class FbxDroid
 	private Vector3 defaultTranslation = new Vector3();
 	private Vector3 defaultRotation = new Vector3();
 	private Vector3 defaultScaling = new Vector3();
-	
-	private Matrix4 axisRotation;
-	
+
 	// Bounding Box
 	private Vector3 max = new Vector3();
 	private Vector3 min = new Vector3();
-	
-	// Material
-	private String textureFileName = "";
-	private Vector3 baseColor = new Vector3();
-	
 	
 	// Additional
 	private ArrayList<Integer> oi = new ArrayList<Integer>();
@@ -194,11 +267,16 @@ public class FbxDroid
 	// Skinned
 	private ArrayList<FbxCluster> clusters;
 	
-	private FbxDroid(String rootName, FbxMesh mesh, Matrix4 axisRotation)
+	// Prefab
+	private NodePrefab nodePrefab;
+	private ScenePrefab scenePrefab;
+
+	private FbxDroid(FbxScene scene, ScenePrefab scenePrefab, FbxMesh mesh)
 	{
-		this.rootName = rootName;
+		this.scene = scene;
+		this.scenePrefab = scenePrefab;
 		this.mesh = mesh;
-		this.axisRotation = axisRotation;
+
 		this.loadMesh();
 	}
 
@@ -295,6 +373,9 @@ public class FbxDroid
 		this.uv = uv2;
 		this.indices = indices;
 		
+		// Gen Mesh
+		meshBuffers = createMeshBuffer(vertices, normals, uv, indices);
+		
 		FbxNode mn = mesh.getNode(0);
 		Vector3 defaultT = mn.getLclTranslation();
 		Vector3 defaultR = mn.getLclRotation();
@@ -323,29 +404,47 @@ public class FbxDroid
 ////			Log.e("Vertices : "+i, x+", "+ y+", "+z);
 //		}
 		
-		// Material Zone
-		FbxSurfaceMaterial material = mesh.getNode(0).getMaterial();
-		if(material != null)
+//		// Material Zone
+		FbxSurfaceMaterial surfaceMaterial = mesh.getNode(0).getMaterial();
+		Material material = null;
+		
+		int sceneMaterialCount = scene.getMaterialCount();
+		for (int j = 0; j < sceneMaterialCount; j++)
 		{
-			FbxSurfacePhong phong = (FbxSurfacePhong) material;
-			
-			FbxTexture texture = phong.getDiffuseTexture();
-			
-			if(texture != null)
+			if(scene.getMaterial(j) == surfaceMaterial)
 			{
-				if(texture instanceof FbxFileTexture)
-				{
-					String fn = ((FbxFileTexture) texture).getFileName();
-					if(fn != null)
-					{
-						textureFileName = fn;
-					}
-				}
+				material = scenePrefab.getMaterials()[j];
 			}
-			
-			Vector3 diffuse = phong.getDiffuse();
-			baseColor = new Vector3(diffuse.x, diffuse.y, diffuse.z);
 		}
+		
+		if(material == null)
+		{
+			material = new Material();
+			material.setShader(Shader.DIFFUSE);
+		}
+		
+//		FbxSurfaceMaterial material = mesh.getNode(0).getMaterial();
+//		if(material != null)
+//		{
+//			FbxSurfacePhong phong = (FbxSurfacePhong) material;
+//			
+//			FbxTexture texture = phong.getDiffuseTexture();
+//			
+//			if(texture != null)
+//			{
+//				if(texture instanceof FbxFileTexture)
+//				{
+//					String fn = ((FbxFileTexture) texture).getFileName();
+//					if(fn != null)
+//					{
+//						textureFileName = fn;
+//					}
+//				}
+//			}
+//			
+//			Vector3 diffuse = phong.getDiffuse();
+//			baseColor = new Vector3(diffuse.x, diffuse.y, diffuse.z);
+//		}
 
 		// Skinned + Animation Zone
 		int deformerCount = mesh.getDeformerCount();
@@ -470,6 +569,34 @@ public class FbxDroid
 				hasAnimation = false;
 			}
 		}
+		
+		
+		// Create Mesh
+		if(isSkinnedMesh)
+		{
+			meshObject = new SkinnedMesh(getNormalOffset(), getUVOffset(), indices.length);
+			meshObject.setBuffer(2, boneBuffers[0]);
+			meshObject.setBuffer(3, boneBuffers[1]);
+		}
+		else
+		{
+			meshObject = new Mesh(getNormalOffset(), getUVOffset(), indices.length);
+		}
+		
+		meshObject.setBuffer(0, meshBuffers[0]);
+		meshObject.setBuffer(1, meshBuffers[1]);
+		
+		if(hasAnimation)
+		{
+			meshObject.setMatrixPalette(getMatrixPalette());
+			meshObject.setMatrixPaletteIndexOffset(getStartFrame());
+		}
+		
+		nodePrefab = new NodePrefab();
+		nodePrefab.setName(getName());
+		nodePrefab.setMesh(meshObject);
+		nodePrefab.setMaterial(material);
+		nodePrefab.setHasAnimation(hasAnimation);
 	}
 	
 	private void loadSkin()
@@ -658,6 +785,9 @@ public class FbxDroid
 				}
 			}
 		}
+		
+		// Gen Bone Buffer
+		boneBuffers = genBonesBuffer(boneWeights, boneIndices);
 	}
 	
 	private FbxNode findRootBone(FbxNode node)
@@ -759,49 +889,61 @@ public class FbxDroid
 		}
 	}
 	
-	public String getRootName()
+	private static int[] createMeshBuffer(float[] vertices, float[] normals, float[] uv, int[] indices)
 	{
-		return rootName;
+		int[] buffers = new int[2];
+
+		int capacity = (vertices.length + vertices.length + uv.length) * 4;
+		
+		FloatBuffer fb = ByteBuffer.allocateDirect(capacity).order(ByteOrder.nativeOrder()).asFloatBuffer();
+		fb.put(vertices).put(normals).put(uv).position(0);
+		
+		IntBuffer ib = ByteBuffer.allocateDirect(indices.length * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
+		ib.put(indices).position(0);
+
+		glGenBuffers(buffers.length, buffers, 0);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+		glBufferData(GL_ARRAY_BUFFER, fb.capacity() * 4, fb, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[1]);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, ib.capacity() * 4, ib, GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		return buffers;
 	}
 	
+	private static int[] genBonesBuffer(float[] boneWeights, short[] boneIndices)
+	{
+		int[] buffers = new int[2];
+		FloatBuffer fb = ByteBuffer.allocateDirect(boneWeights.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+		fb.put(boneWeights).position(0);
+		
+		ShortBuffer ib = ByteBuffer.allocateDirect(boneIndices.length * 2).order(ByteOrder.nativeOrder()).asShortBuffer();
+		ib.put(boneIndices).position(0);
+		
+		glGenBuffers(buffers.length, buffers, 0);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+		glBufferData(GL_ARRAY_BUFFER, fb.capacity() * 4, fb, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
+		glBufferData(GL_ARRAY_BUFFER, ib.capacity() * 2, ib, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		
+		return buffers;
+	}
+	
+	public Mesh getMeshObject()
+	{
+		return meshObject;
+	}
+
 	public String getName()
 	{
 		return mesh.getNode(0).getName();
-	}
-	
-	public int getFrameRate()
-	{
-		return frameRate;
-	}
-	
-	public float[] getVertices()
-	{
-		return vertices;
-	}
-	
-	public float[] getNormals()
-	{
-		return normals;
-	}
-	
-	public float[] getUV()
-	{
-		return uv;
-	}
-	
-	public int[] getIndices()
-	{
-		return indices;
-	}
-	
-	public float[] getBoneWeights()
-	{
-		return boneWeights;
-	}
-	
-	public short[] getBoneIndices()
-	{
-		return boneIndices;
 	}
 	
 	public boolean hasAnimation()
@@ -857,21 +999,6 @@ public class FbxDroid
 	public Vector3 getDefaultScaling()
 	{
 		return defaultScaling;
-	}
-	
-	public String getTextureFileName()
-	{
-		return textureFileName;
-	}
-	
-	public Matrix4 getAxisRotation()
-	{
-		return axisRotation;
-	}
-	
-	public Vector3 getBaseColor()
-	{
-		return baseColor;
 	}
 	
 	public Vector3 getMax()

@@ -1,11 +1,6 @@
 package plia.framework.core;
 
-import static android.opengl.GLES20.GL_ARRAY_BUFFER;
-import static android.opengl.GLES20.GL_ELEMENT_ARRAY_BUFFER;
-import static android.opengl.GLES20.GL_STATIC_DRAW;
-import static android.opengl.GLES20.glBindBuffer;
-import static android.opengl.GLES20.glBufferData;
-import static android.opengl.GLES20.glGenBuffers;
+import static android.opengl.GLES20.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -22,16 +17,19 @@ import android.graphics.BitmapFactory;
 //import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.opengl.Matrix;
 import android.util.Log;
 import plia.framework.math.Matrix4;
 import plia.framework.scene.Model;
 import plia.framework.scene.Object3D;
+import plia.framework.scene.Terrain;
 import plia.framework.scene.obj3d.animation.Animation;
 import plia.framework.scene.obj3d.geometry.Mesh;
-import plia.framework.scene.obj3d.geometry.SkinnedMesh;
+import plia.framework.scene.obj3d.geometry.Plane;
 //import plia.framework.scene.obj3d.shading.Color4;
 import plia.framework.scene.obj3d.shading.Material;
 import plia.framework.scene.obj3d.shading.Shader;
+import plia.framework.scene.obj3d.shading.ShaderProgram;
 import plia.framework.scene.obj3d.shading.Texture2D;
 
 public class GameObjectManager
@@ -39,7 +37,11 @@ public class GameObjectManager
 	private Context context;
 	private ArrayList<String> assetFileNames = new ArrayList<String>();
 	private HashMap<String, Texture2D> texturesList = new HashMap<String, Texture2D>();
-	private HashMap<String, ArrayList<MeshPrefab>> prefabList = new HashMap<String, ArrayList<MeshPrefab>>();
+	private HashMap<String, ScenePrefab> scenePrefabs = new HashMap<String, ScenePrefab>();
+	
+	
+	
+	private int[] terrainBuffers = new int[2];
 	
 	public void setContext(Context context)
 	{
@@ -49,11 +51,15 @@ public class GameObjectManager
 	public void initialize()
 	{
 		this.loadAllFilesInAssets("");
+		
+		createTerrainBuffer();
 	}
 	
 	public void destroy()
 	{
 		assetFileNames.clear();
+		texturesList.clear();
+		scenePrefabs.clear();
 	}
 	
 	private void loadAllFilesInAssets(String foldername)
@@ -116,6 +122,23 @@ public class GameObjectManager
 	static GameObjectManager getInstance()
 	{
 		return instance;
+	}
+	
+	public static Texture2D loadTexture2DWithFileName(String filename)
+	{
+		if(filename != null && !filename.isEmpty())
+		{
+			for (int j = 0; j < instance.assetFileNames.size(); j++)
+			{
+				String path = instance.assetFileNames.get(j);
+				if(path.contains(filename))
+				{
+					return loadTexture2D(path);
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	public static Texture2D loadTexture2D(String file)
@@ -185,122 +208,39 @@ public class GameObjectManager
 
 	public static Object3D loadModel(String fbx_path)
 	{
-		if(instance.prefabList.containsKey(fbx_path))
+		if(!instance.scenePrefabs.containsKey(fbx_path))
 		{
-		FbxDroid[] droids = FbxDroid.importScene(fbx_path, instance.context);
-		
-//		ArrayList<Model> models = new ArrayList<Model>();
-
-//		boolean hasAnimation = false;
-		int fps = 30;
-		
-		ArrayList<MeshPrefab> mpl = new ArrayList<GameObjectManager.MeshPrefab>();
-
-		for (int i = 0; i < droids.length; i++)
-		{
-			FbxDroid droid = droids[i];
-//			Model mdl = new Model(droid.getName());
-			Mesh mesh = null;
-			MeshPrefab mp = new MeshPrefab();
-
-			int[] meshBuffers = createMeshBuffer(droid.getVertices(), droid.getNormals(), droid.getUV(), droid.getIndices());
-
-			if(droid.isSkinnedMesh())
+			ScenePrefab scenePrefab = FbxDroid.importScene(fbx_path, instance.context);
+			
+			if(scenePrefab != null)
 			{
-				int[] boneBuffers = genBonesBuffer(droid.getBoneWeights(), droid.getBoneIndices());
-				mesh = new SkinnedMesh(droid.getNormalOffset(), droid.getUVOffset(), droid.getIndices().length);
-				mesh.setBuffer(2, boneBuffers[0]);
-				mesh.setBuffer(3, boneBuffers[1]);
-			}
-			else
-			{
-				mesh = new Mesh(droid.getNormalOffset(), droid.getUVOffset(), droid.getIndices().length);
-			}
-			
-			mesh.setBuffer(0, meshBuffers[0]);
-			mesh.setBuffer(1, meshBuffers[1]);
-			
-//			mdl.setGeometry(mesh);
-
-//			Log.e(droid.getName(), droid.hasAnimation()+"");
-			if(droid.hasAnimation())
-			{
-				mesh.setMatrixPalette(droid.getMatrixPalette());
-				mesh.setMatrixPaletteIndexOffset(droid.getStartFrame());
-//				mdl.setHasAnimation(true);
-				
-//				hasAnimation = true;
-				fps = droid.getFrameRate();
-//				mdl.setAnimation(new Animation(mdl, droid.getStartFrame(), droid.getTotalFrame()));
-//				mdl.getAnimation().setFrameRate(droid.getFrameRate());
-			}
-//			else
-//			{
-//				mdl.setPosition(droid.getDefaultTranslation());
-//				mdl.setEulerAngles(droid.getDefaultRotation());
-//				mdl.setScale(droid.getDefaultScaling());
-//			}
-
-			Material material = new Material();
-			material.setShader(Shader.DIFFUSE);
-			
-//			Vector3 baseColor = droid.getBaseColor();
-//			material.setBaseColor(baseColor.x, baseColor.y, baseColor.z);
-			
-//			long start = System.nanoTime();
-
-			
-			String textureFileName = droid.getTextureFileName();
-			if(textureFileName != null && !textureFileName.isEmpty())
-			{
-				for (int j = 0; j < instance.assetFileNames.size(); j++)
-				{
-					String path = instance.assetFileNames.get(j);
-					if(path.contains(textureFileName))
-					{
-						Texture2D texture = loadTexture2D(path);
-						
-						if(texture != null)
-						{
-							material.setBaseTexture(texture);
-							
-						}
-						
-						break;
-					}
-				}
-			}
-			
-//			float end = (System.nanoTime() - start)/ 1000000f;
-//			Log.e("Load Time", end+" ms");
-//			
-//			mdl.setMaterial(material);
-//			models.add(mdl);
-			
-			mp.rootName = droid.getRootName();
-			mp.name = droid.getName();
-			mp.mesh = mesh;
-			mp.hasAnimation = droid.hasAnimation();
-			mp.material = material;
-			mp.axisRotation = droid.getAxisRotation();
-			
-			mpl.add(mp);
+				instance.scenePrefabs.put(fbx_path, scenePrefab);
+			}	
 		}
 		//
-		}
 		
-		ArrayList<MeshPrefab> mpl = instance.prefabList.get(fbx_path);
+		ScenePrefab scenePrefab = instance.scenePrefabs.get(fbx_path);
 		
 		ArrayList<Model> models = new ArrayList<Model>();
-		boolean hasAnimation = false;
+		Animation animation = scenePrefab.getAnimation();
 		
-		for (int i = 0; i < mpl.size(); i++)
+		NodePrefab[] nodePrefabs = scenePrefab.getNodePrefabs();
+		
+		for (int i = 0; i < nodePrefabs.length; i++)
 		{
-			MeshPrefab mp = mpl.get(i);
-			Model mdl = new Model(mp.name);
+			NodePrefab nodePrefab = nodePrefabs[i];
+			Model mdl = new Model(nodePrefab.getName());
 			
-			mdl.setGeometry(mp.mesh);
-			mdl.setMaterial(mp.material);
+			mdl.setGeometry(nodePrefab.getMesh());
+			mdl.setMaterial(nodePrefab.getMaterial());
+			mdl.setAxisRotation(scenePrefab.getAxisRotation());
+			
+			if(nodePrefab.hasAnimation())
+			{
+				mdl.setAnimation(animation);
+			}
+			
+			models.add(mdl);
 		}
 		
 		Object3D object3d = null;
@@ -308,14 +248,13 @@ public class GameObjectManager
 		if(models.size() == 1)
 		{
 			object3d = models.get(0);
-			object3d.setName(mpl.get(0).rootName);
-			object3d.setAxisRotation(mpl.get(0).axisRotation);
+			object3d.setName(scenePrefab.getRootName());
 
 		}
 		else if(models.size() > 1)
 		{
-			object3d = new Object3D(mpl.get(0).rootName);
-			object3d.setAxisRotation(mpl.get(0).axisRotation);
+			object3d = new Object3D(scenePrefab.getRootName());
+			object3d.setAnimation(animation);
 
 			for (int i = 0; i < models.size(); i++)
 			{
@@ -323,23 +262,29 @@ public class GameObjectManager
 			}
 		}
 		
-		if(object3d != null && hasAnimation)
-		{
-			Animation animation = new Animation(0, 100);
-			animation.setFrameRate(fps);
-			object3d.setAnimation(animation);
-			
-			for (int i = 0; i < models.size(); i++)
-			{
-				Model model = models.get(i);
-				if(model.hasAnimation())
-				{
-					model.setAnimation(animation);
-				}
-			}
-		}
-
 		return object3d;
+	}
+	
+	private static void createTerrainBuffer()
+	{
+		float[] vertices = Plane.getInstance().getVertices();
+		int[] indices = Plane.getInstance().getIndices();
+		
+		FloatBuffer fb = ByteBuffer.allocateDirect(vertices.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+		fb.put(vertices).position(0);
+		
+		IntBuffer ib = ByteBuffer.allocateDirect(indices.length * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
+		ib.put(indices).position(0);
+
+		glGenBuffers(instance.terrainBuffers.length, instance.terrainBuffers, 0);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, instance.terrainBuffers[0]);
+		glBufferData(GL_ARRAY_BUFFER, fb.capacity() * 4, fb, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, instance.terrainBuffers[1]);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, ib.capacity() * 4, ib, GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 	
 	private static int[] createMeshBuffer(float[] vertices, float[] normals, float[] uv, int[] indices)
@@ -387,6 +332,114 @@ public class GameObjectManager
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		
 		return buffers;
+	}
+	
+	public Texture2D createTerrainNormalMap(Terrain terrain)
+	{
+		int segment = Plane.getInstance().getSegment();
+		IntBuffer normalmapTextureBuffer = ByteBuffer.allocateDirect(segment*segment*4).order(ByteOrder.nativeOrder()).asIntBuffer();
+		
+		int[] frameBuffer = new int[1];
+		int[] depthRenderBuffer = new int[1];
+		int[] renderTextureBuffer = new int[1];
+		IntBuffer textureBuffer;
+
+		// generate
+		glGenFramebuffers(1, frameBuffer, 0);
+		glGenRenderbuffers(1, depthRenderBuffer, 0);
+		glGenTextures(1, renderTextureBuffer, 0);
+
+		// generate color texture
+		glBindTexture(GL_TEXTURE_2D, renderTextureBuffer[0]);
+
+		// parameters
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+		// create it
+		// create an empty intbuffer first?
+		int[] buf = new int[segment * segment];
+		textureBuffer = ByteBuffer.allocateDirect(buf.length * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, segment, segment, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureBuffer);
+
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer[0]);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, segment, segment);
+		
+		// Bind Normal Buffer
+		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer[0]);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTextureBuffer[0], 0);
+		
+		// attach render buffer as depth buffer
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBuffer[0]);
+
+		float[] projection = new float[16];
+		float[] modelView = new float[16];
+		
+		int scale = terrain.getTerrainScale();
+		int height = terrain.getTerrainMaxHeight();
+		
+		Matrix.orthoM(projection, 0, 0, scale, -scale, 0, 1, height*2);
+		Matrix.setLookAtM(modelView, 0, 0, height*2, 0, 0, 0, 0, 0, 0, -1);
+
+		glViewport(0, 0, segment, segment);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		ShaderProgram sprogram = Shader.AMBIENT.getProgram(7);
+		int program = sprogram.getProgramID();
+		
+		glUseProgram(program);
+		
+		int vertex_handle = glGetAttribLocation(program, "vertex");
+		int modelview_handle = glGetUniformLocation(program, "modelViewMatrix");
+		int projection_handle = glGetUniformLocation(program, "projectionMatrix");
+		
+		int heightmap_handle = glGetUniformLocation(program, "heightmap");
+		int terrainData_handle = glGetUniformLocation(program, "terrainData");
+		
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, terrain.getHeightmap().getTextureBuffer());
+		glUniform1i(heightmap_handle, 0);
+		
+		glUniform3f(terrainData_handle, height, segment, scale);
+
+		glUniformMatrix4fv(modelview_handle, 1, false, modelView, 0);
+		glUniformMatrix4fv(projection_handle, 1, false, projection, 0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, terrainBuffers[0]);
+		glEnableVertexAttribArray(vertex_handle);
+		glVertexAttribPointer(vertex_handle, 2, GL_FLOAT, false, 0, 0);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrainBuffers[1]);
+		glDrawElements(GL_TRIANGLES, Plane.getInstance().getIndicesCount(), GL_UNSIGNED_INT, 0);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		
+		glDisableVertexAttribArray(vertex_handle);
+		
+		// Unbind Normal
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		
+		// Bind Normal Again
+		// Bind Normal Buffer
+		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer[0]);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTextureBuffer[0], 0);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBuffer[0]);
+		// Read Pixels
+		glReadPixels(0, 0, segment, segment, GL_RGBA, GL_UNSIGNED_BYTE, normalmapTextureBuffer);
+		// Unbind Normal
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		
+		int[] pixels = normalmapTextureBuffer.array();
+		
+		Texture2D normalmap = new Texture2D("normals", renderTextureBuffer[0], pixels, segment, segment);
+		
+		return normalmap;
 	}
 	
 	private class MeshPrefab

@@ -19,6 +19,7 @@ final class AmbientShader extends Shader
 		instance.programs[4] = new ShaderProgram(getAmbientSrc05());
 		instance.programs[5] = new ShaderProgram(getAmbientSrc06());
 		instance.programs[6] = new ShaderProgram(getAmbientSrc07());
+		instance.programs[7] = new ShaderProgram(getAmbientSrc08());
 	}
 	
 	private static AmbientShader instance = new AmbientShader();
@@ -251,6 +252,83 @@ final class AmbientShader extends Shader
 				"	else" +
 				"		gl_FragColor = vec4(0.0);" +
 				"}";
+		
+		return new String[] { vs, fs };
+	}
+	
+	private static String[] getAmbientSrc08()
+	{
+		// Gen Terrain NormalMap
+		String vs = 
+				"uniform mat4 modelViewMatrix;" +
+				"uniform mat4 projectionMatrix;" +
+				"" +
+				"uniform vec3 terrainData;" +
+				"uniform sampler2D heightmap;" +
+				"" +
+				"atribute vec2 vertex;" +
+				"" +
+				"varying vec4 vertex_color;" +
+				"" +
+				"vec3 displacement(float x, float z)" +
+				"{" +
+				"	float u = min(0.99, max(0.01, x/terrainData.z));" +
+				"	float v = min(0.99, max(0.01, z/terrainData.z));" +
+				"" +
+				"	vec2 coord = vec2(u, v);" +
+				"	vec4 displace = texture2D(heightmap, coord);" +
+				"	float height = displace.r*terrainData.x;" +
+				"" +
+				"	return vec3(x, height, z);" +
+				"}" +
+				"" +
+				"vec3 normalSurface(vec3 a, vec3 b, vec3 c)" +
+				"{" +
+				"	return normalize( cross(a, b) + cross(b, c) + cross(c, a) );" +
+				"}" +
+				"" +
+				"void main()" +
+				"{" +
+				"	float segSize = terrainData.z / terrainData.y;" +
+				"	vec2 point = vertex*segSize;" +
+				"" +
+				"	vec3 vert[7];" +
+				"" +
+				"	vert[0] = displacement(point.x, 		point.y);" +
+				"	vert[1] = displacement(point.x, 		point.y+segSize);" +
+				"	vert[2] = displacement(point.x+segSize, point.y+segSize);" +
+				"	vert[3] = displacement(point.x+segSize, point.y);" +
+				"	vert[4] = displacement(point.x, 		point.y-segSize);" +
+				"	vert[5] = displacement(point.x-segSize, point.y-segSize);" +
+				"	vert[6] = displacement(point.x-segSize, point.y);" +
+				"" +
+				"	vec3 n1 = normalSurface(vert[0], vert[1], vert[2]);" +
+				"	vec3 n2 = normalSurface(vert[0], vert[2], vert[3]);" +
+				"	vec3 n3 = normalSurface(vert[0], vert[3], vert[4]);" +
+				"	vec3 n4 = normalSurface(vert[0], vert[4], vert[5]);" +
+				"	vec3 n5 = normalSurface(vert[0], vert[5], vert[6]);" +
+				"	vec3 n6 = normalSurface(vert[0], vert[6], vert[1]);" +
+				"" +
+				"	vec3 N = (n1+n2+n3+n4+n5+n6)/6.0;" +
+				"	vec3 C = normalize(N);" +
+				"	vertex_color = vec4(((C.gbr/2.0) + 0.5), 1.0);" +
+				"" +
+				"	vec4 position = vec4(vert[0], 1.0);" +
+				"" +
+				"	gl_Position = projectionMatrix*modelViewMatrix*position;" +
+				"}";
+				
+		
+		String fs = 
+				"precision mediump float;" +
+				"" +
+				"varying vec4 vertex_color;" +
+				"" +
+				"void main()" +
+				"{" +
+				"	gl_FragColor = vertex_color;" +
+				"}";
+				
 		
 		return new String[] { vs, fs };
 	}

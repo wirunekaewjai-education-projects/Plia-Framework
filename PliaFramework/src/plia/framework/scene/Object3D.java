@@ -1,5 +1,6 @@
 package plia.framework.scene;
 
+import plia.framework.core.AnimationPlayer;
 import plia.framework.math.Matrix3;
 import plia.framework.math.Matrix4;
 import plia.framework.math.Vector3;
@@ -113,7 +114,7 @@ public class Object3D extends Node<Object3D>
 		{
 			if(hasAnimation && animation != null)
 			{
-				animation.update();
+				AnimationPlayer.getInstance().enqueue(animation);
 			}
 
 			if(this.hasChanged)

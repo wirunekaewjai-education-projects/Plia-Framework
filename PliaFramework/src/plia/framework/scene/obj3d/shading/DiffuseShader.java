@@ -52,7 +52,7 @@ final class DiffuseShader extends Shader
 			"attribute float boneCount;";
 
 	private static final String iDifVarying = 
-			"varying vec4 Idif;";
+			"varying lowp vec4 Idif;";
 	
 	private static final String uvVarying = 
 			"varying vec2 uvCoord;";
@@ -130,7 +130,12 @@ final class DiffuseShader extends Shader
 			"" +
 			"void main()" +
 			"{" +
-			"	gl_FragColor = texture2D(diffuseMap, uvCoord) * Idif; " +
+			"	lowp vec4 texColor = texture2D(diffuseMap, uvCoord);" +
+			"	texColor.r *= Idif.r;" +
+			"	texColor.g *= Idif.g;" +
+			"	texColor.b *= Idif.b;" +
+			"	texColor.a *= Idif.a;" +
+			"	gl_FragColor = texColor;" +
 			"}";
 
 	private static String fsWithOutTexture = 

@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import plia.framework.fbxplugin.fileio.FbxGlobalSetting;
 import plia.framework.fbxplugin.scene.geometry.FbxGeometry;
 import plia.framework.fbxplugin.scene.geometry.FbxNode;
-
-
+import plia.framework.fbxplugin.scene.shading.FbxSurfaceMaterial;
 
 public class FbxScene
 {
 	private FbxNode rootnodes = new FbxNode(0);
 	private ArrayList<FbxNode> nodes = new ArrayList<FbxNode>();
 	private ArrayList<FbxGeometry> geometries = new ArrayList<FbxGeometry>();
+	private ArrayList<FbxSurfaceMaterial> materials = new ArrayList<FbxSurfaceMaterial>();
 	private FbxGlobalSetting globalSetting = new FbxGlobalSetting();
 	
 	private int modelCount = 0;
@@ -74,6 +74,26 @@ public class FbxScene
 	public int getNodeCount()
 	{
 		return nodes.size();
+	}
+	
+	public void addMaterial(FbxSurfaceMaterial material)
+	{
+		materials.add(material);
+	}
+	
+	public void removeMaterial(FbxSurfaceMaterial material)
+	{
+		materials.remove(material);
+	}
+	
+	public int getMaterialCount()
+	{
+		return materials.size();
+	}
+	
+	public FbxSurfaceMaterial getMaterial(int index)
+	{
+		return materials.get(index);
 	}
 	
 	public void setObjectDefinitions(int modelCount, int geometryCount, int nodeAttributeCount, int animCurveCount, int animCurveNodeCount, int deformerCount)

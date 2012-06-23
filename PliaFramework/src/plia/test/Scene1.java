@@ -12,14 +12,15 @@ import plia.framework.scene.obj3d.animation.PlaybackMode;
 public class Scene1 extends Scene
 {
 	private Layer<Object3D> layer1 = new Layer<Object3D>();
-	private Object3D model;
+	private Object3D model1, model2;
 	private Camera camera;
 	private Light skylight;
 
 	public void onInitialize()
 	{
 		long start = System.nanoTime();
-		model = GameObjectManager.loadModel("scene02.FBX");
+		model1 = GameObjectManager.loadModel("buffylow.FBX");
+		model2 = GameObjectManager.loadModel("elementalist31.FBX");
 		float end = (System.nanoTime() - start)/ 1000000f;
 		log("Load Time : "+end+" ms");
 
@@ -33,18 +34,21 @@ public class Scene1 extends Scene
 		camera.setRange(1000);
 		
 		addLayer(layer1);
-		layer1.addChild(model);
+		layer1.addChild(model1);
+		layer1.addChild(model2);
 		layer1.addChild(camera);
 		layer1.addChild(skylight);
 		
-		model.getAnimation().getAnimationClip("idle").setPlaybackMode(PlaybackMode.LOOP);
-		model.getAnimation().getAnimationClip("idle").setEnd(100);
-		model.getAnimation().play("idle");
+		model1.getAnimation().getAnimationClip("idle").setPlaybackMode(PlaybackMode.LOOP);
+		model1.getAnimation().getAnimationClip("idle").setEnd(100);
+		model1.getAnimation().play("idle");
+		
+		model2.setPosition(80, 0, 0);
 	}
 
 	public void onUpdate()
 	{
-//		model.rotate(0, 0, 1);
+		model1.rotate(0, 0, 1);
 	}
 
 }

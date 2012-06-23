@@ -845,6 +845,10 @@ public class FbxImporter
 			{
 				scene.addNode((FbxNode) fbxObject);
 			}
+			else if(fbxObject instanceof FbxSurfaceMaterial)
+			{
+				scene.addMaterial((FbxSurfaceMaterial) fbxObject);
+			}
 		}
 		
 		FbxNode sceneRootNode = scene.getRootnodes();
