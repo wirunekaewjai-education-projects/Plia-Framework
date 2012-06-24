@@ -130,7 +130,7 @@ final class DiffuseShader extends Shader
 			"" +
 			"void main()" +
 			"{" +
-			"	lowp vec4 texColor = texture2D(diffuseMap, uvCoord);" +
+			"	vec4 texColor = texture2D(diffuseMap, uvCoord);" +
 			"	texColor.r *= Idif.r;" +
 			"	texColor.g *= Idif.g;" +
 			"	texColor.b *= Idif.b;" +

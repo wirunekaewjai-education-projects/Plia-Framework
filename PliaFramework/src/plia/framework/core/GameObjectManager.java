@@ -12,6 +12,7 @@ import java.util.HashMap;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 //import android.graphics.Color;
 import android.opengl.GLES20;
@@ -33,8 +34,11 @@ public class GameObjectManager
 	private Context context;
 	private ArrayList<String> assetFileNames = new ArrayList<String>();
 	private HashMap<String, Texture2D> texturesList = new HashMap<String, Texture2D>();
+	
 	private HashMap<String, Bitmap> bitmapList = new HashMap<String, Bitmap>();
 	private HashMap<String, ScenePrefab> scenePrefabs = new HashMap<String, ScenePrefab>();
+	
+	private ArrayList<Terrain> terrains = new ArrayList<Terrain>();
 	
 	private int[] terrainBuffers = new int[2];
 	
@@ -65,15 +69,13 @@ public class GameObjectManager
 			prefab.resume();
 		}
 		
-		Bitmap[] bitmaps = new Bitmap[bitmapList.size()];
-		bitmapList.values().toArray(bitmaps);
+		String[] bitmapKeys = new String[bitmapList.size()];
+		bitmapList.keySet().toArray(bitmapKeys);
 		
-		Texture2D[] texture2ds = new Texture2D[texturesList.size()];
-		texturesList.values().toArray(texture2ds);
-		
-		for (int i = 0; i < texture2ds.length; i++)
+		for (int i = 0; i < bitmapKeys.length; i++)
 		{
-			Bitmap bitmap = bitmaps[i];
+			String key = bitmapKeys[i];
+			Bitmap bitmap = bitmapList.get(key);
 			
 			int[] tex = new int[1];
 			
@@ -93,7 +95,10 @@ public class GameObjectManager
 			
 			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 			
-			texture2ds[i].setTextureBuffer(tex[0]);
+			if(texturesList.containsKey(key))
+			{
+				texturesList.get(key).setTextureBuffer(tex[0]);
+			}
 		}
 	}
 	
@@ -103,6 +108,7 @@ public class GameObjectManager
 		assetFileNames.clear();
 		texturesList.clear();
 		scenePrefabs.clear();
+		terrains.clear();
 		
 		isInitialized = false;
 	}
@@ -333,7 +339,7 @@ public class GameObjectManager
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 	
-	public Texture2D createTerrainNormalMap(Terrain terrain)
+	public static Texture2D createTerrainNormalMap(Terrain terrain)
 	{
 		int segment = Plane.getInstance().getSegment();
 		IntBuffer normalmapTextureBuffer = ByteBuffer.allocateDirect(segment*segment*4).order(ByteOrder.nativeOrder()).asIntBuffer();
@@ -409,11 +415,11 @@ public class GameObjectManager
 		glUniformMatrix4fv(modelview_handle, 1, false, modelView, 0);
 		glUniformMatrix4fv(projection_handle, 1, false, projection, 0);
 
-		glBindBuffer(GL_ARRAY_BUFFER, terrainBuffers[0]);
+		glBindBuffer(GL_ARRAY_BUFFER, instance.terrainBuffers[0]);
 		glEnableVertexAttribArray(vertex_handle);
 		glVertexAttribPointer(vertex_handle, 2, GL_FLOAT, false, 0, 0);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrainBuffers[1]);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, instance.terrainBuffers[1]);
 		glDrawElements(GL_TRIANGLES, Plane.getInstance().getIndicesCount(), GL_UNSIGNED_INT, 0);
 		
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -436,7 +442,14 @@ public class GameObjectManager
 		
 		int[] pixels = normalmapTextureBuffer.array();
 		
+		Bitmap bitmap = Bitmap.createBitmap(pixels, segment, segment, Config.RGB_565);
+
 		Texture2D normalmap = new Texture2D("normals", renderTextureBuffer[0], pixels, segment, segment);
+		
+		String key = ""+terrain.hashCode();
+		
+		instance.texturesList.put(key, normalmap);
+		instance.bitmapList.put(key, bitmap);
 		
 		return normalmap;
 	}

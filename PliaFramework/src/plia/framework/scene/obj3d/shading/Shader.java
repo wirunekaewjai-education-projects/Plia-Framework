@@ -16,7 +16,7 @@ public class Shader
 	
 	public static void warmUpAllShader()
 	{
-//		AMBIENT.loadShader();
+		AMBIENT.loadShader();
 		DIFFUSE.loadShader();
 	}
 	

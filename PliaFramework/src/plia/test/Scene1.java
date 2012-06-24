@@ -40,15 +40,21 @@ public class Scene1 extends Scene
 		layer1.addChild(skylight);
 		
 		model1.getAnimation().getAnimationClip("idle").setPlaybackMode(PlaybackMode.LOOP);
-		model1.getAnimation().getAnimationClip("idle").setEnd(100);
+		model1.getAnimation().getAnimationClip("idle").setStart(35);
+		model1.getAnimation().getAnimationClip("idle").setEnd(50);
 		model1.getAnimation().play("idle");
 		
 		model2.setPosition(80, 0, 0);
+		
+		model2.getAnimation().getAnimationClip("idle").setPlaybackMode(PlaybackMode.LOOP);
+		model2.getAnimation().getAnimationClip("idle").setEnd(200);
+		model2.getAnimation().play("idle");
 	}
 
 	public void onUpdate()
 	{
 		model1.rotate(0, 0, 1);
+		model2.rotate(0, 0, -0.5f);
 	}
 
 }

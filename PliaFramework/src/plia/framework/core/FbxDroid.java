@@ -1,18 +1,6 @@
 package plia.framework.core;
 
-import static android.opengl.GLES20.GL_ARRAY_BUFFER;
-import static android.opengl.GLES20.GL_ELEMENT_ARRAY_BUFFER;
-import static android.opengl.GLES20.GL_STATIC_DRAW;
-import static android.opengl.GLES20.glBindBuffer;
-import static android.opengl.GLES20.glBufferData;
-import static android.opengl.GLES20.glGenBuffers;
-
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -233,9 +221,6 @@ public class FbxDroid
 	private float[] uv;
 	private int[] indices;
 	
-	private int[] meshBuffers;
-	private int[] boneBuffers;
-	
 	private Mesh meshObject;
 	
 	// Skinned Mesh
@@ -372,10 +357,7 @@ public class FbxDroid
 		this.normals = normals2;
 		this.uv = uv2;
 		this.indices = indices;
-		
-		// Gen Mesh
-//		meshBuffers = createMeshBuffer(vertices, normals, uv, indices);
-		
+
 		FbxNode mn = mesh.getNode(0);
 		Vector3 defaultT = mn.getLclTranslation();
 		Vector3 defaultR = mn.getLclRotation();
@@ -421,29 +403,6 @@ public class FbxDroid
 		{
 			material = scenePrefab.getDefaultMaterial();
 		}
-		
-//		FbxSurfaceMaterial material = mesh.getNode(0).getMaterial();
-//		if(material != null)
-//		{
-//			FbxSurfacePhong phong = (FbxSurfacePhong) material;
-//			
-//			FbxTexture texture = phong.getDiffuseTexture();
-//			
-//			if(texture != null)
-//			{
-//				if(texture instanceof FbxFileTexture)
-//				{
-//					String fn = ((FbxFileTexture) texture).getFileName();
-//					if(fn != null)
-//					{
-//						textureFileName = fn;
-//					}
-//				}
-//			}
-//			
-//			Vector3 diffuse = phong.getDiffuse();
-//			baseColor = new Vector3(diffuse.x, diffuse.y, diffuse.z);
-//		}
 
 		// Skinned + Animation Zone
 		int deformerCount = mesh.getDeformerCount();
@@ -506,7 +465,6 @@ public class FbxDroid
 
 						if((n.getAnimCurveNodeT() == null))
 						{
-//							translation.setIdentity();
 							T[0] = 0;
 							T[1] = 0;
 							T[2] = 0;
@@ -514,12 +472,10 @@ public class FbxDroid
 						else
 						{
 							n.getAnimCurveNodeT().getValue(T, frame);
-//							translation.setTranslation(T[0], T[1], T[2]);
 						}
 						
 						if((n.getAnimCurveNodeR() == null))
 						{
-//							rotation.setIdentity();
 							R[0] = 0;
 							R[1] = 0;
 							R[2] = 0;
@@ -527,12 +483,10 @@ public class FbxDroid
 						else
 						{
 							n.getAnimCurveNodeR().getValue(R, frame);
-//							rotation.setEulerAngles(R[0], R[1], R[2]);
 						}
 						
 						if((n.getAnimCurveNodeS() == null))
 						{
-//							scaling.setIdentity();
 							S[0] = 1;
 							S[1] = 1;
 							S[2] = 1;
@@ -540,9 +494,6 @@ public class FbxDroid
 						else
 						{
 							n.getAnimCurveNodeS().getValue(S, frame);
-//							scaling.m11 = S[0];
-//							scaling.m22 = S[1];
-//							scaling.m33 = S[2];
 						}
 						
 						Matrix4.createTranslation(translation, T[0], T[1], T[2]);
@@ -875,11 +826,6 @@ public class FbxDroid
 			
 			Transform.copyTo(temp);
 			System.arraycopy(temp, 0, matrixPalette[(frame - startFrame)], i * 16, 16);
-			
-//			if(frame == 10)
-//			{
-//				Log.e(node.getName(), parentWorld.toString());
-//			}
 		}
 		
 		for (int j = 0; j < node.getChildCount(); j++)

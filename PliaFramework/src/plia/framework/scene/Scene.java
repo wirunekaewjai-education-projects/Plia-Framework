@@ -157,20 +157,14 @@ public abstract class Scene extends GameObject implements IScene
 	private static final Matrix4 projectionMatrix = new Matrix4();
 
 	private static final Matrix4 tempMV = new Matrix4();
-	private static final Matrix4 tempMVP = new Matrix4();
-	private static final Matrix4 tempInvertmMatrix = new Matrix4();
 	private static final Matrix4 tempTransformMatrix = new Matrix4();
 	private static final Matrix3 tempNormalMatrix = new Matrix3();
-	
-	private static final Matrix4 tempS = new Matrix4();
+
 	private static final Matrix4 tempPalette = new Matrix4();
 	
 	private static final Vector3 target = new Vector3();
-	private static final Vector3 lightPos3 = new Vector3();
 	private static final Vector4 lightPos4 = new Vector4();
 	private static final Vector4 lightPosTemp = new Vector4();
-	private static final Vector4 lightColorTemp = new Vector4();
-	private static final Vector4 colorTemp = new Vector4();
 	
 	private ArrayList<Model> models = new ArrayList<Model>();
 	private ArrayList<Light> lights = new ArrayList<Light>();
@@ -201,12 +195,10 @@ public abstract class Scene extends GameObject implements IScene
 			if(mainCamera.getProjectionType() == Camera.PERSPECTIVE)
 			{
 				Matrix4.createFrustum(projectionMatrix, -ratio, ratio, -1, 1, 1, mainCamera.getRange());
-//				log("Set Frustum");
 			}
 			else
 			{
 				Matrix4.createOrtho(projectionMatrix, -ratio, ratio, -1, 1, 1, mainCamera.getRange());
-//				log("Set Ortho");
 			}
 			
 			hasChangedProjection = false;
@@ -223,7 +215,6 @@ public abstract class Scene extends GameObject implements IScene
 			Vector3 up = mainCamera.getUp();
 			
 			Matrix4.createLookAt(modelViewMatrix, eye, target, up);
-//			log("Set LookAt");
 			
 			hasChangedModelView = false;
 		}

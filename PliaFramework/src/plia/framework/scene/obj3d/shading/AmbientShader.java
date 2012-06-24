@@ -13,9 +13,9 @@ final class AmbientShader extends Shader
 	void loadShader()
 	{
 		instance.programs[0] = new ShaderProgram(getAmbientSrc01());
-		instance.programs[1] = new ShaderProgram(getAmbientSrc02());
+//		instance.programs[1] = new ShaderProgram(getAmbientSrc02());
 		instance.programs[2] = new ShaderProgram(getAmbientSrc03());
-		instance.programs[3] = new ShaderProgram(getAmbientSrc04());
+//		instance.programs[3] = new ShaderProgram(getAmbientSrc04());
 		instance.programs[4] = new ShaderProgram(getAmbientSrc05());
 		instance.programs[5] = new ShaderProgram(getAmbientSrc06());
 		instance.programs[6] = new ShaderProgram(getAmbientSrc07());
@@ -28,16 +28,24 @@ final class AmbientShader extends Shader
 		return instance;
 	}
 	
+	private static final String boneAttributeAndMatrixPaletteUniform = 
+			"const int MATRICES_SIZE = 96;" +
+			"uniform mat4 matrixPalette[MATRICES_SIZE];" +
+			"attribute vec4 boneIndices;" +
+			"attribute vec4 boneWeights;" +
+			"attribute float boneCount;";
+	
 	private static final String vertexSkinningLoop = 
 			"	vec4 skinnedPosition = vec4(0.0);" +
+			"	vec3 skinnedNormal = vec3(0.0);" +
 			"	" +
 			"	int bCount = int(boneCount);" +
-			"	for(int i = 0; i < bCount; i++)" +
+			"	for(int b = 0; b < bCount; ++b)" +
 			"	{" +
-			"		float wt = boneWeights[i];" +
+			"		float wt = boneWeights[b];" +
 			"		if(wt > 0.0)" +
 			"		{" +
-			"			int indx = int(boneIndices[i]);" +
+			"			int indx = int(boneIndices[b]);" +
 			"			mat4 matrix = matrixPalette[indx];" +
 			"			skinnedPosition += wt * vec4(vec3(matrix * vertex), vertex.w);" +
 			"		}" +
@@ -92,6 +100,7 @@ final class AmbientShader extends Shader
 				"uniform mat4 modelViewProjectionMatrix;" +
 				"" +
 				"attribute vec4 vertex;" +
+				boneAttributeAndMatrixPaletteUniform +
 				"" +
 				"void main()" +
 				"{" +
@@ -130,6 +139,7 @@ final class AmbientShader extends Shader
 				"" +
 				"attribute vec4 vertex;" +
 				"attribute vec2 uv;" +
+				boneAttributeAndMatrixPaletteUniform +
 				"" +
 				"varying vec2 uvCoord;" +
 				"" +
@@ -260,13 +270,12 @@ final class AmbientShader extends Shader
 	{
 		// Gen Terrain NormalMap
 		String vs = 
-				"uniform mat4 modelViewMatrix;" +
-				"uniform mat4 projectionMatrix;" +
+				"uniform mat4 modelViewProjectionMatrix;" +
 				"" +
 				"uniform vec3 terrainData;" +
 				"uniform sampler2D heightmap;" +
 				"" +
-				"atribute vec2 vertex;" +
+				"attribute vec2 vertex;" +
 				"" +
 				"varying vec4 vertex_color;" +
 				"" +
@@ -277,7 +286,7 @@ final class AmbientShader extends Shader
 				"" +
 				"	vec2 coord = vec2(u, v);" +
 				"	vec4 displace = texture2D(heightmap, coord);" +
-				"	float height = displace.r*terrainData.x;" +
+				"	float height = displace.x * terrainData.x;" +
 				"" +
 				"	return vec3(x, height, z);" +
 				"}" +
@@ -315,7 +324,7 @@ final class AmbientShader extends Shader
 				"" +
 				"	vec4 position = vec4(vert[0], 1.0);" +
 				"" +
-				"	gl_Position = projectionMatrix*modelViewMatrix*position;" +
+				"	gl_Position = modelViewProjectionMatrix * position;" +
 				"}";
 				
 		
