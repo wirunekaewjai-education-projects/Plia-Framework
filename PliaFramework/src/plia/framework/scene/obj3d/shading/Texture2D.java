@@ -21,6 +21,11 @@ public class Texture2D extends GameObject
 		this.pixels = pixels;
 	}
 	
+	public void setTextureBuffer(int b)
+	{
+		this.textureBuffer = b;
+	}
+	
 	public int getTextureBuffer()
 	{
 		return textureBuffer;

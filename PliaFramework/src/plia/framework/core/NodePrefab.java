@@ -49,4 +49,9 @@ public class NodePrefab
 	{
 		this.hasAnimation = hasAnimation;
 	}
+	
+	public void resume()
+	{
+		mesh.resume();
+	}
 }

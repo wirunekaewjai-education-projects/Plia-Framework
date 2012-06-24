@@ -76,4 +76,12 @@ public class ScenePrefab
 	{
 		return defaultMaterial;
 	}
+	
+	public void resume()
+	{
+		for (int i = 0; i < nodePrefabs.length; i++)
+		{
+			nodePrefabs[i].resume();
+		}
+	}
 }

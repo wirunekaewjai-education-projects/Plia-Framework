@@ -374,7 +374,7 @@ public class FbxDroid
 		this.indices = indices;
 		
 		// Gen Mesh
-		meshBuffers = createMeshBuffer(vertices, normals, uv, indices);
+//		meshBuffers = createMeshBuffer(vertices, normals, uv, indices);
 		
 		FbxNode mn = mesh.getNode(0);
 		Vector3 defaultT = mn.getLclTranslation();
@@ -573,17 +573,17 @@ public class FbxDroid
 		// Create Mesh
 		if(isSkinnedMesh)
 		{
-			meshObject = new SkinnedMesh(getNormalOffset(), getUVOffset(), indices.length);
-			meshObject.setBuffer(2, boneBuffers[0]);
-			meshObject.setBuffer(3, boneBuffers[1]);
+			meshObject = new SkinnedMesh(vertices, normals, uv, indices, boneWeights, boneIndices);
+//			meshObject.setBuffer(2, boneBuffers[0]);
+//			meshObject.setBuffer(3, boneBuffers[1]);
 		}
 		else
 		{
-			meshObject = new Mesh(getNormalOffset(), getUVOffset(), indices.length);
+			meshObject = new Mesh(vertices, normals, uv, indices);
 		}
 		
-		meshObject.setBuffer(0, meshBuffers[0]);
-		meshObject.setBuffer(1, meshBuffers[1]);
+//		meshObject.setBuffer(0, meshBuffers[0]);
+//		meshObject.setBuffer(1, meshBuffers[1]);
 		
 		if(hasAnimation)
 		{
@@ -786,7 +786,7 @@ public class FbxDroid
 		}
 		
 		// Gen Bone Buffer
-		boneBuffers = genBonesBuffer(boneWeights, boneIndices);
+//		boneBuffers = genBonesBuffer(boneWeights, boneIndices);
 	}
 	
 	private FbxNode findRootBone(FbxNode node)
@@ -886,53 +886,6 @@ public class FbxDroid
 		{
 			recursive(frame, node.getChild(j), new Matrix4(AbsoluteTransform));
 		}
-	}
-	
-	private static int[] createMeshBuffer(float[] vertices, float[] normals, float[] uv, int[] indices)
-	{
-		int[] buffers = new int[2];
-
-		int capacity = (vertices.length + vertices.length + uv.length) * 4;
-		
-		FloatBuffer fb = ByteBuffer.allocateDirect(capacity).order(ByteOrder.nativeOrder()).asFloatBuffer();
-		fb.put(vertices).put(normals).put(uv).position(0);
-		
-		IntBuffer ib = ByteBuffer.allocateDirect(indices.length * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
-		ib.put(indices).position(0);
-
-		glGenBuffers(buffers.length, buffers, 0);
-		
-		glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-		glBufferData(GL_ARRAY_BUFFER, fb.capacity() * 4, fb, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[1]);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, ib.capacity() * 4, ib, GL_STATIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-		return buffers;
-	}
-	
-	private static int[] genBonesBuffer(float[] boneWeights, short[] boneIndices)
-	{
-		int[] buffers = new int[2];
-		FloatBuffer fb = ByteBuffer.allocateDirect(boneWeights.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
-		fb.put(boneWeights).position(0);
-		
-		ShortBuffer ib = ByteBuffer.allocateDirect(boneIndices.length * 2).order(ByteOrder.nativeOrder()).asShortBuffer();
-		ib.put(boneIndices).position(0);
-		
-		glGenBuffers(buffers.length, buffers, 0);
-		
-		glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-		glBufferData(GL_ARRAY_BUFFER, fb.capacity() * 4, fb, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		
-		glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
-		glBufferData(GL_ARRAY_BUFFER, ib.capacity() * 2, ib, GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		
-		return buffers;
 	}
 	
 	public Mesh getMeshObject()

@@ -33,11 +33,12 @@ public class GameObjectManager
 	private Context context;
 	private ArrayList<String> assetFileNames = new ArrayList<String>();
 	private HashMap<String, Texture2D> texturesList = new HashMap<String, Texture2D>();
+	private HashMap<String, Bitmap> bitmapList = new HashMap<String, Bitmap>();
 	private HashMap<String, ScenePrefab> scenePrefabs = new HashMap<String, ScenePrefab>();
 	
-	
-	
 	private int[] terrainBuffers = new int[2];
+	
+	private boolean isInitialized = false;
 	
 	public void setContext(Context context)
 	{
@@ -46,16 +47,64 @@ public class GameObjectManager
 	
 	public void initialize()
 	{
-		this.loadAllFilesInAssets("");
+		if(!isInitialized)
+		{
+			this.loadAllFilesInAssets("");
+			isInitialized = true;
+		}
+	}
+	
+	public void resume()
+	{
+		Log.e("State", "Resume");
 		
 		createTerrainBuffer();
+		
+		for (ScenePrefab prefab : scenePrefabs.values())
+		{
+			prefab.resume();
+		}
+		
+		Bitmap[] bitmaps = new Bitmap[bitmapList.size()];
+		bitmapList.values().toArray(bitmaps);
+		
+		Texture2D[] texture2ds = new Texture2D[texturesList.size()];
+		texturesList.values().toArray(texture2ds);
+		
+		for (int i = 0; i < texture2ds.length; i++)
+		{
+			Bitmap bitmap = bitmaps[i];
+			
+			int[] tex = new int[1];
+			
+			GLES20.glGenTextures(1, tex, 0);
+			
+			// generate color texture
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex[0]);
+
+			// parameters
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+
+			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+			GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
+			
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+			
+			texture2ds[i].setTextureBuffer(tex[0]);
+		}
 	}
 	
 	public void destroy()
 	{
+		Log.e("State", "Destroy");
 		assetFileNames.clear();
 		texturesList.clear();
 		scenePrefabs.clear();
+		
+		isInitialized = false;
 	}
 	
 	private void loadAllFilesInAssets(String foldername)
@@ -191,6 +240,7 @@ public class GameObjectManager
 			
 			Texture2D texture = new Texture2D(fileName, tex[0], pixels, bitmap.getWidth(), bitmap.getHeight());
 			instance.texturesList.put(file, texture);
+			instance.bitmapList.put(file, bitmap);
 			
 			return texture;
 		} 

@@ -44,6 +44,12 @@ public abstract class Scene extends GameObject implements IScene
 		}
 	}
 	
+	public void resume()
+	{
+		onInitialize();
+	}
+	
+	
 	@Override
 	public void update()
 	{

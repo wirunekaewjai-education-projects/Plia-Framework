@@ -24,7 +24,7 @@ public abstract class Game extends Activity implements IFramework
 	
 	private GLSurfaceView glSurfaceView;
 	private boolean isInitialized = false;
-	private boolean isLoadedShader = false;
+	private boolean isResumed = false;
 	
 	public static boolean enabledDebug = true;
 
@@ -76,6 +76,7 @@ public abstract class Game extends Activity implements IFramework
 		// TODO Auto-generated method stub
 		super.onResume();
 		this.glSurfaceView.onResume();
+		this.isResumed = true;
 	}
 	
 	@Override
@@ -99,7 +100,15 @@ public abstract class Game extends Activity implements IFramework
 				{
 					currentScene.initialize();
 				}
+				
 				isInitialized = true;
+			}
+			
+			if(isResumed)
+			{
+				Shader.warmUpAllShader();
+				gameObjectManager.resume();
+				isResumed = false;
 			}
 			
 			GLES20.glClearColor(0.3f, 0.6f, 0.9f, 1);
@@ -123,11 +132,7 @@ public abstract class Game extends Activity implements IFramework
 
 		public void onSurfaceCreated(GL10 gl, EGLConfig config)
 		{
-			if(!isLoadedShader)
-			{
-				Shader.warmUpAllShader();
-				isLoadedShader = true;
-			}
+			
 		}
 		
 	}
