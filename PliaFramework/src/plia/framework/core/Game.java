@@ -13,11 +13,13 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
+import android.view.MotionEvent;
 
 public abstract class Game extends Activity implements IFramework
 {
 	private GameObjectManager gameObjectManager;
 	private AnimationPlayer animationPlayer;
+	private TouchEventManager touchEventManager;
 	private GameTime gameTime;
 	
 	private Debug debug;
@@ -40,6 +42,8 @@ public abstract class Game extends Activity implements IFramework
 		this.gameObjectManager.setContext(this);
 		
 		this.animationPlayer = AnimationPlayer.getInstance();
+		
+		this.touchEventManager = TouchEventManager.getInstance();
 
 		this.gameTime = GameTime.getInstance();
 		
@@ -80,10 +84,25 @@ public abstract class Game extends Activity implements IFramework
 	}
 	
 	@Override
+	protected void onStop()
+	{
+		// TODO Auto-generated method stub
+		super.onStop();
+		this.touchEventManager.removeAll();
+	}
+	
+	@Override
 	protected void onDestroy()
 	{
 		super.onDestroy();
 		this.gameObjectManager.destroy();
+	}
+	
+	@Override
+	public boolean onTouchEvent(MotionEvent event)
+	{
+		this.touchEventManager.onTouchEvent(event);
+		return true;
 	}
 	
 	private class GLRenderer implements Renderer
@@ -114,6 +133,8 @@ public abstract class Game extends Activity implements IFramework
 			GLES20.glClearColor(0.3f, 0.6f, 0.9f, 1);
 			GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 			
+			touchEventManager.update();
+			
 			if(currentScene != null)
 			{
 				gameTime.update();
@@ -128,6 +149,8 @@ public abstract class Game extends Activity implements IFramework
 		{
 			Screen.w = width;
 			Screen.h = height;
+			
+			Scene.onSurfaceChanged();
 		}
 
 		public void onSurfaceCreated(GL10 gl, EGLConfig config)

@@ -27,4 +27,14 @@ public class View extends Node<View>
 	{
 		this.position = position;
 	}
+	
+	public float getX()
+	{
+		return position.x;
+	}
+	
+	public float getY()
+	{
+		return position.y;
+	}
 }

@@ -19,6 +19,7 @@ import plia.framework.scene.group.shading.Shader;
 import plia.framework.scene.group.shading.ShaderProgram;
 import plia.framework.scene.group.shading.Texture2D;
 //import plia.framework.scene.obj3d.shading.ShaderProgram.VariableType;
+import plia.framework.scene.view.ImageView;
 
 @SuppressWarnings({"rawtypes"})
 public abstract class Scene extends GameObject implements IScene
@@ -155,6 +156,8 @@ public abstract class Scene extends GameObject implements IScene
 	private static final Matrix4 modelViewProjectionMatrix = new Matrix4();
 	private static final Matrix4 modelViewMatrix = new Matrix4();
 	private static final Matrix4 projectionMatrix = new Matrix4();
+	
+	private static final Matrix4 orthogonalProjection = new Matrix4();
 
 	private static final Matrix4 tempMV = new Matrix4();
 	private static final Matrix4 tempTransformMatrix = new Matrix4();
@@ -166,8 +169,19 @@ public abstract class Scene extends GameObject implements IScene
 	private static final Vector4 lightPos4 = new Vector4();
 	private static final Vector4 lightPosTemp = new Vector4();
 	
+	
+	private ArrayList<ImageView> imageViews = new ArrayList<ImageView>();
 	private ArrayList<Model> models = new ArrayList<Model>();
 	private ArrayList<Light> lights = new ArrayList<Light>();
+	
+	public static void onSurfaceChanged()
+	{
+		ratio = (float)Screen.getWidth() / Screen.getHeight();
+		
+		hasChangedProjection = true;
+		
+		Matrix4.createOrtho(orthogonalProjection, -ratio, ratio, -1, 1, 1, 10);
+	}
 	
 	public static Matrix4 getModelViewMatrix()
 	{
@@ -184,14 +198,16 @@ public abstract class Scene extends GameObject implements IScene
 		return modelViewProjectionMatrix;
 	}
 	
+	public static Matrix4 getOrthogonalprojection()
+	{
+		return orthogonalProjection;
+	}
+	
 	// Draw State
 	public void drawScene()
 	{
-		
 		if(hasChangedProjection)
 		{
-			ratio = (float)Screen.getWidth() / Screen.getHeight();
-			
 			if(mainCamera.getProjectionType() == Camera.PERSPECTIVE)
 			{
 				Matrix4.createFrustum(projectionMatrix, -ratio, ratio, -1, 1, 1, mainCamera.getRange());
@@ -223,7 +239,7 @@ public abstract class Scene extends GameObject implements IScene
 
 		for (int i = 0; i < getLayerCount(); i++)
 		{
-			recusiveLayer(getLayer(i));
+			recursiveLayer(getLayer(i));
 		}
 		
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -231,13 +247,25 @@ public abstract class Scene extends GameObject implements IScene
 		{
 			drawModel(models.get(i));
 		}
+		
+		for (int i = 0; i < imageViews.size(); i++)
+		{
+			drawImageView(imageViews.get(i));
+		}
 
+		imageViews.clear();
 		models.clear();
 		lights.clear();
+		
 
 		float end = (System.nanoTime() - start) / 1000000f;
 		Log.d("Usage Time", (1000f / end)+" ms");
 		start = System.nanoTime();
+	}
+	
+	private void drawImageView(ImageView view)
+	{
+		
 	}
 	
 	private void drawModel(Model model)
@@ -434,19 +462,36 @@ public abstract class Scene extends GameObject implements IScene
 //		program.drawTriangleElements(mesh.getBuffer(1), mesh.INDICES_COUNT);
 	}
 	
-	private void recusiveLayer(Layer layer)
+	private void recursiveLayer(Layer layer)
 	{
 		for (int i = 0; i < layer.getChildCount(); i++)
 		{
 			Node child = layer.getChild(i);
 			if(child instanceof Group)
 			{
-				recusiveObject3D((Group) child);
+				recursiveGroup((Group) child);
+			}
+			else if(child instanceof View)
+			{
+				recursiveView((View) child);
 			}
 		}
 	}
 	
-	private void recusiveObject3D(Group obj)
+	private void recursiveView(View view)
+	{
+		if(view instanceof ImageView)
+		{
+			imageViews.add((ImageView) view);
+		}
+		
+		for (int i = 0; i < view.getChildCount(); i++)
+		{
+			recursiveView(view.getChild(i));
+		}
+	}
+	
+	private void recursiveGroup(Group obj)
 	{
 		
 		if(obj instanceof Model)
@@ -461,7 +506,7 @@ public abstract class Scene extends GameObject implements IScene
 		for (int i = 0; i < obj.getChildCount(); i++)
 		{
 			Group child = obj.getChild(i);
-			recusiveObject3D(child);
+			recursiveGroup(child);
 		}
 	}
 }

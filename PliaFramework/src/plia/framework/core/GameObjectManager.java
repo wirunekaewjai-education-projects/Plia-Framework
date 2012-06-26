@@ -27,6 +27,7 @@ import plia.framework.scene.group.geometry.Plane;
 import plia.framework.scene.group.shading.Shader;
 import plia.framework.scene.group.shading.ShaderProgram;
 import plia.framework.scene.group.shading.Texture2D;
+import plia.framework.scene.view.ImageView;
 //import plia.framework.scene.obj3d.shading.Color4;
 
 public class GameObjectManager
@@ -315,6 +316,21 @@ public class GameObjectManager
 		}
 		
 		return object3d;
+	}
+	
+	public static ImageView createImageView()
+	{
+		return new ImageView();
+	}
+	
+	public static ImageView createImageView(String imgSrcFileName)
+	{
+		Texture2D texture2d = loadTexture2D(imgSrcFileName);
+		
+		ImageView imageView = new ImageView();
+		imageView.setImageSrc(texture2d);
+		
+		return imageView;
 	}
 	
 	private static void createTerrainBuffer()
