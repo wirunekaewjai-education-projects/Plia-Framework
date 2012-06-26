@@ -158,6 +158,8 @@ public abstract class Scene extends GameObject implements IScene
 	private static final Matrix4 projectionMatrix = new Matrix4();
 	
 	private static final Matrix4 orthogonalProjection = new Matrix4();
+	private static final Matrix4 orthogonalModelView = Matrix4.createLookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
+	private static final Matrix4 orthogonalMVP = new Matrix4();
 
 	private static final Matrix4 tempMV = new Matrix4();
 	private static final Matrix4 tempTransformMatrix = new Matrix4();
@@ -168,8 +170,7 @@ public abstract class Scene extends GameObject implements IScene
 	private static final Vector3 target = new Vector3();
 	private static final Vector4 lightPos4 = new Vector4();
 	private static final Vector4 lightPosTemp = new Vector4();
-	
-	
+
 	private ArrayList<ImageView> imageViews = new ArrayList<ImageView>();
 	private ArrayList<Model> models = new ArrayList<Model>();
 	private ArrayList<Light> lights = new ArrayList<Light>();
@@ -181,6 +182,7 @@ public abstract class Scene extends GameObject implements IScene
 		hasChangedProjection = true;
 		
 		Matrix4.createOrtho(orthogonalProjection, -ratio, ratio, -1, 1, 1, 10);
+		Matrix4.multiply(orthogonalMVP, orthogonalProjection, orthogonalModelView);
 	}
 	
 	public static Matrix4 getModelViewMatrix()
@@ -197,12 +199,7 @@ public abstract class Scene extends GameObject implements IScene
 	{
 		return modelViewProjectionMatrix;
 	}
-	
-	public static Matrix4 getOrthogonalprojection()
-	{
-		return orthogonalProjection;
-	}
-	
+
 	// Draw State
 	public void drawScene()
 	{
