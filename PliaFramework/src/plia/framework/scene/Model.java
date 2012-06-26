@@ -1,10 +1,10 @@
 package plia.framework.scene;
 
-import plia.framework.scene.obj3d.geometry.Geometry;
-import plia.framework.scene.obj3d.shading.Material;
+import plia.framework.scene.group.geometry.Geometry;
+import plia.framework.scene.group.shading.Material;
 
 
-public class Model extends Object3D
+public class Model extends Group
 {
 	private Geometry geometry;
 	private Material material;

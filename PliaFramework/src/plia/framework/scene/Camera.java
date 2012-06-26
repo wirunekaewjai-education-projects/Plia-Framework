@@ -1,7 +1,7 @@
 package plia.framework.scene;
 
 
-public class Camera extends Object3D
+public class Camera extends Group
 {
 	private float range;
 	private int projectionType = PERSPECTIVE;

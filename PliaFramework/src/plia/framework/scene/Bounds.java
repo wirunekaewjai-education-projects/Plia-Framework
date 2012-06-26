@@ -4,7 +4,7 @@ import plia.framework.math.Matrix4;
 import plia.framework.math.Vector3;
 import plia.framework.math.Vector4;
 
-public class Bounds extends Object3D
+public class Bounds extends Group
 {
 	protected Bounds()
 	{

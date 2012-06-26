@@ -11,14 +11,14 @@ import plia.framework.math.Matrix3;
 import plia.framework.math.Matrix4;
 import plia.framework.math.Vector3;
 import plia.framework.math.Vector4;
-import plia.framework.scene.obj3d.animation.Animation;
-import plia.framework.scene.obj3d.geometry.Geometry;
-import plia.framework.scene.obj3d.geometry.Mesh;
-import plia.framework.scene.obj3d.shading.Color3;
-import plia.framework.scene.obj3d.shading.Shader;
-import plia.framework.scene.obj3d.shading.ShaderProgram;
-import plia.framework.scene.obj3d.shading.ShaderProgram.VariableType;
-import plia.framework.scene.obj3d.shading.Texture2D;
+import plia.framework.scene.group.animation.Animation;
+import plia.framework.scene.group.geometry.Geometry;
+import plia.framework.scene.group.geometry.Mesh;
+import plia.framework.scene.group.shading.Color3;
+import plia.framework.scene.group.shading.Shader;
+import plia.framework.scene.group.shading.ShaderProgram;
+import plia.framework.scene.group.shading.Texture2D;
+//import plia.framework.scene.obj3d.shading.ShaderProgram.VariableType;
 
 @SuppressWarnings({"rawtypes"})
 public abstract class Scene extends GameObject implements IScene
@@ -439,14 +439,14 @@ public abstract class Scene extends GameObject implements IScene
 		for (int i = 0; i < layer.getChildCount(); i++)
 		{
 			Node child = layer.getChild(i);
-			if(child instanceof Object3D)
+			if(child instanceof Group)
 			{
-				recusiveObject3D((Object3D) child);
+				recusiveObject3D((Group) child);
 			}
 		}
 	}
 	
-	private void recusiveObject3D(Object3D obj)
+	private void recusiveObject3D(Group obj)
 	{
 		
 		if(obj instanceof Model)
@@ -460,7 +460,7 @@ public abstract class Scene extends GameObject implements IScene
 		
 		for (int i = 0; i < obj.getChildCount(); i++)
 		{
-			Object3D child = obj.getChild(i);
+			Group child = obj.getChild(i);
 			recusiveObject3D(child);
 		}
 	}

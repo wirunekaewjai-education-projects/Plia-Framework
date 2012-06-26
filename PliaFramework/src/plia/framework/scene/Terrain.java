@@ -1,9 +1,9 @@
 package plia.framework.scene;
 
-import plia.framework.scene.obj3d.shading.Texture2D;
-import plia.framework.scene.obj3d.terrain.Heightmap;
+import plia.framework.scene.group.shading.Texture2D;
+import plia.framework.scene.group.terrain.Heightmap;
 
-public class Terrain extends Object3D
+public class Terrain extends Group
 {
 	private Heightmap heightmap;
 	private Texture2D normalmap;

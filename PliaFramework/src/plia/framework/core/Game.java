@@ -6,7 +6,7 @@ import javax.microedition.khronos.opengles.GL10;
 import plia.framework.debug.Debug;
 import plia.framework.scene.Camera;
 import plia.framework.scene.Scene;
-import plia.framework.scene.obj3d.shading.Shader;
+import plia.framework.scene.group.shading.Shader;
 
 import android.app.Activity;
 import android.opengl.GLES20;

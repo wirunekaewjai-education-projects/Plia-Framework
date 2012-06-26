@@ -20,14 +20,14 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 import plia.framework.scene.Model;
-import plia.framework.scene.Object3D;
+import plia.framework.scene.Group;
 import plia.framework.scene.Terrain;
-import plia.framework.scene.obj3d.animation.Animation;
-import plia.framework.scene.obj3d.geometry.Plane;
+import plia.framework.scene.group.animation.Animation;
+import plia.framework.scene.group.geometry.Plane;
+import plia.framework.scene.group.shading.Shader;
+import plia.framework.scene.group.shading.ShaderProgram;
+import plia.framework.scene.group.shading.Texture2D;
 //import plia.framework.scene.obj3d.shading.Color4;
-import plia.framework.scene.obj3d.shading.Shader;
-import plia.framework.scene.obj3d.shading.ShaderProgram;
-import plia.framework.scene.obj3d.shading.Texture2D;
 
 public class GameObjectManager
 {
@@ -258,7 +258,7 @@ public class GameObjectManager
 		return null;
 	}
 
-	public static Object3D loadModel(String fbx_path)
+	public static Group loadModel(String fbx_path)
 	{
 		if(!instance.scenePrefabs.containsKey(fbx_path))
 		{
@@ -295,7 +295,7 @@ public class GameObjectManager
 			models.add(mdl);
 		}
 		
-		Object3D object3d = null;
+		Group object3d = null;
 		
 		if(models.size() == 1)
 		{
@@ -305,7 +305,7 @@ public class GameObjectManager
 		}
 		else if(models.size() > 1)
 		{
-			object3d = new Object3D(scenePrefab.getRootName());
+			object3d = new Group(scenePrefab.getRootName());
 			object3d.setAnimation(animation);
 
 			for (int i = 0; i < models.size(); i++)

@@ -4,11 +4,11 @@ import plia.framework.core.AnimationPlayer;
 import plia.framework.math.Matrix3;
 import plia.framework.math.Matrix4;
 import plia.framework.math.Vector3;
-import plia.framework.scene.obj3d.animation.Animation;
+import plia.framework.scene.group.animation.Animation;
 
-public class Object3D extends Node<Object3D>
+public class Group extends Node<Group>
 {
-	protected Object3D parent = null;
+	protected Group parent = null;
 	
 	protected Vector3 localTranslation = new Vector3();
 	protected Vector3 localScaling = new Vector3(1, 1, 1);
@@ -26,12 +26,12 @@ public class Object3D extends Node<Object3D>
 	private boolean hasAnimation = false;
 	private Animation animation;
 
-	public Object3D()
+	public Group()
 	{
 		
 	}
 	
-	public Object3D(String name)
+	public Group(String name)
 	{
 		super(name);
 	}
@@ -147,7 +147,7 @@ public class Object3D extends Node<Object3D>
 			
 			for (int i = 0; i < childCount; i++)
 			{
-				Object3D child = (Object3D) children[i];
+				Group child = (Group) children[i];
 				child.onUpdateHierarchy(parentHasChanged);
 			}
 		}
@@ -160,14 +160,14 @@ public class Object3D extends Node<Object3D>
 		return parent == null;
 	}
 
-	public final Object3D getRoot()
+	public final Group getRoot()
 	{
 		return findRoot(this);
 	}
 
-	private Object3D findRoot(Object3D node)
+	private Group findRoot(Group node)
 	{
-		Object3D parent = (Object3D) node.parent;
+		Group parent = (Group) node.parent;
 		
 		if(parent != null)
 		{
@@ -178,13 +178,13 @@ public class Object3D extends Node<Object3D>
 	}
 	
 	
-	public final Object3D getParent()
+	public final Group getParent()
 	{
-		return (Object3D) parent;
+		return (Group) parent;
 	}
 
 	@Override
-	public final boolean addChild(Object3D child)
+	public final boolean addChild(Group child)
 	{
 		if(child.parent == null)
 		{
@@ -200,7 +200,7 @@ public class Object3D extends Node<Object3D>
 	}
 
 	@Override
-	public final boolean removeChild(Object3D child)
+	public final boolean removeChild(Group child)
 	{
 		boolean b = super.removeChild(child);
 		
@@ -345,7 +345,7 @@ public class Object3D extends Node<Object3D>
 		this.hasChanged = true;
 	}
 	
-	public void setLookAt(Object3D target)
+	public void setLookAt(Group target)
 	{
 		this.localRotation.setForward(Vector3.subtract(target.localTranslation, localTranslation));
 		this.hasChanged = true;

@@ -5,14 +5,14 @@ import plia.framework.math.Vector3;
 import plia.framework.scene.Camera;
 import plia.framework.scene.Layer;
 import plia.framework.scene.Light;
-import plia.framework.scene.Object3D;
+import plia.framework.scene.Group;
 import plia.framework.scene.Scene;
-import plia.framework.scene.obj3d.animation.PlaybackMode;
+import plia.framework.scene.group.animation.PlaybackMode;
 
 public class Scene1 extends Scene
 {
-	private Layer<Object3D> layer1 = new Layer<Object3D>();
-	private Object3D model1, model2;
+	private Layer<Group> layer1 = new Layer<Group>();
+	private Group model1, model2;
 	private Camera camera;
 	private Light skylight;
 

@@ -1,4 +1,4 @@
-package plia.framework.scene.obj3d.geometry;
+package plia.framework.scene.group.geometry;
 
 public class Plane
 {

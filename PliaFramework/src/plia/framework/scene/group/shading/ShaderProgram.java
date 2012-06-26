@@ -1,4 +1,4 @@
-package plia.framework.scene.obj3d.shading;
+package plia.framework.scene.group.shading;
 
 import java.nio.Buffer;
 import java.nio.IntBuffer;

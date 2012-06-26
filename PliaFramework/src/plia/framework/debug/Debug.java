@@ -12,9 +12,9 @@ import plia.framework.scene.BoundingPlane;
 import plia.framework.scene.BoundingSphere;
 import plia.framework.scene.Bounds;
 import plia.framework.scene.Scene;
-import plia.framework.scene.obj3d.shading.Color3;
-import plia.framework.scene.obj3d.shading.Shader;
-import plia.framework.scene.obj3d.shading.ShaderProgram;
+import plia.framework.scene.group.shading.Color3;
+import plia.framework.scene.group.shading.Shader;
+import plia.framework.scene.group.shading.ShaderProgram;
 
 public final class Debug
 {

@@ -1,4 +1,4 @@
-package plia.framework.scene.obj3d.geometry;
+package plia.framework.scene.group.geometry;
 
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_ELEMENT_ARRAY_BUFFER;

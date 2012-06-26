@@ -1,8 +1,8 @@
 package plia.framework.scene;
 
-import plia.framework.scene.obj3d.shading.Color3;
+import plia.framework.scene.group.shading.Color3;
 
-public class Light extends Object3D
+public class Light extends Group
 {
 	private float range = 1;
 	private int lightType = DIRECTIONAL_LIGHT;

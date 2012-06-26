@@ -1,4 +1,4 @@
-package plia.framework.scene.obj3d.animation;
+package plia.framework.scene.group.animation;
 
 public class AnimationClip
 {

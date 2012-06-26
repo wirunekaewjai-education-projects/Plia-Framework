@@ -1,4 +1,4 @@
-package plia.framework.scene.obj3d.terrain;
+package plia.framework.scene.group.terrain;
 
 import plia.framework.core.GameObject;
 import android.graphics.Color;
