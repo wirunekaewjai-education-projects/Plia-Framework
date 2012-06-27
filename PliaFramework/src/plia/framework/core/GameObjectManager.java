@@ -50,6 +50,11 @@ public class GameObjectManager
 		this.context = context;
 	}
 	
+	public void start()
+	{
+		createTerrainBuffer();
+	}
+	
 	public void initialize()
 	{
 		if(!isInitialized)
@@ -62,8 +67,6 @@ public class GameObjectManager
 	public void resume()
 	{
 		Log.e("State", "Resume");
-		
-		createTerrainBuffer();
 		
 		for (ScenePrefab prefab : scenePrefabs.values())
 		{
@@ -258,6 +261,18 @@ public class GameObjectManager
 		
 		return null;
 	}
+	
+	public static Terrain createTerrain(String heightmapSrc, int maxHeight, int scale)
+	{
+		Texture2D heightmap = loadTexture2D(heightmapSrc);
+		
+		Terrain terrain = new Terrain(heightmap, maxHeight, scale);
+		
+		Texture2D normalmap = createTerrainNormalMap(terrain);
+		Terrain.setNormalMapTo(terrain, normalmap);
+		
+		return terrain;
+	}
 
 	public static Group loadModel(String fbx_path)
 	{
@@ -355,7 +370,7 @@ public class GameObjectManager
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 	
-	public static Texture2D createTerrainNormalMap(Terrain terrain)
+	private static Texture2D createTerrainNormalMap(Terrain terrain)
 	{
 		int segment = Plane.getInstance().getSegment();
 		IntBuffer normalmapTextureBuffer = ByteBuffer.allocateDirect(segment*segment*4).order(ByteOrder.nativeOrder()).asIntBuffer();
@@ -456,7 +471,11 @@ public class GameObjectManager
 		// Unbind Normal
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		
-		int[] pixels = normalmapTextureBuffer.array();
+		int[] pixels = new int[normalmapTextureBuffer.capacity()];
+		for (int i = 0; i < normalmapTextureBuffer.capacity(); i++)
+		{
+			pixels[i] = normalmapTextureBuffer.get(i);
+		}
 		
 		Bitmap bitmap = Bitmap.createBitmap(pixels, segment, segment, Config.RGB_565);
 

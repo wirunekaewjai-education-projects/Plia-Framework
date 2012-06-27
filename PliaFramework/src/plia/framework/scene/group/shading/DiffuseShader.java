@@ -15,6 +15,7 @@ final class DiffuseShader extends Shader
 		instance.programs[1] = new ShaderProgram(getDiffuseSrc02());
 		instance.programs[2] = new ShaderProgram(getDiffuseSrc03());
 		instance.programs[3] = new ShaderProgram(getDiffuseSrc04());
+		instance.programs[5] = new ShaderProgram(getDiffuseSrc06());
 	}
 	
 	private static DiffuseShader instance = new DiffuseShader();
@@ -43,6 +44,9 @@ final class DiffuseShader extends Shader
 	private static final String vertexNormalAndUVAttribute = 
 			 vertexAndNormalAttribute +
 			"attribute vec2 uv;";
+	
+	private static final String vertexAttribute = 
+			"attribute vec4 vertex;";
 	
 	private static final String boneAttributeAndMatrixPaletteUniform = 
 			"const int MATRICES_SIZE = 96;" +
@@ -117,9 +121,9 @@ final class DiffuseShader extends Shader
 	private static final String heightMap = 
 			"uniform sampler2D heightMap;";
 	
-	private static final String displacementAttribute = 
-			"uniform float size;" +
-			"uniform float height;";
+//	private static final String displacementAttribute = 
+//			"uniform float size;" +
+//			"uniform float height;";
 	
 	private static String fsWithTexture = 
 			"precision mediump float;" +
@@ -238,5 +242,50 @@ final class DiffuseShader extends Shader
 				"}";
 
 		return new String[] {vs, fsWithTexture};
+	}
+	
+	private static String[] getDiffuseSrc06()
+	{
+		// Terrain With Texture
+		String vs = 
+				matrixUniform + 
+				lightAttribute + 
+				vertexAttribute + 
+				iDifVarying +
+				uvVarying +
+				"" +
+				"uniform vec3 terrainData;" +
+				"" +
+				heightMap +
+				normalMap +
+				"" +
+				"void main()" +
+				"{" +
+				"	float segSize = terrainData.z / terrainData.y;" +
+
+				"	float u = min(0.99, max(0.01, vertex.x/terrainData.z));" +
+				"	float v = min(0.99, max(0.01, vertex.y/terrainData.z));" +
+				"" +
+				"	vec2 uv = vec2(u, v);" +
+					initialUVCoordVarying +
+				"" +
+				"	vec4 displace = texture2D(heightMap, uv);" +
+				"	float height = displace.x * terrainData.x;" +
+				"" +
+				"	vec4 position = vec4(vertex.x*segSize, height, vertex.y*segSize, 1.0);" +
+				"	vec3 normal = (texture2D(normalMap, vec2(uv.x, 1.0-uv.y)).xzy - 0.5) * 2.0;" +
+				"" +
+				"	vec4 V = modelViewMatrix * position;" +
+				"	vec3 N = normalMatrix * normal;" +
+				"	" +
+					initialIDif +
+					lightLoop +
+				"" +
+				"	gl_Position = projectionMatrix * V;" +
+				"}";
+		
+//		String fs = "";
+		
+		return new String[] { vs, fsWithTexture };
 	}
 }

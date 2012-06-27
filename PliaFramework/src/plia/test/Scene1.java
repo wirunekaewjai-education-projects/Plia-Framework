@@ -7,14 +7,21 @@ import plia.framework.scene.Layer;
 import plia.framework.scene.Light;
 import plia.framework.scene.Group;
 import plia.framework.scene.Scene;
+import plia.framework.scene.Terrain;
+import plia.framework.scene.View;
 import plia.framework.scene.group.animation.PlaybackMode;
+import plia.framework.scene.view.ImageView;
 
 public class Scene1 extends Scene
 {
 	private Layer<Group> layer1 = new Layer<Group>();
+	private Layer<View> layer2 = new Layer<View>();
 	private Group model1, model2;
+	private Terrain terrain;
 	private Camera camera;
 	private Light skylight;
+	
+	private ImageView view1;
 
 	public void onInitialize()
 	{
@@ -49,6 +56,12 @@ public class Scene1 extends Scene
 		model2.getAnimation().getAnimationClip("idle").setPlaybackMode(PlaybackMode.LOOP);
 		model2.getAnimation().getAnimationClip("idle").setEnd(200);
 		model2.getAnimation().play("idle");
+		
+		terrain = GameObjectManager.createTerrain("terrain/heightmap.png", 50, 400);
+		layer1.addChild(terrain);
+
+		view1 = GameObjectManager.createImageView("btn_default.png");
+		layer2.addChild(view1);
 	}
 
 	public void onUpdate()

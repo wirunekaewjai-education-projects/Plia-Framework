@@ -27,6 +27,7 @@ public abstract class Game extends Activity implements IFramework
 	private GLSurfaceView glSurfaceView;
 	private boolean isInitialized = false;
 	private boolean isResumed = false;
+	private boolean isStarted = false;
 	
 	public static boolean enabledDebug = true;
 
@@ -64,6 +65,7 @@ public abstract class Game extends Activity implements IFramework
 		// TODO Auto-generated method stub
 		super.onStart();
 		this.gameTime.start();
+		this.isStarted = true;
 	}
 	
 	@Override
@@ -111,6 +113,13 @@ public abstract class Game extends Activity implements IFramework
 		{
 //			Log.e("FPS", (1000f / GameTime.getElapsedGameTime().getMilliseconds())+"");
 
+			if(isStarted)
+			{
+				Shader.warmUpAllShader();
+				gameObjectManager.start();
+				isStarted = false;
+			}
+			
 			if(!isInitialized)
 			{
 				gameObjectManager.initialize();
@@ -125,11 +134,11 @@ public abstract class Game extends Activity implements IFramework
 			
 			if(isResumed)
 			{
-				Shader.warmUpAllShader();
 				gameObjectManager.resume();
 				isResumed = false;
 			}
 			
+			GLES20.glViewport(0, 0, Screen.getWidth(), Screen.getHeight());
 			GLES20.glClearColor(0.3f, 0.6f, 0.9f, 1);
 			GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 			

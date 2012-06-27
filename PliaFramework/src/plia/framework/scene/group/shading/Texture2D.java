@@ -1,7 +1,7 @@
 package plia.framework.scene.group.shading;
 
-import android.graphics.Color;
 import plia.framework.core.GameObject;
+import android.graphics.Color;
 
 public class Texture2D extends GameObject
 {
@@ -10,7 +10,7 @@ public class Texture2D extends GameObject
 	private int width;
 	private int height;
 	
-	private int[] pixels;
+	protected int[] pixels;
 	
 	public Texture2D(String name, int texBuffer, int[] pixels, int width, int height)
 	{
@@ -21,14 +21,14 @@ public class Texture2D extends GameObject
 		this.pixels = pixels;
 	}
 	
-	public void setTextureBuffer(int b)
-	{
-		this.textureBuffer = b;
-	}
-	
 	public int getTextureBuffer()
 	{
 		return textureBuffer;
+	}
+	
+	public void setTextureBuffer(int b)
+	{
+		this.textureBuffer = b;
 	}
 	
 	public int getWidth()
@@ -43,7 +43,7 @@ public class Texture2D extends GameObject
 	
 	public Color4 getPixel(int x, int y)
 	{
-		int row = y * height;
+		int row = y * getHeight();
 		int i = row + x;
 		
 		float r = Color.red(pixels[i]) / 255f;

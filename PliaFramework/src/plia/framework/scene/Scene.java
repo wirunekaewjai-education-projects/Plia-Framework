@@ -173,6 +173,7 @@ public abstract class Scene extends GameObject implements IScene
 
 	private ArrayList<ImageView> imageViews = new ArrayList<ImageView>();
 	private ArrayList<Model> models = new ArrayList<Model>();
+	private ArrayList<Terrain> terrains = new ArrayList<Terrain>();
 	private ArrayList<Light> lights = new ArrayList<Light>();
 	
 	public static void onSurfaceChanged()
@@ -233,7 +234,7 @@ public abstract class Scene extends GameObject implements IScene
 		}
 		
 		Matrix4.multiply(modelViewProjectionMatrix, projectionMatrix, modelViewMatrix);
-
+		
 		for (int i = 0; i < getLayerCount(); i++)
 		{
 			recursiveLayer(getLayer(i));
@@ -252,6 +253,7 @@ public abstract class Scene extends GameObject implements IScene
 
 		imageViews.clear();
 		models.clear();
+		terrains.clear();
 		lights.clear();
 		
 
@@ -459,6 +461,16 @@ public abstract class Scene extends GameObject implements IScene
 //		program.drawTriangleElements(mesh.getBuffer(1), mesh.INDICES_COUNT);
 	}
 	
+	private void drawTerrains()
+	{
+		
+	}
+	
+	private void drawTerrain(Terrain terrain)
+	{
+		
+	}
+	
 	private void recursiveLayer(Layer layer)
 	{
 		for (int i = 0; i < layer.getChildCount(); i++)
@@ -494,6 +506,10 @@ public abstract class Scene extends GameObject implements IScene
 		if(obj instanceof Model)
 		{
 			models.add((Model) obj);
+		}
+		else if(obj instanceof Terrain)
+		{
+			terrains.add((Terrain) obj);
 		}
 		else if(obj instanceof Light)
 		{
