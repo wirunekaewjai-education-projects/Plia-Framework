@@ -263,8 +263,8 @@ final class DiffuseShader extends Shader
 				"{" +
 				"	float segSize = terrainData.z / terrainData.y;" +
 
-				"	float u = min(0.99, max(0.01, vertex.x/terrainData.z));" +
-				"	float v = min(0.99, max(0.01, vertex.y/terrainData.z));" +
+				"	float u = min(0.99, max(0.01, vertex.x / terrainData.y));" +
+				"	float v = min(0.99, max(0.01, vertex.y / terrainData.y));" +
 				"" +
 				"	vec2 uv = vec2(u, v);" +
 					initialUVCoordVarying +

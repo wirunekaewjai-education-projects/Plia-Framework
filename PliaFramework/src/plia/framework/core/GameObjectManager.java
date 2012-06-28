@@ -368,6 +368,8 @@ public class GameObjectManager
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, instance.terrainBuffers[1]);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, ib.capacity() * 4, ib, GL_STATIC_DRAW);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		
+		Terrain.setTerrainBuffer(instance.terrainBuffers);
 	}
 	
 	private static Texture2D createTerrainNormalMap(Terrain terrain)
@@ -407,7 +409,7 @@ public class GameObjectManager
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, segment, segment);
 		
 		// Bind Normal Buffer
-		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer[0]);
+//		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer[0]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTextureBuffer[0], 0);
 		
 		// attach render buffer as depth buffer
@@ -463,7 +465,7 @@ public class GameObjectManager
 		
 		// Bind Normal Again
 		// Bind Normal Buffer
-		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer[0]);
+//		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer[0]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTextureBuffer[0], 0);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBuffer[0]);
 		// Read Pixels

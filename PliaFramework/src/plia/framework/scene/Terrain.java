@@ -62,4 +62,15 @@ public class Terrain extends Group
 	{
 		terrain.normalmap = normalMap;
 	}
+	
+	private static int[] terrainBuffers = new int[2];
+	public static void setTerrainBuffer(int[] terrainBuffers)
+	{
+		Terrain.terrainBuffers = terrainBuffers;
+	}
+	
+	public static int getTerrainBuffer(int index)
+	{
+		return terrainBuffers[index];
+	}
 }

@@ -14,6 +14,7 @@ import plia.framework.math.Vector4;
 import plia.framework.scene.group.animation.Animation;
 import plia.framework.scene.group.geometry.Geometry;
 import plia.framework.scene.group.geometry.Mesh;
+import plia.framework.scene.group.geometry.Plane;
 import plia.framework.scene.group.shading.Color3;
 import plia.framework.scene.group.shading.Shader;
 import plia.framework.scene.group.shading.ShaderProgram;
@@ -241,6 +242,8 @@ public abstract class Scene extends GameObject implements IScene
 		}
 		
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+		drawTerrains();
+		
 		for (int i = 0; i < models.size(); i++)
 		{
 			drawModel(models.get(i));
@@ -333,40 +336,11 @@ public abstract class Scene extends GameObject implements IScene
 		// Lights
 		ArrayList<Light> ls = new ArrayList<Light>();
 		ls.addAll(lights);
-		
-		float lightCount = ls.size();
 
 		int prg = program.getProgramID();
 		GLES20.glUseProgram(prg);
-		GLES20.glUniform1f(GLES20.glGetUniformLocation(prg, "lightCount"), lightCount);
-//		program.use();
-//		program.setUniform(ShaderProgram.LIGHT_COUNT, lightCount);
 
-		for (int i = 0; i < lightCount; i++)
-		{
-			Light light = ls.get(i);
-			int lt = light.getLightType();
-			if(lt == Light.DIRECTIONAL_LIGHT)
-			{
-				Vector3 forward = light.getForward();
-				lightPosTemp.set(-forward.x, -forward.y, -forward.z, 0);
-			}
-			else
-			{
-				lightPosTemp.set(light.getPosition(), 1);
-			}
-			
-			Matrix4.multiply(lightPos4, modelViewMatrix, lightPosTemp);
-			GLES20.glUniform4f(GLES20.glGetUniformLocation(prg, "lightPosition["+i+"]"), lightPos4.x, lightPos4.y, lightPos4.z, lt);
-			
-			Color3 color = light.getColor();
-			GLES20.glUniform4f(GLES20.glGetUniformLocation(prg, "lightColor["+i+"]"), color.r, color.g, color.b, 1);
-			
-			GLES20.glUniform1f(GLES20.glGetUniformLocation(prg, "lightRange["+i+"]"), light.getRange());
-			GLES20.glUniform1f(GLES20.glGetUniformLocation(prg, "lightIntensity["+i+"]"), light.getIntensity());
-			
-//			program.setUniformLight(i, lightPos4, light.getColor(), light.getRange(), light.getIntensity());
-		}
+		setLightUniform(prg, ls);
 		
 		float[] tm = new float[16];
 		projectionMatrix.copyTo(tm);
@@ -463,12 +437,105 @@ public abstract class Scene extends GameObject implements IScene
 	
 	private void drawTerrains()
 	{
+		ShaderProgram shaderProgram = Shader.DIFFUSE.getProgram(5);
 		
+		int program = shaderProgram.getProgramID();
+		
+		GLES20.glUseProgram(program);
+		
+		setLightUniform(program, lights);
+		
+		for (int i = 0; i < terrains.size(); i++)
+		{
+			drawTerrain(program, terrains.get(i));
+		}
 	}
 	
-	private void drawTerrain(Terrain terrain)
+	private void drawTerrain(int program, Terrain terrain)
 	{
+		tempTransformMatrix.setIdentity();
+		tempTransformMatrix.setTranslation(terrain.localTranslation);
 		
+		Matrix4 transformMatrix = Matrix4.multiply(modelViewMatrix, tempTransformMatrix);
+		Matrix3.createNormalMatrix(tempNormalMatrix, tempMV);
+		
+//		Matrix4.multiply(tempMV, modelViewMatrix, terrain.getWorldMatrix());
+//		Matrix4.multiply(tempTransformMatrix, tempMV, terrain.getAxisRotation());
+//		Matrix3.createNormalMatrix(tempNormalMatrix, tempTransformMatrix);
+		
+		float[] tm = new float[16];
+		projectionMatrix.copyTo(tm);
+		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "projectionMatrix"), 1, false, tm, 0);
+		
+		transformMatrix.copyTo(tm);
+		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "modelViewMatrix"), 1, false, tm, 0);
+		
+		tempNormalMatrix.copyTo(tm);
+		GLES20.glUniformMatrix3fv(GLES20.glGetUniformLocation(program, "normalMatrix"), 1, false, tm, 0);
+		
+		int vh = GLES20.glGetAttribLocation(program, "vertex");
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, Terrain.getTerrainBuffer(0));
+		GLES20.glEnableVertexAttribArray(vh);
+		GLES20.glVertexAttribPointer(vh, 2, GLES20.GL_FLOAT, false, 0, 0);
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, terrain.getBaseTexture().getTextureBuffer());
+		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "diffuseMap"), 0);
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, terrain.getHeightmap().getTextureBuffer());
+		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "heightMap"), 1);
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE2);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, terrain.getNormalmap().getTextureBuffer());
+		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "normalMap"), 2);
+		
+		GLES20.glUniform3f(GLES20.glGetUniformLocation(program, "terrainData"), terrain.getTerrainMaxHeight(), Plane.getInstance().getSegment(), terrain.getTerrainScale());
+		
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, Terrain.getTerrainBuffer(1));
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, Plane.getInstance().getIndicesCount(), GLES20.GL_UNSIGNED_INT, 0);
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		
+		GLES20.glDisableVertexAttribArray(vh);
+	}
+	
+	private void setLightUniform(int program, ArrayList<Light> lights)
+	{
+		int lightCount = lights.size();
+		
+		GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "lightCount"), lightCount);
+
+//		program.use();
+//		program.setUniform(ShaderProgram.LIGHT_COUNT, lightCount);
+
+		for (int i = 0; i < lightCount; i++)
+		{
+			Light light = lights.get(i);
+			int lt = light.getLightType();
+			if(lt == Light.DIRECTIONAL_LIGHT)
+			{
+				Vector3 forward = light.getForward();
+				lightPosTemp.set(-forward.x, -forward.y, -forward.z, 0);
+			}
+			else
+			{
+				lightPosTemp.set(light.getPosition(), 1);
+			}
+			
+			Matrix4.multiply(lightPos4, modelViewMatrix, lightPosTemp);
+			GLES20.glUniform4f(GLES20.glGetUniformLocation(program, "lightPosition["+i+"]"), lightPos4.x, lightPos4.y, lightPos4.z, lt);
+			
+			Color3 color = light.getColor();
+			GLES20.glUniform4f(GLES20.glGetUniformLocation(program, "lightColor["+i+"]"), color.r, color.g, color.b, 1);
+			
+			GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "lightRange["+i+"]"), light.getRange());
+			GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "lightIntensity["+i+"]"), light.getIntensity());
+			
+//			program.setUniformLight(i, lightPos4, light.getColor(), light.getRange(), light.getIntensity());
+		}
 	}
 	
 	private void recursiveLayer(Layer layer)

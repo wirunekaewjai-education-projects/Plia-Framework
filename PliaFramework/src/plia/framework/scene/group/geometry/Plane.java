@@ -5,9 +5,9 @@ public class Plane
 	private final float[] vertices;
 	private final int[] indices;
 
-	private int segment = 40;
+	private int segment = 64;
 	
-	public Plane()
+	private Plane()
 	{
 		int length = (segment+1);
 		int s, t;

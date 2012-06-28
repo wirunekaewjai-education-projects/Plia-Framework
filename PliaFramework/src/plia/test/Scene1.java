@@ -58,6 +58,7 @@ public class Scene1 extends Scene
 		model2.getAnimation().play("idle");
 		
 		terrain = GameObjectManager.createTerrain("terrain/heightmap.png", 50, 400);
+		terrain.setBaseTexture(GameObjectManager.loadTexture2D("terrain/diffusemap.jpg"));
 		layer1.addChild(terrain);
 
 		view1 = GameObjectManager.createImageView("btn_default.png");
