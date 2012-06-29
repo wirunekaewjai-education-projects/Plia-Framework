@@ -440,11 +440,7 @@ public abstract class Scene extends GameObject implements IScene
 		ShaderProgram shaderProgram = Shader.DIFFUSE.getProgram(5);
 		
 		int program = shaderProgram.getProgramID();
-		
-		GLES20.glUseProgram(program);
-		
-		setLightUniform(program, lights);
-		
+
 		for (int i = 0; i < terrains.size(); i++)
 		{
 			drawTerrain(program, terrains.get(i));
@@ -463,15 +459,25 @@ public abstract class Scene extends GameObject implements IScene
 //		Matrix4.multiply(tempTransformMatrix, tempMV, terrain.getAxisRotation());
 //		Matrix3.createNormalMatrix(tempNormalMatrix, tempTransformMatrix);
 		
+		GLES20.glUseProgram(program);
+		
+		// Lights
+		ArrayList<Light> ls = new ArrayList<Light>();
+		ls.addAll(lights);
+		
+		setLightUniform(program, ls);
+		
 		float[] tm = new float[16];
 		projectionMatrix.copyTo(tm);
 		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "projectionMatrix"), 1, false, tm, 0);
 		
-		transformMatrix.copyTo(tm);
-		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "modelViewMatrix"), 1, false, tm, 0);
+		float[] tm1 = new float[16];
+		transformMatrix.copyTo(tm1);
+		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "modelViewMatrix"), 1, false, tm1, 0);
 		
-		tempNormalMatrix.copyTo(tm);
-		GLES20.glUniformMatrix3fv(GLES20.glGetUniformLocation(program, "normalMatrix"), 1, false, tm, 0);
+		float[] tm2 = new float[9];
+		tempNormalMatrix.copyTo(tm2);
+		GLES20.glUniformMatrix3fv(GLES20.glGetUniformLocation(program, "normalMatrix"), 1, false, tm2, 0);
 		
 		int vh = GLES20.glGetAttribLocation(program, "vertex");
 		
@@ -479,18 +485,20 @@ public abstract class Scene extends GameObject implements IScene
 		GLES20.glEnableVertexAttribArray(vh);
 		GLES20.glVertexAttribPointer(vh, 2, GLES20.GL_FLOAT, false, 0, 0);
 		
+		GLES20.glEnable(GLES20.GL_TEXTURE_2D);
+		
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, terrain.getBaseTexture().getTextureBuffer());
 		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "diffuseMap"), 0);
 		
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, terrain.getHeightmap().getTextureBuffer());
-		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "heightMap"), 1);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, terrain.getNormalmap().getTextureBuffer());
+		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "normalMap"), 1);
 		
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE2);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, terrain.getNormalmap().getTextureBuffer());
-		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "normalMap"), 2);
-		
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, terrain.getHeightmap().getTextureBuffer());
+		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "heightMap"), 2);
+
 		GLES20.glUniform3f(GLES20.glGetUniformLocation(program, "terrainData"), terrain.getTerrainMaxHeight(), Plane.getInstance().getSegment(), terrain.getTerrainScale());
 		
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, Terrain.getTerrainBuffer(1));

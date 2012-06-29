@@ -14,6 +14,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 //import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
@@ -24,6 +25,7 @@ import plia.framework.scene.Group;
 import plia.framework.scene.Terrain;
 import plia.framework.scene.group.animation.Animation;
 import plia.framework.scene.group.geometry.Plane;
+import plia.framework.scene.group.shading.Color4;
 import plia.framework.scene.group.shading.Shader;
 import plia.framework.scene.group.shading.ShaderProgram;
 import plia.framework.scene.group.shading.Texture2D;
@@ -265,12 +267,12 @@ public class GameObjectManager
 	public static Terrain createTerrain(String heightmapSrc, int maxHeight, int scale)
 	{
 		Texture2D heightmap = loadTexture2D(heightmapSrc);
-		
+
 		Terrain terrain = new Terrain(heightmap, maxHeight, scale);
 		
 		Texture2D normalmap = createTerrainNormalMap(terrain);
 		Terrain.setNormalMapTo(terrain, normalmap);
-		
+
 		return terrain;
 	}
 
@@ -374,6 +376,9 @@ public class GameObjectManager
 	
 	private static Texture2D createTerrainNormalMap(Terrain terrain)
 	{
+//		glEnable(GL_DEPTH_TEST);
+//		glEnable(GL_CULL_FACE);
+		
 		int segment = Plane.getInstance().getSegment();
 		IntBuffer normalmapTextureBuffer = ByteBuffer.allocateDirect(segment*segment*4).order(ByteOrder.nativeOrder()).asIntBuffer();
 		
@@ -409,7 +414,7 @@ public class GameObjectManager
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, segment, segment);
 		
 		// Bind Normal Buffer
-//		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer[0]);
+		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer[0]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTextureBuffer[0], 0);
 		
 		// attach render buffer as depth buffer
@@ -417,14 +422,17 @@ public class GameObjectManager
 
 		float[] projection = new float[16];
 		float[] modelView = new float[16];
+		float[] mvp = new float[16];
 		
 		int scale = terrain.getTerrainScale();
 		int height = terrain.getTerrainMaxHeight();
 		
-		Matrix.orthoM(projection, 0, 0, scale, -scale, 0, 1, height*2);
-		Matrix.setLookAtM(modelView, 0, 0, height*2, 0, 0, 0, 0, 0, 0, -1);
+		Matrix.orthoM(projection, 0, 0, segment, 0, segment, 1, 10);
+		Matrix.setLookAtM(modelView, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0);
+		Matrix.multiplyMM(mvp, 0, projection, 0, modelView, 0);
 
 		glViewport(0, 0, segment, segment);
+		glClearColor(0.3f, 0.6f, 0.9f, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		ShaderProgram sprogram = Shader.AMBIENT.getProgram(7);
@@ -433,8 +441,7 @@ public class GameObjectManager
 		glUseProgram(program);
 		
 		int vertex_handle = glGetAttribLocation(program, "vertex");
-		int modelview_handle = glGetUniformLocation(program, "modelViewMatrix");
-		int projection_handle = glGetUniformLocation(program, "projectionMatrix");
+		int mvp_handle = glGetUniformLocation(program, "modelViewProjectionMatrix");
 		
 		int heightmap_handle = glGetUniformLocation(program, "heightmap");
 		int terrainData_handle = glGetUniformLocation(program, "terrainData");
@@ -445,9 +452,8 @@ public class GameObjectManager
 		
 		glUniform3f(terrainData_handle, height, segment, scale);
 
-		glUniformMatrix4fv(modelview_handle, 1, false, modelView, 0);
-		glUniformMatrix4fv(projection_handle, 1, false, projection, 0);
-
+		glUniformMatrix4fv(mvp_handle, 1, false, mvp, 0);
+		
 		glBindBuffer(GL_ARRAY_BUFFER, instance.terrainBuffers[0]);
 		glEnableVertexAttribArray(vertex_handle);
 		glVertexAttribPointer(vertex_handle, 2, GL_FLOAT, false, 0, 0);
@@ -465,7 +471,7 @@ public class GameObjectManager
 		
 		// Bind Normal Again
 		// Bind Normal Buffer
-//		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer[0]);
+		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer[0]);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTextureBuffer[0], 0);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBuffer[0]);
 		// Read Pixels
@@ -477,6 +483,7 @@ public class GameObjectManager
 		for (int i = 0; i < normalmapTextureBuffer.capacity(); i++)
 		{
 			pixels[i] = normalmapTextureBuffer.get(i);
+//			Log.e(i+"", Color.red(pixels[i])+", "+Color.green(pixels[i])+", "+Color.blue(pixels[i]));
 		}
 		
 		Bitmap bitmap = Bitmap.createBitmap(pixels, segment, segment, Config.RGB_565);

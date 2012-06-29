@@ -5,7 +5,7 @@ public class Plane
 	private final float[] vertices;
 	private final int[] indices;
 
-	private int segment = 64;
+	private int segment = 40;
 	
 	private Plane()
 	{

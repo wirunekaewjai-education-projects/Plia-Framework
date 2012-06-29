@@ -322,7 +322,7 @@ final class AmbientShader extends Shader
 				"	vec3 C = normalize(N);" +
 				"	vertex_color = vec4(((C.gbr/2.0) + 0.5), 1.0);" +
 				"" +
-				"	vec4 position = vec4(vert[0], 1.0);" +
+				"	vec4 position = vec4(vertex.x, vertex.y, 0.0, 1.0);" +
 				"" +
 				"	gl_Position = modelViewProjectionMatrix * position;" +
 				"}";

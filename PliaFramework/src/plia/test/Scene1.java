@@ -57,7 +57,7 @@ public class Scene1 extends Scene
 		model2.getAnimation().getAnimationClip("idle").setEnd(200);
 		model2.getAnimation().play("idle");
 		
-		terrain = GameObjectManager.createTerrain("terrain/heightmap.png", 50, 400);
+		terrain = GameObjectManager.createTerrain("terrain/heightmap.png", 50, 100);
 		terrain.setBaseTexture(GameObjectManager.loadTexture2D("terrain/diffusemap.jpg"));
 		layer1.addChild(terrain);
 
@@ -69,6 +69,8 @@ public class Scene1 extends Scene
 	{
 		model1.rotate(0, 0, 1);
 		model2.rotate(0, 0, -0.5f);
+		
+//		log(terrain.getPosition());
 	}
 
 }

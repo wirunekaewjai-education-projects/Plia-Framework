@@ -44,10 +44,7 @@ final class DiffuseShader extends Shader
 	private static final String vertexNormalAndUVAttribute = 
 			 vertexAndNormalAttribute +
 			"attribute vec2 uv;";
-	
-	private static final String vertexAttribute = 
-			"attribute vec4 vertex;";
-	
+
 	private static final String boneAttributeAndMatrixPaletteUniform = 
 			"const int MATRICES_SIZE = 96;" +
 			"uniform mat4 matrixPalette[MATRICES_SIZE];" +
@@ -250,11 +247,11 @@ final class DiffuseShader extends Shader
 		String vs = 
 				matrixUniform + 
 				lightAttribute + 
-				vertexAttribute + 
 				iDifVarying +
 				uvVarying +
 				"" +
 				"uniform vec3 terrainData;" +
+				"attribute vec2 vertex;" +
 				"" +
 				heightMap +
 				normalMap +
@@ -272,7 +269,7 @@ final class DiffuseShader extends Shader
 				"	vec4 displace = texture2D(heightMap, uv);" +
 				"	float height = displace.x * terrainData.x;" +
 				"" +
-				"	vec4 position = vec4(vertex.x*segSize, height, vertex.y*segSize, 1.0);" +
+				"	vec4 position = vec4(vertex.x*segSize, vertex.y*segSize, height, 1.0);" +
 				"	vec3 normal = (texture2D(normalMap, vec2(uv.x, 1.0-uv.y)).xzy - 0.5) * 2.0;" +
 				"" +
 				"	vec4 V = modelViewMatrix * position;" +
