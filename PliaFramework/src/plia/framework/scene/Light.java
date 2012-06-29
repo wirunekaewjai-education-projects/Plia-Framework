@@ -13,6 +13,55 @@ public class Light extends Group
 	{
 		setName("Light");
 	}
+	
+	public Light(int type)
+	{
+		setName("Light");
+		this.lightType = type;
+	}
+	
+	public Light(int type, float range)
+	{
+		setName("Light");
+		this.lightType = type;
+	}
+	
+	public Light(int type, float range, float intensity)
+	{
+		setName("Light");
+		this.lightType = type;
+		this.intensity = intensity;
+	}
+	
+	public Light(int type, float red, float green, float blue)
+	{
+		setName("Light");
+		this.lightType = type;
+		this.color.r = red;
+		this.color.g = green;
+		this.color.b = blue;
+	}
+
+	public Light(int type, float intensity, float red, float green, float blue)
+	{
+		setName("Light");
+		this.lightType = type;
+		this.color.r = red;
+		this.color.g = green;
+		this.color.b = blue;
+		this.intensity = intensity;
+	}
+
+	public Light(int type, float range, float intensity, float red, float green, float blue)
+	{
+		setName("Light");
+		this.lightType = type;
+		this.range = range;
+		this.color.r = red;
+		this.color.g = green;
+		this.color.b = blue;
+		this.intensity = intensity;
+	}
 
 	public float getRange()
 	{

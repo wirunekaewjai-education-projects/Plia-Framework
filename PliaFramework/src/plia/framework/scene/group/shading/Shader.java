@@ -2,7 +2,7 @@ package plia.framework.scene.group.shading;
 
 public class Shader
 {
-	protected ShaderProgram[] programs = new ShaderProgram[10];
+	protected ShaderProgram[] programs = new ShaderProgram[15];
 	
 	public ShaderProgram getProgram(int index)
 	{

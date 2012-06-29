@@ -30,7 +30,7 @@ final class DiffuseShader extends Shader
 			"uniform mat3 normalMatrix;";
 	
 	private static final String lightAttribute = 
-			"const int MAX_LIGHTS = 8;" +
+			"const int MAX_LIGHTS = 6;" +
 			"uniform vec4 lightPosition[MAX_LIGHTS];" +
 			"uniform vec4 lightColor[MAX_LIGHTS];" +
 			"uniform float lightRange[MAX_LIGHTS];" +
@@ -260,22 +260,21 @@ final class DiffuseShader extends Shader
 				"" +
 				"void main()" +
 				"{" +
-				"	float segSize = terrainData.z / terrainData.y;" +
-				"	float u1 = min(0.99, max(0.01, vertex.x / terrainData.y));" +
-				"	float v1 = min(0.99, max(0.01, vertex.y / terrainData.y));" +
-				"" +
-				"	vec2 uv = vec2(u1, v1);" +
-				"" +
-				"	vec4 displace = texture2D(heightMap, uv);" +
-				"	vec4 nColor = texture2D(normalMap, uv);" +
-				"" +
-				"	float height = displace.x * terrainData.x;" +
-				"" +
-				"	vec4 position = vec4(vertex.x * segSize, vertex.y * segSize, height, 1.0);" +
-				"	vec3 normal = (nColor.xzy - 0.5) * 2.0;" +
-				"" +
-					initalVN_Terrain +
 					initialIDif +
+
+				"	float segSize = terrainData.z / terrainData.y;" +
+				"	float u = clamp(vertex.x / terrainData.y, 0.0, 1.0);" +
+				"	float v = clamp(vertex.y / terrainData.y, 0.0, 1.0);" +
+				"	vec2 uv = vec2(u, v);" +
+				
+				"	vec4 displace = texture2D(heightMap, uv);" +
+				"	vec3 normal = vec3((texture2D(normalMap, uv).xyz - 0.5) * 2.0);" +
+
+				"	float height = displace.x * terrainData.x;" +
+
+				"	vec4 position = vec4(vertex.x * segSize, vertex.y * segSize, height, 1.0);" +
+				
+					initalVN_Terrain +
 					lightLoop +
 					initialUVCoordVarying +
 				"	gl_Position = projectionMatrix * V;" +

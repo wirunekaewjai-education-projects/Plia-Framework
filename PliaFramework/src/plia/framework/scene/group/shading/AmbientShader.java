@@ -13,14 +13,16 @@ final class AmbientShader extends Shader
 	void loadShader()
 	{
 		instance.programs[0] = new ShaderProgram(getAmbientSrc01());
-//		instance.programs[1] = new ShaderProgram(getAmbientSrc02());
+		instance.programs[1] = new ShaderProgram(getAmbientSrc02());
 		instance.programs[2] = new ShaderProgram(getAmbientSrc03());
-//		instance.programs[3] = new ShaderProgram(getAmbientSrc04());
+		instance.programs[3] = new ShaderProgram(getAmbientSrc04());
 		instance.programs[4] = new ShaderProgram(getAmbientSrc05());
 		instance.programs[5] = new ShaderProgram(getAmbientSrc06());
 		instance.programs[6] = new ShaderProgram(getAmbientSrc07());
 		instance.programs[7] = new ShaderProgram(getAmbientSrc08());
 		instance.programs[8] = new ShaderProgram(getAmbientSrc09());
+		instance.programs[9] = new ShaderProgram(getAmbientSrc10());
+		instance.programs[10] = new ShaderProgram(getAmbientSrc11());
 	}
 	
 	private static AmbientShader instance = new AmbientShader();
@@ -358,5 +360,65 @@ final class AmbientShader extends Shader
 						"}";
 				
 				return new String[] { vs, fsWithOutTexture };
+	}
+	
+	private static String[] getAmbientSrc10()
+	{
+		//Grid
+		String vs = 
+				"uniform mat4 modelViewProjectionMatrix;" +
+				"" +
+				"attribute vec2 vertex;" +
+				"attribute vec4 color;" +
+				"" +
+				"varying vec4 vertex_color;" +
+				"" +
+				"void main()" +
+				"{" +
+				"	vertex_color =  color;" +
+				"	gl_Position = modelViewProjectionMatrix * vec4(vertex.x, vertex.y, 0.0, 1.0);" +
+				"}";
+				
+		String fs = 
+				"precision mediump float;" +
+				"" +
+				"varying vec4 vertex_color;" +
+				"" +
+				"void main()" +
+				"{" +
+				"	gl_FragColor = vertex_color;" +
+				"}";
+				
+		return new String[] { vs, fs };
+	}
+	
+	private static String[] getAmbientSrc11()
+	{
+		//Grid
+		String vs = 
+				"uniform mat4 modelViewProjectionMatrix;" +
+				"" +
+				"attribute vec4 vertex;" +
+				"attribute vec4 color;" +
+				"" +
+				"varying vec4 vertex_color;" +
+				"" +
+				"void main()" +
+				"{" +
+				"	vertex_color =  color;" +
+				"	gl_Position = modelViewProjectionMatrix * vertex;" +
+				"}";
+				
+		String fs = 
+				"precision mediump float;" +
+				"" +
+				"varying vec4 vertex_color;" +
+				"" +
+				"void main()" +
+				"{" +
+				"	gl_FragColor = vertex_color;" +
+				"}";
+				
+		return new String[] { vs, fs };
 	}
 }

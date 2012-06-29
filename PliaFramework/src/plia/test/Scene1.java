@@ -9,6 +9,8 @@ import plia.framework.scene.Group;
 import plia.framework.scene.Scene;
 import plia.framework.scene.Terrain;
 import plia.framework.scene.View;
+import plia.framework.scene.group.animation.Animation;
+import plia.framework.scene.group.animation.AnimationClip;
 import plia.framework.scene.group.animation.PlaybackMode;
 import plia.framework.scene.view.ImageView;
 
@@ -16,61 +18,70 @@ public class Scene1 extends Scene
 {
 	private Layer<Group> layer1 = new Layer<Group>();
 	private Layer<View> layer2 = new Layer<View>();
-	private Group model1, model2;
+	private Group model1;
 	private Terrain terrain;
 	private Camera camera;
-	private Light skylight;
 	
 	private ImageView view1;
+	
+	private Light backLight, keyLight, fillLight;
+	private Light pointLight;
 
 	public void onInitialize()
 	{
 		long start = System.nanoTime();
 		model1 = GameObjectManager.loadModel("buffylow.FBX");
-		model2 = GameObjectManager.loadModel("elementalist31.FBX");
-		float end = (System.nanoTime() - start)/ 1000000f;
-		log("Load Time : "+end+" ms");
 
-		skylight = new Light();
-		skylight.setForward(0, -1, 0);
+		terrain = GameObjectManager.createTerrain("terrain/heightmap.png", 60, 500);
+		terrain.setBaseTexture(GameObjectManager.loadTexture2D("terrain/diffusemap.jpg"));
+
+		keyLight = new Light();
+		keyLight.setForward(-1, -1, -1);
+		keyLight.setIntensity(1);
+		
+		backLight = new Light();
+		backLight.setIntensity(3);
+		
+		fillLight = new Light();
+		fillLight.setForward(-1, 0, -0.45f);
+		fillLight.setIntensity(1.4f);
+		
+		pointLight = new Light(Light.POINT_LIGHT, 50, 1.2f);
+		pointLight.setLightType(Light.POINT_LIGHT);
+		pointLight.setPosition(250, 250, 80);
 
 		camera = Scene.getMainCamera();
-		camera.setPosition(200, 200, 100);
-		camera.setLookAt(new Vector3(100, 100, 0));
+		camera.setPosition(350, 350, 100);
+		camera.setLookAt(new Vector3(250, 250, 0));
 		camera.setProjectionType(Camera.PERSPECTIVE);
 		camera.setRange(1000);
+
+		Animation animation1 = model1.getAnimation();
+		AnimationClip idle1 = animation1.getAnimationClip("idle");
+		animation1.play("idle");
+		idle1.setPlaybackMode(PlaybackMode.LOOP);
+		idle1.setStart(35);
+		idle1.setEnd(50);
 		
+		model1.setPosition(250, 250, 40);
+
 		addLayer(layer1);
-		layer1.addChild(model1);
-		layer1.addChild(model2);
-		layer1.addChild(camera);
-		layer1.addChild(skylight);
-		
-		model1.getAnimation().getAnimationClip("idle").setPlaybackMode(PlaybackMode.LOOP);
-		model1.getAnimation().getAnimationClip("idle").setStart(35);
-		model1.getAnimation().getAnimationClip("idle").setEnd(50);
-		model1.getAnimation().play("idle");
-		
-		model2.setPosition(80, 0, 0);
-		
-		model2.getAnimation().getAnimationClip("idle").setPlaybackMode(PlaybackMode.LOOP);
-		model2.getAnimation().getAnimationClip("idle").setEnd(200);
-		model2.getAnimation().play("idle");
-		
-		terrain = GameObjectManager.createTerrain("terrain/heightmap.png", 40, 200);
-		terrain.setBaseTexture(GameObjectManager.loadTexture2D("terrain/diffusemap.jpg"));
-		layer1.addChild(terrain);
+		layer1.addChild(model1, camera, keyLight, fillLight, backLight, terrain);
 
 		view1 = GameObjectManager.createImageView("btn_default.png");
 		layer2.addChild(view1);
+		
+		float end = (System.nanoTime() - start)/ 1000000f;
+		log("Load Time : "+end+" ms");
 	}
 
 	public void onUpdate()
 	{
-		model1.rotate(0, 0, 1);
-		model2.rotate(0, 0, -0.5f);
+		Vector3 camForward = camera.getForward();
+		backLight.setForward(-camForward.x, -camForward.y, -camForward.z);
 		
-//		log(terrain.getPosition());
+		model1.rotate(0, 0, 1);
 	}
 
+	
 }
