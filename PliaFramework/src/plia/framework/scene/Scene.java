@@ -220,14 +220,15 @@ public abstract class Scene extends GameObject implements IScene
 		}
 		if(hasChangedModelView)
 		{
-			Vector3 eye = mainCamera.getPosition();
-			Vector3 forward = mainCamera.getForward();
+			Matrix4 world = mainCamera.getWorldMatrix();
+			Vector3 eye = world.getTranslation();
+			Vector3 forward = world.getForward();
 			
 			target.x = eye.x + (forward.x * 10);
 			target.y = eye.y + (forward.y * 10);
 			target.z = eye.z + (forward.z * 10);
 			
-			Vector3 up = mainCamera.getUp();
+			Vector3 up = world.getUp();
 			
 			Matrix4.createLookAt(modelViewMatrix, eye, target, up);
 			
@@ -462,7 +463,7 @@ public abstract class Scene extends GameObject implements IScene
 //		tempTransformMatrix.setTranslation(terrain.localTranslation);
 		
 		Matrix4 tmm1 = new Matrix4();
-		tmm1.setTranslation(terrain.localTranslation);
+		tmm1.setTranslation(terrain.getWorldMatrix().getTranslation());
 		Matrix4 tmm = Matrix4.multiply(modelViewMatrix, tmm1);
 		
 		Matrix3 nm = new Matrix3();
@@ -542,15 +543,16 @@ public abstract class Scene extends GameObject implements IScene
 		for (int i = 0; i < lightCount; i++)
 		{
 			Light light = lights.get(i);
+			Matrix4 world = light.getWorldMatrix();
 			int lt = light.getLightType();
 			if(lt == Light.DIRECTIONAL_LIGHT)
 			{
-				Vector3 forward = light.getForward();
+				Vector3 forward = world.getForward();
 				lightPosTemp.set(-forward.x, -forward.y, -forward.z, 0);
 			}
 			else
 			{
-				lightPosTemp.set(light.getPosition(), 1);
+				lightPosTemp.set(world.getTranslation(), 1);
 			}
 			
 			Matrix4.multiply(lightPos4, modelViewMatrix, lightPosTemp);

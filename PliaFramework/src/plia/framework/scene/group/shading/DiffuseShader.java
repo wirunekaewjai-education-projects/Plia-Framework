@@ -95,15 +95,16 @@ final class DiffuseShader extends Shader
 			"	for(int l = 0; l < lCount; ++l)" +
 			"	{" +
 			"		vec4 lightDir = lightPosition[l];" +
-			"		vec3 L = normalize( lightDir.xyz - (V.xyz * lightDir.w) );" +
+			"		vec3 lp = lightDir.xyz - (V.xyz * lightDir.w);" +
+			"		vec3 L = normalize( lp );" +
 			"		float lambertTerm = dot(N, L);" +
 			"		if(lambertTerm > 0.0)" +
 			"		{" +
 			"			if(lightDir.w > 0.0)" +
 			"			{" +
-			"				float dist = length(L);" +
-			"				float att = 1.0 - (dist / lightRange[l]);" +
-			"				lambertTerm *= att;" +
+			"				float dist = length(lp);" +
+			"				float att = dist / lightRange[l];" +
+			"				lambertTerm /= max(0.01, att);" +
 			"			}" +
 			"			Idif += lightColor[l] * lambertTerm * lightIntensity[l];" +
 			"		}" +

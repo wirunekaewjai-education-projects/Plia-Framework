@@ -198,6 +198,14 @@ public class Group extends Node<Group>
 		}
 		return false;
 	}
+	
+	public final void addChild(Group...children)
+	{
+		for (Group child : children)
+		{
+			addChild(child);
+		}
+	}
 
 	@Override
 	public final boolean removeChild(Group child)
@@ -224,7 +232,7 @@ public class Group extends Node<Group>
 
 	public Matrix4 getWorldMatrix()
 	{
-		if(isRoot())
+		if(parent == null)
 		{
 			return local;
 		}

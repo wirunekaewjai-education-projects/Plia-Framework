@@ -25,7 +25,7 @@ public class Scene1 extends Scene
 	private ImageView view1;
 	
 	private Light backLight, keyLight, fillLight;
-	private Light pointLight;
+	private Light pointLight1, pointLight2;
 
 	public void onInitialize()
 	{
@@ -46,9 +46,11 @@ public class Scene1 extends Scene
 		fillLight.setForward(-1, 0, -0.45f);
 		fillLight.setIntensity(1.4f);
 		
-		pointLight = new Light(Light.POINT_LIGHT, 50, 1.2f);
-		pointLight.setLightType(Light.POINT_LIGHT);
-		pointLight.setPosition(250, 250, 80);
+		pointLight1 = new Light(Light.POINT_LIGHT, 40, 2f, 1,0,0);
+		pointLight1.setPosition(-100, 0, 30);
+		
+		pointLight2 = new Light(Light.POINT_LIGHT, 40, 2f, 0,0,1);
+		pointLight2.setPosition(100, 0, 30);
 
 		camera = Scene.getMainCamera();
 		camera.setPosition(350, 350, 100);
@@ -64,6 +66,7 @@ public class Scene1 extends Scene
 		idle1.setEnd(50);
 		
 		model1.setPosition(250, 250, 40);
+		model1.addChild(pointLight1, pointLight2);
 
 		addLayer(layer1);
 		layer1.addChild(model1, camera, keyLight, fillLight, backLight, terrain);
@@ -82,6 +85,4 @@ public class Scene1 extends Scene
 		
 		model1.rotate(0, 0, 1);
 	}
-
-	
 }
