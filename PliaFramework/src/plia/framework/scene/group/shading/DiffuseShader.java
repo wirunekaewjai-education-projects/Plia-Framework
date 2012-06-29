@@ -264,7 +264,6 @@ final class DiffuseShader extends Shader
 				"	float v = min(0.99, max(0.01, vertex.y / terrainData.y));" +
 				"" +
 				"	vec2 uv = vec2(u, v);" +
-					initialUVCoordVarying +
 				"" +
 				"	vec4 displace = texture2D(heightMap, uv);" +
 				"	float height = displace.x * terrainData.x;" +
@@ -278,6 +277,7 @@ final class DiffuseShader extends Shader
 					initialIDif +
 					lightLoop +
 				"" +
+					initialUVCoordVarying +
 				"	gl_Position = projectionMatrix * V;" +
 				"}";
 		

@@ -242,6 +242,7 @@ public abstract class Scene extends GameObject implements IScene
 		}
 		
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+		GLES20.glEnable(GLES20.GL_CULL_FACE);
 		drawTerrains();
 		
 		for (int i = 0; i < models.size(); i++)
@@ -452,12 +453,8 @@ public abstract class Scene extends GameObject implements IScene
 		tempTransformMatrix.setIdentity();
 //		tempTransformMatrix.setTranslation(terrain.localTranslation);
 		
-		Matrix4 transformMatrix = Matrix4.multiply(modelViewMatrix, tempTransformMatrix);
-		Matrix3.createNormalMatrix(tempNormalMatrix, tempMV);
-		
-//		Matrix4.multiply(tempMV, modelViewMatrix, terrain.getWorldMatrix());
-//		Matrix4.multiply(tempTransformMatrix, tempMV, terrain.getAxisRotation());
-//		Matrix3.createNormalMatrix(tempNormalMatrix, tempTransformMatrix);
+//		Matrix4 transformMatrix = Matrix4.multiply(modelViewMatrix, tempTransformMatrix);
+		Matrix3.createNormalMatrix(tempNormalMatrix, modelViewMatrix);
 		
 		GLES20.glUseProgram(program);
 		
@@ -472,15 +469,13 @@ public abstract class Scene extends GameObject implements IScene
 		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "projectionMatrix"), 1, false, tm, 0);
 		
 		float[] tm1 = new float[16];
-		transformMatrix.copyTo(tm1);
+		modelViewMatrix.copyTo(tm1);
 		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "modelViewMatrix"), 1, false, tm1, 0);
 		
 		float[] tm2 = new float[9];
 		tempNormalMatrix.copyTo(tm2);
 		GLES20.glUniformMatrix3fv(GLES20.glGetUniformLocation(program, "normalMatrix"), 1, false, tm2, 0);
 
-		GLES20.glEnable(GLES20.GL_TEXTURE_2D);
-		
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, terrain.getBaseTexture().getTextureBuffer());
 		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "diffuseMap"), 0);
@@ -508,6 +503,8 @@ public abstract class Scene extends GameObject implements IScene
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		
 		GLES20.glDisableVertexAttribArray(vh);
+		
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
 	
 	private void setLightUniform(int program, ArrayList<Light> lights)

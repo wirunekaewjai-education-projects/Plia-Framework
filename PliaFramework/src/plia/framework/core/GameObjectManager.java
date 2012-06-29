@@ -478,6 +478,7 @@ public class GameObjectManager
 		glReadPixels(0, 0, segment, segment, GL_RGBA, GL_UNSIGNED_BYTE, normalmapTextureBuffer);
 		// Unbind Normal
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 		
 		int[] pixels = new int[normalmapTextureBuffer.capacity()];
 		for (int i = 0; i < normalmapTextureBuffer.capacity(); i++)
