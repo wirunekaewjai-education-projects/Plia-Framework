@@ -20,6 +20,7 @@ final class AmbientShader extends Shader
 		instance.programs[5] = new ShaderProgram(getAmbientSrc06());
 		instance.programs[6] = new ShaderProgram(getAmbientSrc07());
 		instance.programs[7] = new ShaderProgram(getAmbientSrc08());
+		instance.programs[8] = new ShaderProgram(getAmbientSrc09());
 	}
 	
 	private static AmbientShader instance = new AmbientShader();
@@ -340,5 +341,22 @@ final class AmbientShader extends Shader
 				
 		
 		return new String[] { vs, fs };
+	}
+	
+	private static String[] getAmbientSrc09()
+	{
+		//Mesh Without Texture / Line
+				String vs = 
+						"uniform mat4 modelViewProjectionMatrix;" +
+						"" +
+						"attribute vec2 vertex;" +
+						"" +
+						"void main()" +
+						"{" +
+						"	vec4 position = vec4(vertex.x, vertex.y, 0.0, 1.0);" +
+						"	gl_Position = modelViewProjectionMatrix * position;" +
+						"}";
+				
+				return new String[] { vs, fsWithOutTexture };
 	}
 }

@@ -35,8 +35,8 @@ public class Scene1 extends Scene
 		skylight.setForward(0, -1, 0);
 
 		camera = Scene.getMainCamera();
-		camera.setPosition(100, 120, 100);
-		camera.setLookAt(new Vector3());
+		camera.setPosition(200, 200, 100);
+		camera.setLookAt(new Vector3(100, 100, 0));
 		camera.setProjectionType(Camera.PERSPECTIVE);
 		camera.setRange(1000);
 		
@@ -57,7 +57,7 @@ public class Scene1 extends Scene
 		model2.getAnimation().getAnimationClip("idle").setEnd(200);
 		model2.getAnimation().play("idle");
 		
-		terrain = GameObjectManager.createTerrain("terrain/heightmap.png", 50, 100);
+		terrain = GameObjectManager.createTerrain("terrain/heightmap.png", 40, 200);
 		terrain.setBaseTexture(GameObjectManager.loadTexture2D("terrain/diffusemap.jpg"));
 		layer1.addChild(terrain);
 

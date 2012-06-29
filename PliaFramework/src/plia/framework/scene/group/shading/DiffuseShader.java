@@ -56,7 +56,7 @@ final class DiffuseShader extends Shader
 			"varying lowp vec4 Idif;";
 	
 	private static final String uvVarying = 
-			"varying vec2 uvCoord;";
+			"varying lowp vec2 uvCoord;";
 	
 	private static final String initialIDif = 
 			"	Idif = vec4(0.0);";
@@ -86,11 +86,15 @@ final class DiffuseShader extends Shader
 			"vec4 V = modelViewMatrix * skinnedPosition;" +
 			"vec3 N = normalMatrix * skinnedNormal;";
 	
+	private static String initalVN_Terrain = 
+			"vec4 V = modelViewMatrix * position;" +
+			"vec3 N = normalMatrix * normal;";
+	
 	private static String lightLoop = 
-			"	int count = int(lightCount);" +
-			"	for(int i = 0; i<count; ++i)" +
+			"	int lCount = int(lightCount);" +
+			"	for(int l = 0; l < lCount; ++l)" +
 			"	{" +
-			"		vec4 lightDir = lightPosition[i];" +
+			"		vec4 lightDir = lightPosition[l];" +
 			"		vec3 L = normalize( lightDir.xyz - (V.xyz * lightDir.w) );" +
 			"		float lambertTerm = dot(N, L);" +
 			"		if(lambertTerm > 0.0)" +
@@ -98,10 +102,10 @@ final class DiffuseShader extends Shader
 			"			if(lightDir.w > 0.0)" +
 			"			{" +
 			"				float dist = length(L);" +
-			"				float att = 1.0 - (dist / lightRange[i]);" +
+			"				float att = 1.0 - (dist / lightRange[l]);" +
 			"				lambertTerm *= att;" +
 			"			}" +
-			"			Idif += lightColor[i] * lambertTerm * lightIntensity[i];" +
+			"			Idif += lightColor[l] * lambertTerm * lightIntensity[l];" +
 			"		}" +
 			"	}";
 	
@@ -247,41 +251,35 @@ final class DiffuseShader extends Shader
 		String vs = 
 				matrixUniform + 
 				lightAttribute + 
-				iDifVarying +
-				uvVarying +
-				"" +
-				"uniform vec3 terrainData;" +
-				"attribute vec2 vertex;" +
-				"" +
 				heightMap +
 				normalMap +
+				iDifVarying +
+				uvVarying +
+				"uniform vec3 terrainData;" +
+				"attribute vec4 vertex;" +
 				"" +
 				"void main()" +
 				"{" +
 				"	float segSize = terrainData.z / terrainData.y;" +
-
-				"	float u = min(0.99, max(0.01, vertex.x / terrainData.y));" +
-				"	float v = min(0.99, max(0.01, vertex.y / terrainData.y));" +
+				"	float u1 = min(0.99, max(0.01, vertex.x / terrainData.y));" +
+				"	float v1 = min(0.99, max(0.01, vertex.y / terrainData.y));" +
 				"" +
-				"	vec2 uv = vec2(u, v);" +
+				"	vec2 uv = vec2(u1, v1);" +
 				"" +
 				"	vec4 displace = texture2D(heightMap, uv);" +
+				"	vec4 nColor = texture2D(normalMap, uv);" +
+				"" +
 				"	float height = displace.x * terrainData.x;" +
 				"" +
-				"	vec4 position = vec4(vertex.x*segSize, vertex.y*segSize, height, 1.0);" +
-				"	vec3 normal = (texture2D(normalMap, vec2(uv.x, 1.0-uv.y)).xzy - 0.5) * 2.0;" +
+				"	vec4 position = vec4(vertex.x * segSize, vertex.y * segSize, height, 1.0);" +
+				"	vec3 normal = (nColor.xzy - 0.5) * 2.0;" +
 				"" +
-				"	vec4 V = modelViewMatrix * position;" +
-				"	vec3 N = normalMatrix * normal;" +
-				"	" +
+					initalVN_Terrain +
 					initialIDif +
 					lightLoop +
-				"" +
 					initialUVCoordVarying +
 				"	gl_Position = projectionMatrix * V;" +
 				"}";
-		
-//		String fs = "";
 		
 		return new String[] { vs, fsWithTexture };
 	}
