@@ -450,7 +450,7 @@ public abstract class Scene extends GameObject implements IScene
 	private void drawTerrain(int program, Terrain terrain)
 	{
 		tempTransformMatrix.setIdentity();
-		tempTransformMatrix.setTranslation(terrain.localTranslation);
+//		tempTransformMatrix.setTranslation(terrain.localTranslation);
 		
 		Matrix4 transformMatrix = Matrix4.multiply(modelViewMatrix, tempTransformMatrix);
 		Matrix3.createNormalMatrix(tempNormalMatrix, tempMV);
@@ -478,13 +478,7 @@ public abstract class Scene extends GameObject implements IScene
 		float[] tm2 = new float[9];
 		tempNormalMatrix.copyTo(tm2);
 		GLES20.glUniformMatrix3fv(GLES20.glGetUniformLocation(program, "normalMatrix"), 1, false, tm2, 0);
-		
-		int vh = GLES20.glGetAttribLocation(program, "vertex");
-		
-		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, Terrain.getTerrainBuffer(0));
-		GLES20.glEnableVertexAttribArray(vh);
-		GLES20.glVertexAttribPointer(vh, 2, GLES20.GL_FLOAT, false, 0, 0);
-		
+
 		GLES20.glEnable(GLES20.GL_TEXTURE_2D);
 		
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -500,6 +494,12 @@ public abstract class Scene extends GameObject implements IScene
 		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "heightMap"), 2);
 
 		GLES20.glUniform3f(GLES20.glGetUniformLocation(program, "terrainData"), terrain.getTerrainMaxHeight(), Plane.getInstance().getSegment(), terrain.getTerrainScale());
+		
+		int vh = GLES20.glGetAttribLocation(program, "vertex");
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, Terrain.getTerrainBuffer(0));
+		GLES20.glEnableVertexAttribArray(vh);
+		GLES20.glVertexAttribPointer(vh, 2, GLES20.GL_FLOAT, false, 0, 0);
 		
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, Terrain.getTerrainBuffer(1));
 		GLES20.glDrawElements(GLES20.GL_TRIANGLES, Plane.getInstance().getIndicesCount(), GLES20.GL_UNSIGNED_INT, 0);
