@@ -8,7 +8,7 @@ import plia.framework.scene.group.shading.Texture2D;
 public class ImageView extends View
 {
 	private Texture2D imageSrc;
-	private float width, height;
+	private float sx = 1, sy = 1;
 	
 	public Texture2D getImageSrc()
 	{
@@ -20,49 +20,29 @@ public class ImageView extends View
 		this.imageSrc = imageSrc;
 	}
 	
-	public Vector2 getSize()
+	public Vector2 getScale()
 	{
-		return new Vector2(width, height);
+		return new Vector2(sx, sy);
 	}
 	
-	public void setSize(float w, float h)
+	public void setScale(float x, float y)
 	{
-		this.width = w;
-		this.height = h;
+		this.sx = x;
+		this.sy = y;
 	}
-	
-	public float getWidth()
-	{
-		return width;
-	}
-	
-	public void setWidth(float width)
-	{
-		this.width = width;
-	}
-	
-	public float getHeight()
-	{
-		return height;
-	}
-	
-	public void setHeight(float height)
-	{
-		this.height = height;
-	}
-	
+
 	public boolean intersect(ImageView view)
 	{
 		
-		A.set(getX(), getY(), getX() + getWidth(), getY() + getHeight());
-		B.set(view.getX(), view.getY(), view.getX() + view.getWidth(), view.getY() + view.getHeight());
+		A.set(getX(), getY(), getX() + sx, getY() + sy);
+		B.set(view.getX(), view.getY(), view.getX() + view.sx, view.getY() + view.sy);
 		
 		return A.intersect(B);
 	}
 
 	public boolean intersect(float x, float y)
 	{
-		A.set(getX(), getY(), getX() + getWidth(), getY() + getHeight());
+		A.set(getX(), getY(), getX() + sx, getY() + sy);
 		return A.contains(x, y);
 	}
 	

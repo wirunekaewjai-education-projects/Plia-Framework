@@ -7,6 +7,7 @@ import plia.framework.event.OnTouchListener;
 import plia.framework.event.TouchEvent;
 import plia.framework.scene.view.Button;
 
+import android.util.Log;
 import android.view.MotionEvent;
 
 public class TouchEventManager

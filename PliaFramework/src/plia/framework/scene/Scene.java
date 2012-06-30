@@ -1,25 +1,30 @@
 package plia.framework.scene;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import android.opengl.GLES20;
 import android.util.Log;
 
 import plia.framework.core.GameObject;
+import plia.framework.core.GameObjectManager;
 import plia.framework.core.Screen;
 import plia.framework.math.Matrix3;
 import plia.framework.math.Matrix4;
+import plia.framework.math.Vector2;
 import plia.framework.math.Vector3;
 import plia.framework.math.Vector4;
 import plia.framework.scene.group.animation.Animation;
 import plia.framework.scene.group.geometry.Geometry;
 import plia.framework.scene.group.geometry.Mesh;
 import plia.framework.scene.group.geometry.Plane;
+import plia.framework.scene.group.geometry.Quad;
 import plia.framework.scene.group.shading.Color3;
 import plia.framework.scene.group.shading.Shader;
 import plia.framework.scene.group.shading.ShaderProgram;
 import plia.framework.scene.group.shading.Texture2D;
 //import plia.framework.scene.obj3d.shading.ShaderProgram.VariableType;
+import plia.framework.scene.view.Button;
 import plia.framework.scene.view.ImageView;
 
 @SuppressWarnings({"rawtypes"})
@@ -159,7 +164,7 @@ public abstract class Scene extends GameObject implements IScene
 	private static final Matrix4 projectionMatrix = new Matrix4();
 	
 	private static final Matrix4 orthogonalProjection = new Matrix4();
-	private static final Matrix4 orthogonalModelView = Matrix4.createLookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
+	private static final Matrix4 orthogonalModelView = new Matrix4();
 	private static final Matrix4 orthogonalMVP = new Matrix4();
 
 	private static final Matrix4 tempMV = new Matrix4();
@@ -183,8 +188,11 @@ public abstract class Scene extends GameObject implements IScene
 		
 		hasChangedProjection = true;
 		
-		Matrix4.createOrtho(orthogonalProjection, -ratio, ratio, -1, 1, 1, 10);
+		Matrix4.createOrtho(orthogonalProjection, 0, 1, 1, 0, 1, 10);
+		Matrix4.createLookAt(orthogonalModelView, 0, 0, 1, 0, 0, 0, 0, 1, 0);
 		Matrix4.multiply(orthogonalMVP, orthogonalProjection, orthogonalModelView);
+		
+		Log.e("MVP", orthogonalModelView.toString());
 	}
 	
 	public static Matrix4 getModelViewMatrix()
@@ -244,19 +252,23 @@ public abstract class Scene extends GameObject implements IScene
 		
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 		GLES20.glDisable(GLES20.GL_CULL_FACE);
-		drawTerrains();
+//		drawTerrains();
 		
 		GLES20.glEnable(GLES20.GL_CULL_FACE);
 		
 		for (int i = 0; i < models.size(); i++)
 		{
-			drawModel(models.get(i));
+//			drawModel(models.get(i));
 		}
 		
+		GLES20.glEnable(GLES20.GL_BLEND);
+		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+
 		for (int i = 0; i < imageViews.size(); i++)
 		{
 			drawImageView(imageViews.get(i));
 		}
+		GLES20.glDisable(GLES20.GL_BLEND);
 
 		imageViews.clear();
 		models.clear();
@@ -271,7 +283,39 @@ public abstract class Scene extends GameObject implements IScene
 	
 	private void drawImageView(ImageView view)
 	{
+		ShaderProgram shaderProgram = Shader.AMBIENT.getProgram(2);
 		
+		int program = shaderProgram.getProgramID();
+
+		Vector2 position = view.getPosition();
+		Vector2 scale = view.getScale();
+		Matrix4 transformM = new Matrix4();
+//		transformM.setTranslation(position.x, position.y, 2);
+//		transformM.m11 = scale.x;
+//		transformM.m22 = scale.y;
+
+		Matrix4 mvp = Matrix4.multiply(orthogonalMVP, transformM);
+		
+		GLES20.glUseProgram(program);
+		
+		int vh = GLES20.glGetAttribLocation(program, "vertex");
+		int uvh = GLES20.glGetAttribLocation(program, "uv");
+		
+		float[] mvpm = new float[16];
+		mvp.copyTo(mvpm);
+		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "modelViewProjectionMatrix"), 1, false, mvpm, 0);
+		
+		GLES20.glEnableVertexAttribArray(vh);
+		GLES20.glVertexAttribPointer(vh, 2, GLES20.GL_FLOAT, false, 0, Quad.getVertexBuffer());
+
+		GLES20.glEnableVertexAttribArray(uvh);
+		GLES20.glVertexAttribPointer(uvh, 2, GLES20.GL_FLOAT, false, 0, Quad.getUVBuffer());
+
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, view.getImageSrc().getTextureBuffer());
+		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "baseTexture"), 0);
+		
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_BYTE, Quad.getIndicesBuffer());
 	}
 	
 	private void drawModel(Model model)
@@ -618,6 +662,161 @@ public abstract class Scene extends GameObject implements IScene
 			Group child = obj.getChild(i);
 			recursiveGroup(child);
 		}
+	}
+	
+	
+	///
+	public static final Group model(String fbx_path)
+	{
+		return GameObjectManager.loadModel(fbx_path);
+	}
+	
+	public static final Terrain terrain(String heightmapSrc, int maxHeight, int scale)
+	{
+		return GameObjectManager.createTerrain(heightmapSrc, maxHeight, scale);
+	}
+	
+	public static final Terrain terrain(String heightmapSrc, String diffusemapSrc, int maxHeight, int scale)
+	{
+		Terrain t = GameObjectManager.createTerrain(heightmapSrc, maxHeight, scale);
+		t.setBaseTexture(GameObjectManager.loadTexture2D(diffusemapSrc));
+		
+		return t;
+	}
+	
+	public static final Light directionalLight(float intensity)
+	{
+		Light light = new Light();
+		light.setIntensity(intensity);
+		return light;
+	}
+	
+	public static final Light directionalLight(float forwardX, float forwardY, float forwardZ)
+	{
+		Light light = new Light();
+		light.setForward(forwardX, forwardY, forwardZ);
+
+		return light;
+	}
+	
+	public static final Light directionalLight(float forwardX, float forwardY, float forwardZ, float intensity)
+	{
+		Light light = new Light();
+		light.setForward(forwardX, forwardY, forwardZ);
+		light.setIntensity(intensity);
+		
+		return light;
+	}
+	
+	public static final Light directionalLight(float forwardX, float forwardY, float forwardZ, float red, float green, float blue)
+	{
+		Light light = new Light();
+		light.setForward(forwardX, forwardY, forwardZ);
+		light.setColor(red, green, blue);
+
+		return light;
+	}
+	
+	public static final Light directionalLight(float forwardX, float forwardY, float forwardZ, float intensity, float red, float green, float blue)
+	{
+		Light light = new Light();
+		light.setForward(forwardX, forwardY, forwardZ);
+		light.setColor(red, green, blue);
+		light.setIntensity(intensity);
+		
+		return light;
+	}
+	
+	public static final Light pointLight(float posX, float posY, float posZ, float range)
+	{
+		Light light = new Light();
+		light.setLightType(Light.POINT_LIGHT);
+		light.setRange(range);
+		light.setPosition(posX, posY, posZ);
+
+		return light;
+	}
+	
+	public static final Light pointLight(float posX, float posY, float posZ, float range, float intensity)
+	{
+		Light light = new Light();
+		light.setLightType(Light.POINT_LIGHT);
+		light.setRange(range);
+		light.setPosition(posX, posY, posZ);
+		light.setIntensity(intensity);
+		
+		return light;
+	}
+	
+	public static final Light pointLight(float posX, float posY, float posZ, float range, float red, float green, float blue)
+	{
+		Light light = new Light();
+		light.setLightType(Light.POINT_LIGHT);
+		light.setRange(range);
+		light.setPosition(posX, posY, posZ);
+		light.setColor(red, green, blue);
+
+		return light;
+	}
+	
+	public static final Light pointLight(float posX, float posY, float posZ, float range, float intensity, float red, float green, float blue)
+	{
+		Light light = new Light();
+		light.setLightType(Light.POINT_LIGHT);
+		light.setRange(range);
+		light.setPosition(posX, posY, posZ);
+		light.setColor(red, green, blue);
+		light.setIntensity(intensity);
+		
+		return light;
+	}
+	
+	public static final Camera camera(int projectionType)
+	{
+		Camera camera = new Camera();
+		camera.setProjectionType(projectionType);
+		
+		return camera;
+	}
+	
+	public static final Camera camera(int projectionType, float range)
+	{
+		Camera camera = new Camera();
+		camera.setProjectionType(projectionType);
+		camera.setRange(range);
+		
+		return camera;
+	}
+	
+	public static final Camera camera(int projectionType, float posX, float posY, float posZ, float range)
+	{
+		Camera camera = new Camera();
+		camera.setProjectionType(projectionType);
+		camera.setPosition(posX, posY, posZ);
+		camera.setRange(range);
+		
+		return camera;
+	}
+	
+	public static final Camera camera(int projectionType, float posX, float posY, float posZ, float targetX, float targetY, float targetZ, float range)
+	{
+		Camera camera = new Camera();
+		camera.setProjectionType(projectionType);
+		camera.setPosition(posX, posY, posZ);
+		camera.setLookAt(new Vector3(targetX, targetY, targetZ));
+		camera.setRange(range);
+		
+		return camera;
+	}
+	
+	public static final ImageView imageView(String imgSrc)
+	{
+		return GameObjectManager.createImageView(imgSrc);
+	}
+	
+	public static final Button button(String imgSrc)
+	{
+		return GameObjectManager.createButton(imgSrc);
 	}
 }
 

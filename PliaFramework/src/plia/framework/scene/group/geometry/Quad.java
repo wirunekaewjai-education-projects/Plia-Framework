@@ -1,8 +1,12 @@
 package plia.framework.scene.group.geometry;
 
-public class Quad
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+
+public final class Quad
 {
-	private byte[] vertices = 
+	private float[] vertices = 
 		{ 
 			0, 0,
 			0, 1,
@@ -10,12 +14,12 @@ public class Quad
 			1, 0,
 		};
 	
-	private byte[] uv = 
+	private float[] uv = 
 		{ 
-			0, 1,
 			0, 0,
-			1, 0,
+			0, 1,
 			1, 1,
+			1, 0,
 		};
 	
 	private byte[] indices = 
@@ -30,12 +34,12 @@ public class Quad
 		
 	}
 	
-	public byte[] getVertices()
+	public float[] getVertices()
 	{
 		return vertices;
 	}
 	
-	public byte[] getUV()
+	public float[] getUV()
 	{
 		return uv;
 	}
@@ -55,9 +59,40 @@ public class Quad
 		return indices.length;
 	}
 	
-	private static Quad quad = new Quad();
-	public static Quad getQuad()
+	private static Quad instance = new Quad();
+	public static Quad getInstance()
 	{
-		return quad;
+		return instance;
+	}
+	
+	private static FloatBuffer vb;
+	private static FloatBuffer uvb;
+	private static ByteBuffer ib;
+	
+	public static void createBuffer()
+	{
+		vb = ByteBuffer.allocateDirect( 32 ).order(ByteOrder.nativeOrder()).asFloatBuffer();
+		vb.put(instance.vertices).position(0);
+		
+		uvb = ByteBuffer.allocateDirect( 32 ).order(ByteOrder.nativeOrder()).asFloatBuffer();
+		uvb.put(instance.uv).position(0);
+		
+		ib = ByteBuffer.allocateDirect( 6 ).order(ByteOrder.nativeOrder());
+		ib.put(instance.indices).position(0);
+	}
+	
+	public static FloatBuffer getVertexBuffer()
+	{
+		return vb;
+	}
+	
+	public static FloatBuffer getUVBuffer()
+	{
+		return uvb;
+	}
+	
+	public static ByteBuffer getIndicesBuffer()
+	{
+		return ib;
 	}
 }

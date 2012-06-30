@@ -992,7 +992,7 @@ public final class Matrix4
 	
 	public static Matrix4 createLookAt(Matrix4 result, float eyeX, float eyeY, float eyeZ, float cenX, float cenY, float cenZ, float upX, float upY, float upZ)
 	{
-		return createLookAt(result, new Vector3(eyeX, eyeY, eyeY), new Vector3(cenX, cenY, cenZ), new Vector3(upX, upY, upZ));
+		return createLookAt(result, new Vector3(eyeX, eyeY, eyeZ), new Vector3(cenX, cenY, cenZ), new Vector3(upX, upY, upZ));
 	}
 
 	public static Matrix4 createLookAt(Matrix4 result, Vector3 eye, Vector3 center, Vector3 up)
@@ -1040,7 +1040,7 @@ public final class Matrix4
 		result.m41 = -(right + left) / w;
 		result.m42 = -(top + bottom) / h;
 		result.m43 = -(far + near) / Zf_Zn;
-
+		
 		return result;
 	}
 	

@@ -30,33 +30,19 @@ public class Scene1 extends Scene
 	public void onInitialize()
 	{
 		long start = System.nanoTime();
-		model1 = GameObjectManager.loadModel("buffylow.FBX");
+		model1 = model("buffylow.FBX");
 
-		terrain = GameObjectManager.createTerrain("terrain/heightmap.png", 60, 500);
-		terrain.setBaseTexture(GameObjectManager.loadTexture2D("terrain/diffusemap.jpg"));
+		terrain = terrain("terrain/heightmap.png", "terrain/diffusemap.jpg", 60, 500);
 
-		keyLight = new Light();
-		keyLight.setForward(-1, -1, -1);
-		keyLight.setIntensity(1);
-		
-		backLight = new Light();
-		backLight.setIntensity(3);
-		
-		fillLight = new Light();
-		fillLight.setForward(-1, 0, -0.45f);
-		fillLight.setIntensity(1.4f);
-		
-		pointLight1 = new Light(Light.POINT_LIGHT, 40, 2f, 1,0,0);
-		pointLight1.setPosition(-100, 0, 30);
-		
-		pointLight2 = new Light(Light.POINT_LIGHT, 40, 2f, 0,0,1);
-		pointLight2.setPosition(100, 0, 30);
+		keyLight = directionalLight(-1, -1, -1);
+		backLight = directionalLight(3);
+		fillLight = directionalLight(-1, 0, -0.45f, 1.4f);
 
-		camera = Scene.getMainCamera();
-		camera.setPosition(350, 350, 100);
-		camera.setLookAt(new Vector3(250, 250, 0));
-		camera.setProjectionType(Camera.PERSPECTIVE);
-		camera.setRange(1000);
+		pointLight1 = pointLight(-100, 0, 30, 40, 2, 1, 0, 0);
+		pointLight2 = pointLight(100, 0, 30, 40, 2, 0, 0, 1);
+
+		camera = camera(Camera.PERSPECTIVE, 350, 350, 100, 250, 250, 0, 1000);
+		Scene.setMainCamera(camera);
 
 		Animation animation1 = model1.getAnimation();
 		AnimationClip idle1 = animation1.getAnimationClip("idle");
@@ -64,15 +50,17 @@ public class Scene1 extends Scene
 		idle1.setPlaybackMode(PlaybackMode.LOOP);
 		idle1.setStart(35);
 		idle1.setEnd(50);
-		
+
 		model1.setPosition(250, 250, 40);
 		model1.addChild(pointLight1, pointLight2);
 
-		addLayer(layer1);
 		layer1.addChild(model1, camera, keyLight, fillLight, backLight, terrain);
 
-		view1 = GameObjectManager.createImageView("btn_default.png");
+		view1 = imageView("diffuse.jpg");
 		layer2.addChild(view1);
+
+		addLayer(layer1);
+		addLayer(layer2);
 		
 		float end = (System.nanoTime() - start)/ 1000000f;
 		log("Load Time : "+end+" ms");

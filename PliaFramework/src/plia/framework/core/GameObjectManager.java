@@ -25,10 +25,12 @@ import plia.framework.scene.Group;
 import plia.framework.scene.Terrain;
 import plia.framework.scene.group.animation.Animation;
 import plia.framework.scene.group.geometry.Plane;
+import plia.framework.scene.group.geometry.Quad;
 import plia.framework.scene.group.shading.Color4;
 import plia.framework.scene.group.shading.Shader;
 import plia.framework.scene.group.shading.ShaderProgram;
 import plia.framework.scene.group.shading.Texture2D;
+import plia.framework.scene.view.Button;
 import plia.framework.scene.view.ImageView;
 //import plia.framework.scene.obj3d.shading.Color4;
 
@@ -55,6 +57,7 @@ public class GameObjectManager
 	public void start()
 	{
 		createTerrainBuffer();
+		Quad.createBuffer();
 	}
 	
 	public void initialize()
@@ -345,6 +348,21 @@ public class GameObjectManager
 		Texture2D texture2d = loadTexture2D(imgSrcFileName);
 		
 		ImageView imageView = new ImageView();
+		imageView.setImageSrc(texture2d);
+		
+		return imageView;
+	}
+	
+	public static Button createButton()
+	{
+		return new Button();
+	}
+	
+	public static Button createButton(String imgSrcFileName)
+	{
+		Texture2D texture2d = loadTexture2D(imgSrcFileName);
+		
+		Button imageView = new Button();
 		imageView.setImageSrc(texture2d);
 		
 		return imageView;
