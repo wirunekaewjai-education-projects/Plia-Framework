@@ -1,5 +1,6 @@
 package plia.framework.scene;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import android.opengl.GLES20;
@@ -164,10 +165,6 @@ public abstract class Scene extends GameObject implements IScene
 	private static final Matrix4 orthogonalModelView = new Matrix4();
 	private static final Matrix4 orthogonalMVP = new Matrix4();
 
-	private static final Matrix4 tempMV = new Matrix4();
-	private static final Matrix4 tempTransformMatrix = new Matrix4();
-	private static final Matrix3 tempNormalMatrix = new Matrix3();
-
 	private static final Matrix4 tempPalette = new Matrix4();
 	
 	private static final Vector3 target = new Vector3();
@@ -303,8 +300,39 @@ public abstract class Scene extends GameObject implements IScene
 		GLES20.glEnableVertexAttribArray(vh);
 		GLES20.glVertexAttribPointer(vh, 2, GLES20.GL_FLOAT, false, 0, Quad.getVertexBuffer());
 
-		GLES20.glEnableVertexAttribArray(uvh);
-		GLES20.glVertexAttribPointer(uvh, 2, GLES20.GL_FLOAT, false, 0, Quad.getUVBuffer());
+		if(view.hasAnimation())
+		{
+			float[] srcRect = new float[8];
+			float frame = view.getAnimation().getCurrentFrame();
+			float width = 1f / view.getAnimation().getTotalFrame();
+			
+			float x = frame * width;
+			float xw = x + width;
+
+			srcRect[0] = x;
+			srcRect[1] = 0;
+			
+			srcRect[2] = x;
+			srcRect[3] = 1;
+			
+			srcRect[4] = xw;
+			srcRect[5] = 1;
+			
+			srcRect[6] = xw;
+			srcRect[7] = 0;
+			
+			FloatBuffer sb = Quad.getSpriteUVBuffer();
+			sb.clear();
+			sb.put(srcRect).position(0);
+			
+			GLES20.glEnableVertexAttribArray(uvh);
+			GLES20.glVertexAttribPointer(uvh, 2, GLES20.GL_FLOAT, false, 0, sb);
+		}
+		else
+		{
+			GLES20.glEnableVertexAttribArray(uvh);
+			GLES20.glVertexAttribPointer(uvh, 2, GLES20.GL_FLOAT, false, 0, Quad.getUVBuffer());
+		}
 
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, view.getImageSrc().getTextureBuffer());

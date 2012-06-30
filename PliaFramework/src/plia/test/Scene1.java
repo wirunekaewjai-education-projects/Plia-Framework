@@ -49,9 +49,14 @@ public class Scene1 extends Scene
 		model1.setPosition(250, 250, 40);
 		model1.addChild(pointLight1, pointLight2);
 
-		view1 = sprite("diffuse.jpg");
+		view1 = sprite("sprite3.png", 12);
 		view1.setPosition(0.25f, 0.5f);
 		view1.setScale(0.25f, 0.25f);
+		
+		Animation animation2 = view1.getAnimation();
+		animation2.play("idle");
+		animation2.setFrameRate(12);
+		animation2.getAnimationClip("idle").setPlaybackMode(PlaybackMode.LOOP);
 		
 		layer1.addChild(model1, camera, keyLight, fillLight, backLight, terrain);
 		layer2.addChild(view1);

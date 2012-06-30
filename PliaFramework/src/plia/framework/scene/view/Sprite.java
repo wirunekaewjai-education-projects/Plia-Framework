@@ -1,6 +1,8 @@
 package plia.framework.scene.view;
 
 import android.graphics.RectF;
+import android.util.Log;
+import plia.framework.core.AnimationPlayer;
 import plia.framework.math.Vector2;
 import plia.framework.scene.View;
 import plia.framework.scene.group.animation.Animation;
@@ -15,10 +17,20 @@ public class Sprite extends View
 	{
 		
 	}
-	
-	public Sprite(int frame)
+
+	@Override
+	protected void update()
 	{
-		setAnimation(new Animation(0, frame));
+		// TODO Auto-generated method stub
+		super.update();
+		
+		if(isActive())
+		{
+			if(hasAnimation && animation != null)
+			{
+				AnimationPlayer.getInstance().enqueue(animation);
+			}
+		}
 	}
 	
 	public Texture2D getImageSrc()
@@ -29,6 +41,12 @@ public class Sprite extends View
 	public void setImageSrc(Texture2D imageSrc)
 	{
 		this.imageSrc = imageSrc;
+	}
+	
+	public void setImageSrc(Texture2D imageSrc, int frame)
+	{
+		this.imageSrc = imageSrc;
+		setAnimation(new Animation(0, frame));
 	}
 	
 	public Vector2 getScale()
@@ -49,7 +67,6 @@ public class Sprite extends View
 
 	public boolean intersect(Sprite view)
 	{
-		
 		A.set(getX(), getY(), getX() + scale.x, getY() + scale.y);
 		B.set(view.getX(), view.getY(), view.getX() + view.scale.x, view.getY() + view.scale.y);
 		

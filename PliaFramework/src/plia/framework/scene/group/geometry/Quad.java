@@ -65,12 +65,16 @@ public final class Quad
 		return instance;
 	}
 	
+	private static FloatBuffer sb;
 	private static FloatBuffer vb;
 	private static FloatBuffer uvb;
 	private static ByteBuffer ib;
 	
 	public static void createBuffer()
 	{
+		sb = ByteBuffer.allocateDirect( 32 ).order(ByteOrder.nativeOrder()).asFloatBuffer();
+		sb.position(0);
+		
 		vb = ByteBuffer.allocateDirect( 32 ).order(ByteOrder.nativeOrder()).asFloatBuffer();
 		vb.put(instance.vertices).position(0);
 		
@@ -79,6 +83,11 @@ public final class Quad
 		
 		ib = ByteBuffer.allocateDirect( 6 ).order(ByteOrder.nativeOrder());
 		ib.put(instance.indices).position(0);
+	}
+	
+	public static FloatBuffer getSpriteUVBuffer()
+	{
+		return sb;
 	}
 	
 	public static FloatBuffer getVertexBuffer()

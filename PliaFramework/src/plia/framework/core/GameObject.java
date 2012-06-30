@@ -205,6 +205,14 @@ public class GameObject
 		return GameObjectManager.createSprite(imgSrc);
 	}
 	
+	public static final Sprite sprite(String imgSrc, int frame)
+	{
+		Sprite sprite = new Sprite();
+		sprite.setImageSrc(GameObjectManager.loadTexture2D(imgSrc), frame);
+		
+		return sprite;
+	}
+	
 	public static final Button button(String imgSrc)
 	{
 		return GameObjectManager.createButton(imgSrc);
