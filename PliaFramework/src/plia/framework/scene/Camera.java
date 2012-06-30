@@ -1,5 +1,7 @@
 package plia.framework.scene;
 
+import plia.framework.core.GameObject;
+
 
 public class Camera extends Group
 {
@@ -15,6 +17,24 @@ public class Camera extends Group
 	public Camera(String name)
 	{
 		setName(name);
+	}
+	
+	@Override
+	protected void copyTo(GameObject gameObject)
+	{
+		super.copyTo(gameObject);
+		
+		Camera b = (Camera) gameObject;
+		b.range = this.range;
+		b.projectionType = this.projectionType;
+	}
+
+	@Override
+	public Camera instantiate()
+	{
+		Camera copy = new Camera();
+		this.copyTo(copy);
+		return copy;
 	}
 	
 	@Override

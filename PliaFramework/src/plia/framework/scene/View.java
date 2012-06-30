@@ -1,5 +1,6 @@
 package plia.framework.scene;
 
+import plia.framework.core.GameObject;
 import plia.framework.math.Vector2;
 
 public class View extends Node<View>
@@ -9,6 +10,23 @@ public class View extends Node<View>
 	protected View()
 	{
 		setName("View");
+	}
+	
+	@Override
+	protected void copyTo(GameObject gameObject)
+	{
+		super.copyTo(gameObject);
+		
+		View view = (View) gameObject;
+		view.position.set(this.position);
+	}
+
+	@Override
+	public View instantiate()
+	{
+		View copy = new View();
+		this.copyTo(copy);
+		return copy;
 	}
 	
 	@Override

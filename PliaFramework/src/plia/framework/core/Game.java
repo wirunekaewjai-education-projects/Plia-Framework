@@ -90,7 +90,6 @@ public abstract class Game extends Activity implements IFramework
 	{
 		// TODO Auto-generated method stub
 		super.onStop();
-		this.touchEventManager.removeAll();
 	}
 	
 	@Override
@@ -98,6 +97,7 @@ public abstract class Game extends Activity implements IFramework
 	{
 		super.onDestroy();
 		this.gameObjectManager.destroy();
+		this.touchEventManager.removeAll();
 	}
 	
 	@Override

@@ -1,5 +1,6 @@
 package plia.framework.scene;
 
+import plia.framework.core.GameObject;
 import plia.framework.scene.group.geometry.Geometry;
 import plia.framework.scene.group.shading.Material;
 
@@ -17,6 +18,24 @@ public class Model extends Group
 	public Model(String name)
 	{
 		setName(name);
+	}
+	
+	@Override
+	protected void copyTo(GameObject gameObject)
+	{
+		super.copyTo(gameObject);
+
+		Model b = (Model) gameObject;
+		b.geometry = this.geometry;
+		b.material = this.material;
+	}
+
+	@Override
+	public Model instantiate()
+	{
+		Model copy = new Model();
+		this.copyTo(copy);
+		return copy;
 	}
 	
 	public Geometry getGeometry()

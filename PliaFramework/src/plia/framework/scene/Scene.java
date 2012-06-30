@@ -253,13 +253,14 @@ public abstract class Scene extends GameObject implements IScene
 			drawModel(models.get(i));
 		}
 		
-		GLES20.glEnable(GLES20.GL_BLEND);
-		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+//		GLES20.glEnable(GLES20.GL_BLEND);
+//		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
 		for (int i = 0; i < sprites.size(); i++)
 		{
 			drawSprites(sprites.get(i));
 		}
+		
 		GLES20.glDisable(GLES20.GL_BLEND);
 
 		sprites.clear();

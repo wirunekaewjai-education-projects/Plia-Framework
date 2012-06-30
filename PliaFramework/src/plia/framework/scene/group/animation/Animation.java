@@ -35,6 +35,27 @@ public class Animation
 		animationClips.put(currentAnimationClip.getName(), currentAnimationClip);
 	}
 	
+	@Override
+	public Animation clone()
+	{
+		Animation animation = new Animation(startFrame, totalFrame);
+		
+		animation.frameRate = frameRate;
+		animation.interval = interval;
+		animation.startFrame = startFrame;
+		animation.stopFrame = stopFrame;
+		animation.totalFrame = totalFrame;
+		animation.currentFrame = currentFrame;
+		animation.playbackSpeed = playbackSpeed;
+		
+		animation.currentAnimationClip = currentAnimationClip;
+		animation.animationClips = animationClips;
+		
+		animation.playing = playing;
+		
+		return animation;
+	}
+	
 	public void update()
 	{
 		if(playing)

@@ -1,6 +1,7 @@
 package plia.framework.scene;
 
 import plia.framework.core.AnimationPlayer;
+import plia.framework.core.GameObject;
 import plia.framework.math.Matrix3;
 import plia.framework.math.Matrix4;
 import plia.framework.math.Vector3;
@@ -30,6 +31,26 @@ public class Group extends Node<Group>
 	public Group(String name)
 	{
 		super(name);
+	}
+	
+	@Override
+	protected void copyTo(GameObject gameObject)
+	{
+		super.copyTo(gameObject);
+		
+		Group group = (Group) gameObject;
+		group.localTranslation.set(this.localTranslation);
+		group.localRotation = this.localRotation.clone();
+		group.localScaling.set(this.localScaling);
+		group.axisRotation = this.axisRotation.clone();
+	}
+	
+	@Override
+	public Group instantiate()
+	{
+		Group group = new Group();
+		this.copyTo(group);
+		return group;
 	}
 	
 	public Model asModel()

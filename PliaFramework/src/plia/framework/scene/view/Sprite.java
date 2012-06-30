@@ -1,8 +1,8 @@
 package plia.framework.scene.view;
 
 import android.graphics.RectF;
-import android.util.Log;
 import plia.framework.core.AnimationPlayer;
+import plia.framework.core.GameObject;
 import plia.framework.math.Vector2;
 import plia.framework.scene.View;
 import plia.framework.scene.group.animation.Animation;
@@ -16,6 +16,24 @@ public class Sprite extends View
 	public Sprite()
 	{
 		
+	}
+	
+	@Override
+	protected void copyTo(GameObject gameObject)
+	{
+		super.copyTo(gameObject);
+		
+		Sprite view = (Sprite) gameObject;
+		view.imageSrc = this.imageSrc;
+		view.scale.set(this.scale);
+	}
+
+	@Override
+	public Sprite instantiate()
+	{
+		Sprite copy = new Sprite();
+		this.copyTo(copy);
+		return copy;
 	}
 
 	@Override
@@ -47,6 +65,17 @@ public class Sprite extends View
 	{
 		this.imageSrc = imageSrc;
 		setAnimation(new Animation(0, frame));
+	}
+	
+	public void setCenter(float x, float y)
+	{
+		setPosition(x - (scale.x / 2f), y - (scale.y / 2f));
+	}
+	
+	public Vector2 getCenter()
+	{
+		Vector2 pos = getPosition();
+		return new Vector2(pos.x + (scale.x / 2f), pos.y + (scale.y / 2f));
 	}
 	
 	public Vector2 getScale()

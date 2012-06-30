@@ -63,7 +63,13 @@ final class AmbientShader extends Shader
 			"" +
 			"void main()" +
 			"{" +
-			"	gl_FragColor = texture2D(baseTexture, uvCoord);" +
+			"	lowp vec4 final_color = texture2D(baseTexture, uvCoord);" +
+			"	if(final_color.w < 0.5)" +
+			"	{" +
+			"		discard;" +
+			"	}" +
+			"	else" +
+			"		gl_FragColor = final_color;" +
 			"}";
 
 	private static String fsWithOutTexture = 

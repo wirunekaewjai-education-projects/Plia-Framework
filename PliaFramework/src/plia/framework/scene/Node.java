@@ -22,6 +22,31 @@ class Node<T extends Node> extends GameObject
 		// TODO Auto-generated constructor stub
 		super(name);
 	}
+
+	@Override
+	protected void copyTo(GameObject gameObject)
+	{
+		super.copyTo(gameObject);
+		
+		Node node = (Node) gameObject;
+		node.animation = this.animation.clone();
+		node.hasAnimation = this.hasAnimation;
+		node.childCount = this.childCount;
+		node.children = new Node[this.childCount];
+		
+		for (int i = 0; i < childCount; i++)
+		{
+			node.children[i] = this.children[i].instantiate();
+		}
+	}
+
+	@Override
+	public Node instantiate()
+	{
+		Node copy = new Node();
+		this.copyTo(copy);
+		return copy;
+	}
 	
 	private final int indexOf(T child)
 	{

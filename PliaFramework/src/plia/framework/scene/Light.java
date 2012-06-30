@@ -1,5 +1,6 @@
 package plia.framework.scene;
 
+import plia.framework.core.GameObject;
 import plia.framework.scene.group.shading.Color3;
 
 public class Light extends Group
@@ -61,6 +62,28 @@ public class Light extends Group
 		this.color.g = green;
 		this.color.b = blue;
 		this.intensity = intensity;
+	}
+	
+	@Override
+	protected void copyTo(GameObject gameObject)
+	{
+		super.copyTo(gameObject);
+		
+		Light b = (Light) gameObject;
+		b.range = this.range;
+		b.lightType = this.lightType;
+		b.intensity = this.intensity;
+		b.color.r = this.color.r;
+		b.color.g = this.color.g;
+		b.color.b = this.color.b;
+	}
+
+	@Override
+	public Light instantiate()
+	{
+		Light copy = new Light();
+		this.copyTo(copy);
+		return copy;
 	}
 
 	public float getRange()

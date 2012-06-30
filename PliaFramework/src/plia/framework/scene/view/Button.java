@@ -1,5 +1,6 @@
 package plia.framework.scene.view;
 
+import plia.framework.core.GameObject;
 import plia.framework.core.TouchEventManager;
 import plia.framework.event.OnTouchListener;
 
@@ -10,6 +11,22 @@ public class Button extends Sprite
 	public Button()
 	{
 
+	}
+	
+	@Override
+	protected void copyTo(GameObject gameObject)
+	{
+		super.copyTo(gameObject);
+		
+		Button view = (Button) gameObject;
+	}
+
+	@Override
+	public Button instantiate()
+	{
+		Button copy = new Button();
+		this.copyTo(copy);
+		return copy;
 	}
 	
 	public OnTouchListener getOnTouchListener()

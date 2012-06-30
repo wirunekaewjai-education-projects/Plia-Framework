@@ -26,6 +26,19 @@ public class GameObject
 		this.name = name;
 	}
 	
+	protected void copyTo(GameObject gameObject)
+	{
+		gameObject.active = this.active;
+		gameObject.name = this.name;
+	}
+
+	public GameObject instantiate()
+	{
+		GameObject copy = new GameObject();
+		this.copyTo(copy);
+		return copy;
+	}
+	
 	public String getName()
 	{
 		return name;
@@ -216,6 +229,14 @@ public class GameObject
 	public static final Button button(String imgSrc)
 	{
 		return GameObjectManager.createButton(imgSrc);
+	}
+	
+	public static final Button button(String imgSrc, int frame)
+	{
+		Button sprite = new Button();
+		sprite.setImageSrc(GameObjectManager.loadTexture2D(imgSrc), frame);
+		
+		return sprite;
 	}
 	
 	//

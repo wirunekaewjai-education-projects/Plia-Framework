@@ -7,7 +7,6 @@ import plia.framework.event.OnTouchListener;
 import plia.framework.event.TouchEvent;
 import plia.framework.scene.view.Button;
 
-import android.util.Log;
 import android.view.MotionEvent;
 
 public class TouchEventManager
@@ -90,8 +89,8 @@ public class TouchEventManager
 			case MotionEvent.ACTION_UP : action = TouchEvent.ACTION_UP; break;
 		}
 		
-		locationX = event.getX();
-		locationY = event.getY();
+		locationX = event.getX() / Screen.getWidth();
+		locationY = event.getY() / Screen.getHeight();
 		
 		if(action == TouchEvent.ACTION_DOWN)
 		{
