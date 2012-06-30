@@ -1,8 +1,12 @@
 package plia.test;
 
+import plia.framework.debug.Debug;
 import plia.framework.event.OnTouchListener;
 import plia.framework.event.TouchEvent;
 import plia.framework.math.Vector3;
+import plia.framework.scene.BoundingPlane;
+import plia.framework.scene.BoundingSphere;
+import plia.framework.scene.Bounds;
 import plia.framework.scene.Camera;
 import plia.framework.scene.Layer;
 import plia.framework.scene.Light;
@@ -12,6 +16,8 @@ import plia.framework.scene.Terrain;
 import plia.framework.scene.View;
 import plia.framework.scene.group.animation.Animation;
 import plia.framework.scene.group.animation.PlaybackMode;
+import plia.framework.scene.group.shading.Color3;
+import plia.framework.scene.group.shading.Shader;
 import plia.framework.scene.view.Button;
 
 public class Scene1 extends Scene implements OnTouchListener
@@ -34,14 +40,15 @@ public class Scene1 extends Scene implements OnTouchListener
 
 		terrain = terrain("terrain/heightmap.png", "terrain/diffusemap.jpg", 60, 500);
 
-		keyLight = directionalLight(-1, -1, -1);
+		keyLight = directionalLight(-1, -1, -1, 0.2f, 1, 1);
 		backLight = directionalLight(3);
 		fillLight = directionalLight(-1, 0, -0.45f, 1.4f);
 
 		pointLight1 = pointLight(-100, 0, 30, 40, 2, 1, 0, 0);
 		pointLight2 = pointLight(100, 0, 30, 40, 2, 0, 0, 1);
 
-		camera = camera(Camera.PERSPECTIVE, 350, 350, 100, 250, 250, 0, 1000);
+		camera = camera(Camera.PERSPECTIVE, 350, 350, 100, 250, 250, 50, 1000);
+		camera.setSkyTexture(tex2D("skytex.jpg"));
 		Scene.setMainCamera(camera);
 
 		Animation animation1 = model1.getAnimation();
@@ -53,6 +60,21 @@ public class Scene1 extends Scene implements OnTouchListener
 		
 		model1.setPosition(250, 250, 40);
 		model1.addChild(pointLight1, pointLight2);
+		
+		BoundingPlane p = new BoundingPlane();
+		p.setScale(50, 50, 0);
+		p.setForward(0, 1, 0);
+		
+		BoundingPlane p2 = new BoundingPlane();
+		p2.setScale(50, 50, 0);
+		p2.setForward(0, 1, 0);
+		
+		BoundingSphere bs = new BoundingSphere(25);
+		
+		model1.setBounds(p);
+		model2.setBounds(p2);
+		
+		model3.setBounds(bs);
 		
 		model2.setPosition(300, 250, 40);
 		model3.setPosition(200, 250, 40);
@@ -89,6 +111,16 @@ public class Scene1 extends Scene implements OnTouchListener
 		backLight.setForward(-camForward.x, -camForward.y, -camForward.z);
 		
 		model1.rotate(0, 0, 1);
+		
+//		Debug.drawLine(model1.getPosition(), vec3(250, 250, 100), new Color3(0.5f, 1, 0.5f));
+		
+		Debug.drawBounds(model1.getBounds(), new Color3(0.5f, 1, 0.5f));
+		Debug.drawBounds(model2.getBounds(), new Color3(0.5f, 1, 0.5f));
+		
+		if(Bounds.intersect(model1.getBounds(), model2.getBounds()))
+		{
+			
+		}
 	}
 
 	public void onTouch(Button button, int action, float x, float y)

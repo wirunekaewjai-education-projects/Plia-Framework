@@ -44,11 +44,11 @@ public final class BoundingPlane extends Bounds
 	@Override
 	protected void onUpdateHierarchy(boolean parentHasChanged)
 	{
-		boolean hasChanged = this.hasChanged;
+		boolean hc = this.hasChanged;
 		
 		super.onUpdateHierarchy(parentHasChanged);
 		
-		if(isActive() && hasChanged)
+		if(isActive() && (hc || parentHasChanged))
 		{
 			for (int i = 0; i < p.length; i++)
 			{
@@ -93,5 +93,10 @@ public final class BoundingPlane extends Bounds
 	Vector4 getP3()
 	{
 		return p[3];
+	}
+	
+	public Vector3 getPoint(int index)
+	{
+		return new Vector3(p[index].x, p[index].y, p[index].z);
 	}
 }

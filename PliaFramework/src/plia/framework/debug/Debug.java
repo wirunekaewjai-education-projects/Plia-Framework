@@ -72,13 +72,18 @@ public final class Debug
 		GLES20.glDisableVertexAttribArray(vh);
 	}
 	
-//	public static void drawBounds(Bounds bounds, float[] mvp, float r, float g, float b)
-//	{
+	public static void drawBounds(Bounds bounds, Color3 color)
+	{
 //		if(bounds instanceof BoundingBox)
 //		{
 //			instance.drawBoundingBox((BoundingBox) bounds, mvp, r, g, b);
 //		}
-//	}
+		
+		if(bounds instanceof BoundingPlane)
+		{
+			instance.drawBoundingPlane((BoundingPlane) bounds, color);
+		}
+	}
 	
 //	private void drawBoundingBox(BoundingBox bounds, float[] mvp, float r, float g, float b)
 //	{
@@ -103,9 +108,13 @@ public final class Debug
 //		GLES20.glDisableVertexAttribArray(vh);
 //	}
 	
-	private static void drawBoundingPlane(BoundingPlane bounds)
+	private static void drawBoundingPlane(BoundingPlane bounds, Color3 color)
 	{
-		
+		Vector3 p0 = bounds.getPoint(0), p1 = bounds.getPoint(1), p2 = bounds.getPoint(2), p3 = bounds.getPoint(3);
+		drawLine(p0, p1, color);
+		drawLine(p1, p2, color);
+		drawLine(p2, p3, color);
+		drawLine(p3, p0, color);
 	}
 	
 	private static void drawBoundingSphere(BoundingSphere bounds)

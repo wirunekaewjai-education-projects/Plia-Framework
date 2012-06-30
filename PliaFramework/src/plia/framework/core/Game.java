@@ -22,7 +22,7 @@ public abstract class Game extends Activity implements IFramework
 	private TouchEventManager touchEventManager;
 	private GameTime gameTime;
 	
-	private Debug debug;
+//	private Debug debug;
 	
 	private GLSurfaceView glSurfaceView;
 	private boolean isInitialized = false;
@@ -48,7 +48,7 @@ public abstract class Game extends Activity implements IFramework
 
 		this.gameTime = GameTime.getInstance();
 		
-		this.debug = Debug.getInstance();
+//		this.debug = Debug.getInstance();
 
 		Scene.setMainCamera(new Camera("Main Camera"));
 		

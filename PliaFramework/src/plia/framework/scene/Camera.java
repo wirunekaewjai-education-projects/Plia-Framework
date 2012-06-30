@@ -1,13 +1,14 @@
 package plia.framework.scene;
 
 import plia.framework.core.GameObject;
+import plia.framework.scene.group.shading.Texture2D;
 
 
 public class Camera extends Group
 {
 	private float range;
 	private int projectionType = PERSPECTIVE;
-	
+	private Texture2D skyTexture;
 
 	public Camera()
 	{
@@ -27,6 +28,7 @@ public class Camera extends Group
 		Camera b = (Camera) gameObject;
 		b.range = this.range;
 		b.projectionType = this.projectionType;
+		b.skyTexture = skyTexture;
 	}
 
 	@Override
@@ -76,6 +78,16 @@ public class Camera extends Group
 		{
 			Scene.hasChangedProjection = true;
 		}
+	}
+	
+	public Texture2D getSkyTexture()
+	{
+		return skyTexture;
+	}
+	
+	public void setSkyTexture(Texture2D skyTexture)
+	{
+		this.skyTexture = skyTexture;
 	}
 
 	public static final int PERSPECTIVE 	= 0;

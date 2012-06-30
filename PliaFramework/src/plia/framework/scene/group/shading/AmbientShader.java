@@ -23,6 +23,7 @@ final class AmbientShader extends Shader
 		instance.programs[8] = new ShaderProgram(getAmbientSrc09());
 		instance.programs[9] = new ShaderProgram(getAmbientSrc10());
 		instance.programs[10] = new ShaderProgram(getAmbientSrc11());
+		instance.programs[11] = new ShaderProgram(getAmbientSrc12());
 	}
 	
 	private static AmbientShader instance = new AmbientShader();
@@ -55,6 +56,18 @@ final class AmbientShader extends Shader
 			"	}";
 	
 	private static String fsWithTexture = 
+			"precision mediump float;" +
+			"" +
+			"uniform sampler2D baseTexture;" +
+			"" +
+			"varying vec2 uvCoord;" +
+			"" +
+			"void main()" +
+			"{" +
+			"	gl_FragColor = texture2D(baseTexture, uvCoord);" +
+			"}";
+	
+	private static String fsWithTexture2 = 
 			"precision mediump float;" +
 			"" +
 			"uniform sampler2D baseTexture;" +
@@ -426,5 +439,25 @@ final class AmbientShader extends Shader
 				"}";
 				
 		return new String[] { vs, fs };
+	}
+	
+	private static String[] getAmbientSrc12()
+	{
+		// Sprite
+		String vs = 
+				"uniform mat4 modelViewProjectionMatrix;" +
+				"" +
+				"attribute vec4 vertex;" +
+				"attribute vec2 uv;" +
+				"" +
+				"varying vec2 uvCoord;" +
+				"" +
+				"void main()" +
+				"{" +
+				"	uvCoord = uv;" +
+				"	gl_Position = modelViewProjectionMatrix * vertex;" +
+				"}";
+
+		return new String[] { vs, fsWithTexture2 };
 	}
 }

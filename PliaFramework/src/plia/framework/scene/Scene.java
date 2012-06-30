@@ -164,6 +164,11 @@ public abstract class Scene extends GameObject implements IScene
 	private static final Matrix4 orthogonalProjection = new Matrix4();
 	private static final Matrix4 orthogonalModelView = new Matrix4();
 	private static final Matrix4 orthogonalMVP = new Matrix4();
+	
+	private static final Matrix4 skyTransform = new Matrix4();
+	private static final Matrix4 skyOrthogonalProjection = new Matrix4();
+	private static final Matrix4 skyOrthogonalModelView = new Matrix4();
+	private static final Matrix4 skyOrthogonalMVP = new Matrix4();
 
 	private static final Matrix4 tempPalette = new Matrix4();
 	
@@ -216,6 +221,10 @@ public abstract class Scene extends GameObject implements IScene
 				Matrix4.createOrtho(projectionMatrix, -ratio, ratio, -1, 1, 1, mainCamera.getRange());
 			}
 			
+//			Matrix4.createOrtho(skyOrthogonalProjection, 0, 1, 1, 0, 1, mainCamera.getRange());
+//			Matrix4.createLookAt(skyOrthogonalModelView, 0, 0, 1, 0, 0, 0, 0, 1, 0);
+//			Matrix4.multiply(skyOrthogonalMVP, skyOrthogonalProjection, skyOrthogonalModelView);
+			
 			hasChangedProjection = false;
 		}
 		if(hasChangedModelView)
@@ -242,8 +251,15 @@ public abstract class Scene extends GameObject implements IScene
 			recursiveLayer(getLayer(i));
 		}
 		
+		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+		if(mainCamera.getSkyTexture() != null)
+		{
+			drawSky();
+		}
+		
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 		GLES20.glDisable(GLES20.GL_CULL_FACE);
+
 		drawTerrains();
 		
 		GLES20.glEnable(GLES20.GL_CULL_FACE);
@@ -261,7 +277,8 @@ public abstract class Scene extends GameObject implements IScene
 			drawSprites(sprites.get(i));
 		}
 		
-		GLES20.glDisable(GLES20.GL_BLEND);
+//		GLES20.glDisable(GLES20.GL_BLEND);
+		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 
 		sprites.clear();
 		models.clear();
@@ -269,14 +286,47 @@ public abstract class Scene extends GameObject implements IScene
 		lights.clear();
 		
 
-		float end = (System.nanoTime() - start) / 1000000f;
-		Log.d("Usage Time", (1000f / end)+" ms");
-		start = System.nanoTime();
+//		float end = (System.nanoTime() - start) / 1000000f;
+//		Log.d("Usage Time", (1000f / end)+" ms");
+//		start = System.nanoTime();
+	}
+	
+	private void drawSky()
+	{
+		ShaderProgram shaderProgram = Shader.AMBIENT.getProgram(2);
+		
+		int program = shaderProgram.getProgramID();
+		
+		GLES20.glUseProgram(program);
+		
+		int vh = GLES20.glGetAttribLocation(program, "vertex");
+		int uvh = GLES20.glGetAttribLocation(program, "uv");
+		
+//		skyTransform.setTranslation(0, 0, 0.5f);
+//		Matrix4 mvp = Matrix4.multiply(skyOrthogonalMVP, skyTransform);
+		
+		float[] mvpm = new float[16];
+		orthogonalMVP.copyTo(mvpm);
+		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "modelViewProjectionMatrix"), 1, false, mvpm, 0);
+		
+		GLES20.glEnableVertexAttribArray(vh);
+		GLES20.glVertexAttribPointer(vh, 2, GLES20.GL_FLOAT, false, 0, Quad.getVertexBuffer());
+		
+		GLES20.glEnableVertexAttribArray(uvh);
+		GLES20.glVertexAttribPointer(uvh, 2, GLES20.GL_FLOAT, false, 0, Quad.getUVBuffer());
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mainCamera.getSkyTexture().getTextureBuffer());
+		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "baseTexture"), 0);
+		
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_BYTE, Quad.getIndicesBuffer());
+		
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
 	
 	private void drawSprites(Sprite view)
 	{
-		ShaderProgram shaderProgram = Shader.AMBIENT.getProgram(2);
+		ShaderProgram shaderProgram = Shader.AMBIENT.getProgram(11);
 		
 		int program = shaderProgram.getProgramID();
 
@@ -412,26 +462,41 @@ public abstract class Scene extends GameObject implements IScene
 		Matrix4.multiply(tmm, tmv, model.getAxisRotation());
 		Matrix3.createNormalMatrix(nm, tmm);
 
-		// Lights
-		ArrayList<Light> ls = new ArrayList<Light>();
-		ls.addAll(lights);
+
 
 		int prg = program.getProgramID();
 		GLES20.glUseProgram(prg);
 
-		setLightUniform(prg, ls);
+		boolean isDiffuse = (shader == Shader.DIFFUSE);
 		
-		float[] tm = new float[16];
-		projectionMatrix.copyTo(tm);
-		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "projectionMatrix"), 1, false, tm, 0);
-		
-		float[] tm1 = new float[16];
-		tmm.copyTo(tm1);
-		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "modelViewMatrix"), 1, false, tm1, 0);
-		
-		float[] tm2 = new float[9];
-		nm.copyTo(tm2);
-		GLES20.glUniformMatrix3fv(GLES20.glGetUniformLocation(prg, "normalMatrix"), 1, false, tm2, 0);
+		if(isDiffuse)
+		{
+			// Lights
+			ArrayList<Light> ls = new ArrayList<Light>();
+			ls.addAll(lights);
+			
+			setLightUniform(prg, ls);
+			
+			float[] tm = new float[16];
+			projectionMatrix.copyTo(tm);
+			GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "projectionMatrix"), 1, false, tm, 0);
+			
+			float[] tm1 = new float[16];
+			tmm.copyTo(tm1);
+			GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "modelViewMatrix"), 1, false, tm1, 0);
+			
+			float[] tm2 = new float[9];
+			nm.copyTo(tm2);
+			GLES20.glUniformMatrix3fv(GLES20.glGetUniformLocation(prg, "normalMatrix"), 1, false, tm2, 0);
+		}
+		else
+		{
+			Matrix4 mvp = Matrix4.multiply(projectionMatrix, tmm);
+			float[] tm = new float[16];
+			mvp.copyTo(tm);
+			GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "modelViewProjectionMatrix"), 1, false, tm, 0);
+		}
+
 		
 //		program.setUniform(ShaderProgram.PROJECTION_MATRIX, projectionMatrix);
 //		program.setUniform(ShaderProgram.MODELVIEW_MATRIX, tempTransformMatrix);
@@ -444,14 +509,16 @@ public abstract class Scene extends GameObject implements IScene
 		int bwh = GLES20.glGetAttribLocation(prg, "boneWeights");
 		int bih = GLES20.glGetAttribLocation(prg, "boneIndices");
 		int bch = GLES20.glGetAttribLocation(prg, "boneCount");
-		
-		
+
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mesh.getBuffer(0));
 		GLES20.glEnableVertexAttribArray(vh);
 		GLES20.glVertexAttribPointer(vh, 3, GLES20.GL_FLOAT, false, 0, 0);
 		
-		GLES20.glEnableVertexAttribArray(nh);
-		GLES20.glVertexAttribPointer(nh, 3, GLES20.GL_FLOAT, false, 0, mesh.NORMALS_OFFSET);
+		if(isDiffuse)
+		{
+			GLES20.glEnableVertexAttribArray(nh);
+			GLES20.glVertexAttribPointer(nh, 3, GLES20.GL_FLOAT, false, 0, mesh.NORMALS_OFFSET);
+		}
 		
 //		program.setAttribPointer(ShaderProgram.VERTEX_ATTRIBUTE, 3, 0, 0, mesh.getBuffer(0), VariableType.FLOAT);
 //		program.setAttribPointer(ShaderProgram.NORMAL_ATTRIBUTE, 3, 0, mesh.NORMALS_OFFSET, mesh.getBuffer(0), VariableType.FLOAT);

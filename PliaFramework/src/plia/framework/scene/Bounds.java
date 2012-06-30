@@ -11,12 +11,40 @@ public class Bounds extends Group
 		
 	}
 	
-	public static final boolean intersect(BoundingSphere a, BoundingPlane b)
+	public static final boolean intersect(Bounds a, Bounds b)
+	{
+		if(a instanceof BoundingPlane)
+		{
+			if(b instanceof BoundingPlane)
+			{
+				return intersect((BoundingPlane)a, (BoundingPlane)b);
+			}
+			else if(b instanceof BoundingSphere)
+			{
+				return intersect((BoundingPlane)a, (BoundingSphere)b);
+			}
+		}
+		else if(a instanceof BoundingSphere)
+		{
+			if(b instanceof BoundingPlane)
+			{
+				return intersect((BoundingSphere)a, (BoundingPlane)b);
+			}
+			else if(b instanceof BoundingSphere)
+			{
+				return intersect((BoundingSphere)a, (BoundingSphere)b);
+			}
+		}
+		
+		return false;
+	}
+	
+	private static final boolean intersect(BoundingSphere a, BoundingPlane b)
 	{
 		return intersect(b, a);
 	}
 	
-	public static final boolean intersect(BoundingPlane a, BoundingSphere b)
+	private static final boolean intersect(BoundingPlane a, BoundingSphere b)
 	{
 		Vector4 ap0 = a.getP0();
 		Vector4 ap1 = a.getP1();
@@ -122,7 +150,7 @@ public class Bounds extends Group
 		return false;
 	}
 	
-	public static final boolean intersect(BoundingPlane a, BoundingPlane b)
+	private static final boolean intersect(BoundingPlane a, BoundingPlane b)
 	{
 		Vector4 ap0 = a.getP0();
 		Vector4 ap1 = a.getP1();
@@ -138,7 +166,7 @@ public class Bounds extends Group
 		return false;
 	}
 
-	public static final boolean intersect(BoundingSphere a, BoundingSphere b)
+	private static final boolean intersect(BoundingSphere a, BoundingSphere b)
 	{
 		Matrix4 aw = a.getWorldMatrix();
 		Matrix4 bw = b.getWorldMatrix();

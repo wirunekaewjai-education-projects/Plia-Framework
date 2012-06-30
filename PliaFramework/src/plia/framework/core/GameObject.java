@@ -7,6 +7,7 @@ import plia.framework.scene.Camera;
 import plia.framework.scene.Group;
 import plia.framework.scene.Light;
 import plia.framework.scene.Terrain;
+import plia.framework.scene.group.shading.Texture2D;
 import plia.framework.scene.view.Button;
 import plia.framework.scene.view.Sprite;
 import android.util.Log;
@@ -237,6 +238,11 @@ public class GameObject
 		sprite.setImageSrc(GameObjectManager.loadTexture2D(imgSrc), frame);
 		
 		return sprite;
+	}
+	
+	public static final Texture2D tex2D(String path)
+	{
+		return GameObjectManager.loadTexture2D(path);
 	}
 	
 	//
