@@ -23,7 +23,7 @@ public class Scene1 extends Scene implements OnTouchListener
 {
 	private Layer<Group> layer1 = new Layer<Group>();
 	private Layer<View> layer2 = new Layer<View>();
-	private Group model1, model2, model3;
+	private Group model1, model2, model3, model4, model5, model6, model7;
 	private Terrain terrain;
 	private Camera camera;
 	
@@ -57,13 +57,17 @@ public class Scene1 extends Scene implements OnTouchListener
 
 		model2 = model1.instantiate();
 		model3 = model1.instantiate();
+		model4 = model1.instantiate();
+		model5 = model1.instantiate();
+		model6 = model1.instantiate();
+		model7 = model1.instantiate();
 		
 		model1.setPosition(250, 250, 40);
 		model1.addChild(pointLight1, pointLight2);
 		
-		BoundingPlane p = new BoundingPlane();
-		p.setScale(50, 50, 0);
-		p.setForward(0, 1, 0);
+		BoundingSphere p = new BoundingSphere(30);
+//		p.setScale(50, 50, 0);
+//		p.setForward(0, 1, 0);
 		
 		BoundingPlane p2 = new BoundingPlane();
 		p2.setScale(50, 50, 0);
@@ -79,6 +83,11 @@ public class Scene1 extends Scene implements OnTouchListener
 		
 		model2.setPosition(300, 250, 40);
 		model3.setPosition(200, 250, 40);
+		
+		model4.setPosition(350, 250, 40);
+		model5.setPosition(350, 200, 40);
+		model6.setPosition(400, 200, 40);
+		model7.setPosition(400, 250, 40);
 
 		view1 = button("sprite3.png", 12);
 		view1.setName("Human");
@@ -96,7 +105,7 @@ public class Scene1 extends Scene implements OnTouchListener
 		view2.getAnimation().stop();
 		view2.setOnTouchListener(this);
 		
-		layer1.addChild(model1, model2, model3, camera, keyLight, fillLight, backLight, terrain);
+		layer1.addChild(model1, model2, model3, model4, model5, model6, model7, camera, keyLight, fillLight, backLight, terrain);
 		layer2.addChild(view1, view2);
 
 		addLayer(layer1);
@@ -114,6 +123,9 @@ public class Scene1 extends Scene implements OnTouchListener
 		backLight.setForward(-camForward.x, -camForward.y, -camForward.z);
 		
 		model1.rotate(0, 0, 1);
+		model3.rotate(1, 0, 1);
+		model5.rotate(0, 1, 1);
+		model6.rotate(0, 1, 0);
 		
 //		Debug.drawLine(model1.getPosition(), vec3(250, 250, 100), new Color3(0.5f, 1, 0.5f));
 		
@@ -121,10 +133,10 @@ public class Scene1 extends Scene implements OnTouchListener
 		Debug.drawBounds(model2.getBounds(), new Color3(0.5f, 1, 0.5f));
 		Debug.drawBounds(model3.getBounds(), new Color3(0.5f, 1, 0.5f));
 		
-//		if(Bounds.intersect(model1.getBounds(), model2.getBounds()))
-//		{
-//			
-//		}
+		if(Bounds.intersect(model1.getBounds(), model3.getBounds()))
+		{
+//			log("Intersected");
+		}
 	}
 
 	public void onTouch(Button button, int action, float x, float y)
