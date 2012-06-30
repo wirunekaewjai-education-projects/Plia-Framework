@@ -4,7 +4,6 @@ import plia.framework.core.AnimationPlayer;
 import plia.framework.math.Matrix3;
 import plia.framework.math.Matrix4;
 import plia.framework.math.Vector3;
-import plia.framework.scene.group.animation.Animation;
 
 public class Group extends Node<Group>
 {
@@ -22,9 +21,6 @@ public class Group extends Node<Group>
 	protected boolean hasChanged = true;
 	
 	private Bounds bounds = null;
-	
-	private boolean hasAnimation = false;
-	private Animation animation;
 
 	public Group()
 	{
@@ -65,28 +61,7 @@ public class Group extends Node<Group>
 		
 		return null;
 	}
-	
-	public boolean hasAnimation()
-	{
-		return hasAnimation;
-	}
-	
-	public Animation getAnimation()
-	{
-		return animation;
-	}
-	
-	public void setAnimation(Animation animation)
-	{
-		this.animation = animation;
-		this.hasAnimation = (animation != null);
-	}
-	
-	public void setHasAnimation(boolean hasAnimation)
-	{
-		this.hasAnimation = hasAnimation;
-	}
-	
+
 	public Bounds getBounds()
 	{
 		return bounds;

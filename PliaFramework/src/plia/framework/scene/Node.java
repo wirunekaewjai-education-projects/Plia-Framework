@@ -1,12 +1,16 @@
 package plia.framework.scene;
 
 import plia.framework.core.GameObject;
+import plia.framework.scene.group.animation.Animation;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 class Node<T extends Node> extends GameObject
 {
 	protected Node[] children = new Node[32];
 	protected int childCount = 0;
+	
+	protected boolean hasAnimation = false;
+	protected Animation animation;
 	
 	protected Node()
 	{
@@ -97,5 +101,26 @@ class Node<T extends Node> extends GameObject
 	{
 		// TODO Auto-generated method stub
 		super.update();
+	}
+	
+	public boolean hasAnimation()
+	{
+		return hasAnimation;
+	}
+	
+	public Animation getAnimation()
+	{
+		return animation;
+	}
+	
+	public void setAnimation(Animation animation)
+	{
+		this.animation = animation;
+		this.hasAnimation = (animation != null);
+	}
+	
+	public void setHasAnimation(boolean hasAnimation)
+	{
+		this.hasAnimation = hasAnimation;
 	}
 }

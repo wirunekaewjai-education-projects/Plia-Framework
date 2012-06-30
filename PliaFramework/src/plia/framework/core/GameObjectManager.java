@@ -31,7 +31,7 @@ import plia.framework.scene.group.shading.Shader;
 import plia.framework.scene.group.shading.ShaderProgram;
 import plia.framework.scene.group.shading.Texture2D;
 import plia.framework.scene.view.Button;
-import plia.framework.scene.view.ImageView;
+import plia.framework.scene.view.Sprite;
 //import plia.framework.scene.obj3d.shading.Color4;
 
 public class GameObjectManager
@@ -338,16 +338,16 @@ public class GameObjectManager
 		return object3d;
 	}
 	
-	public static ImageView createImageView()
+	public static Sprite createSprite()
 	{
-		return new ImageView();
+		return new Sprite();
 	}
 	
-	public static ImageView createImageView(String imgSrcFileName)
+	public static Sprite createSprite(String imgSrcFileName)
 	{
 		Texture2D texture2d = loadTexture2D(imgSrcFileName);
 		
-		ImageView imageView = new ImageView();
+		Sprite imageView = new Sprite();
 		imageView.setImageSrc(texture2d);
 		
 		return imageView;

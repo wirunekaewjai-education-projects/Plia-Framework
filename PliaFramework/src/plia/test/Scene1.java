@@ -1,6 +1,5 @@
 package plia.test;
 
-import plia.framework.core.GameObjectManager;
 import plia.framework.math.Vector3;
 import plia.framework.scene.Camera;
 import plia.framework.scene.Layer;
@@ -10,9 +9,8 @@ import plia.framework.scene.Scene;
 import plia.framework.scene.Terrain;
 import plia.framework.scene.View;
 import plia.framework.scene.group.animation.Animation;
-import plia.framework.scene.group.animation.AnimationClip;
 import plia.framework.scene.group.animation.PlaybackMode;
-import plia.framework.scene.view.ImageView;
+import plia.framework.scene.view.Sprite;
 
 public class Scene1 extends Scene
 {
@@ -22,7 +20,7 @@ public class Scene1 extends Scene
 	private Terrain terrain;
 	private Camera camera;
 	
-	private ImageView view1;
+	private Sprite view1;
 	
 	private Light backLight, keyLight, fillLight;
 	private Light pointLight1, pointLight2;
@@ -45,18 +43,17 @@ public class Scene1 extends Scene
 		Scene.setMainCamera(camera);
 
 		Animation animation1 = model1.getAnimation();
-		AnimationClip idle1 = animation1.getAnimationClip("idle");
 		animation1.play("idle");
-		idle1.setPlaybackMode(PlaybackMode.LOOP);
-		idle1.setStart(35);
-		idle1.setEnd(50);
+		animation1.getAnimationClip("idle").set(35, 50, PlaybackMode.LOOP);
 
 		model1.setPosition(250, 250, 40);
 		model1.addChild(pointLight1, pointLight2);
 
+		view1 = sprite("diffuse.jpg");
+		view1.setPosition(0.25f, 0.5f);
+		view1.setScale(0.25f, 0.25f);
+		
 		layer1.addChild(model1, camera, keyLight, fillLight, backLight, terrain);
-
-		view1 = imageView("diffuse.jpg");
 		layer2.addChild(view1);
 
 		addLayer(layer1);

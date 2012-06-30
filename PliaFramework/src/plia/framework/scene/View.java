@@ -25,7 +25,13 @@ public class View extends Node<View>
 	
 	public void setPosition(Vector2 position)
 	{
-		this.position = position;
+		this.position.set(position);
+	}
+	
+	public void setPosition(float x, float y)
+	{
+		this.position.x = x;
+		this.position.y = y;
 	}
 	
 	public float getX()

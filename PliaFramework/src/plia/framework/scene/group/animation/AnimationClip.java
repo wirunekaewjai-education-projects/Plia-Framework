@@ -54,4 +54,11 @@ public class AnimationClip
 	{
 		this.playbackMode = playbackMode;
 	}
+	
+	public void set(int start, int end, int playbackMode)
+	{
+		this.start = start;
+		this.end = end;
+		this.playbackMode = playbackMode;
+	}
 }

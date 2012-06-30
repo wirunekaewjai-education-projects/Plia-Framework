@@ -3,7 +3,7 @@ package plia.framework.scene.view;
 import plia.framework.core.TouchEventManager;
 import plia.framework.event.OnTouchListener;
 
-public class Button extends ImageView
+public class Button extends Sprite
 {
 	private OnTouchListener onTouchListener = null;
 
