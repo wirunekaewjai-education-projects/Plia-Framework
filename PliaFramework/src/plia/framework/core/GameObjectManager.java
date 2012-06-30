@@ -14,8 +14,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-//import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
@@ -26,7 +24,6 @@ import plia.framework.scene.Terrain;
 import plia.framework.scene.group.animation.Animation;
 import plia.framework.scene.group.geometry.Plane;
 import plia.framework.scene.group.geometry.Quad;
-import plia.framework.scene.group.shading.Color4;
 import plia.framework.scene.group.shading.Shader;
 import plia.framework.scene.group.shading.ShaderProgram;
 import plia.framework.scene.group.shading.Texture2D;
@@ -131,8 +128,7 @@ public class GameObjectManager
 		} 
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.e("Error", e.getMessage());
 		}
 		
 		if(filelist != null)
