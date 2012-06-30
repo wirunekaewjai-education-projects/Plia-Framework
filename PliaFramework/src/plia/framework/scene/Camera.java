@@ -8,7 +8,7 @@ public class Camera extends Group
 {
 	private float range;
 	private int projectionType = PERSPECTIVE;
-	private Texture2D skyTexture;
+	private Sky sky;
 
 	public Camera()
 	{
@@ -28,7 +28,7 @@ public class Camera extends Group
 		Camera b = (Camera) gameObject;
 		b.range = this.range;
 		b.projectionType = this.projectionType;
-		b.skyTexture = skyTexture;
+		b.sky = sky;
 	}
 
 	@Override
@@ -80,14 +80,14 @@ public class Camera extends Group
 		}
 	}
 	
-	public Texture2D getSkyTexture()
+	public Sky getSky()
 	{
-		return skyTexture;
+		return sky;
 	}
 	
-	public void setSkyTexture(Texture2D skyTexture)
+	public void setSky(Sky sky)
 	{
-		this.skyTexture = skyTexture;
+		this.sky = sky;
 	}
 
 	public static final int PERSPECTIVE 	= 0;

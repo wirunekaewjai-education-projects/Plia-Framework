@@ -6,6 +6,8 @@ import plia.framework.math.Vector4;
 import plia.framework.scene.Camera;
 import plia.framework.scene.Group;
 import plia.framework.scene.Light;
+import plia.framework.scene.SkyBox;
+import plia.framework.scene.SkyDome;
 import plia.framework.scene.Terrain;
 import plia.framework.scene.group.shading.Texture2D;
 import plia.framework.scene.view.Button;
@@ -212,6 +214,39 @@ public class GameObject
 		camera.setRange(range);
 		
 		return camera;
+	}
+	
+	public static final SkyDome skydome(String textureSrc)
+	{
+		SkyDome dome = new SkyDome();
+		dome.setTexture(tex2D(textureSrc));
+		
+		return dome;
+	}
+	
+	public static final SkyBox skybox(String src)
+	{
+		int indexOfDot = src.lastIndexOf(".");
+		
+		String s1 = src.substring(0, indexOfDot);
+		String s2 = src.substring(indexOfDot, src.length());
+		
+		String frontSrc  = s1+"_front"+s2;
+		String backSrc 	 = s1+"_back"+s2;
+		String leftSrc 	 = s1+"_left"+s2;
+		String rightSrc  = s1+"_right"+s2;
+		String topSrc 	 = s1+"_top"+s2;
+		String bottomSrc = s1+"_bottom"+s2;
+		
+		Log.e("", frontSrc+", "+backSrc+", "+leftSrc+", "+rightSrc+", "+topSrc+", "+bottomSrc);
+		
+		
+		return new SkyBox(tex2D(frontSrc), tex2D(backSrc), tex2D(leftSrc), tex2D(rightSrc), tex2D(topSrc), tex2D(bottomSrc));
+	}
+	
+	public static final SkyBox skyBox(String frontSrc, String backSrc, String leftSrc, String rightSrc, String topSrc, String bottomSrc)
+	{
+		return new SkyBox(tex2D(frontSrc), tex2D(backSrc), tex2D(leftSrc), tex2D(rightSrc), tex2D(topSrc), tex2D(bottomSrc));
 	}
 	
 	public static final Sprite sprite(String imgSrc)

@@ -511,4 +511,6 @@ class DebugMeshSphere
 		
 		return indices2;
 	}
+	
+	
 }

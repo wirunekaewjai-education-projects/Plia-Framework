@@ -17,7 +17,6 @@ import plia.framework.scene.View;
 import plia.framework.scene.group.animation.Animation;
 import plia.framework.scene.group.animation.PlaybackMode;
 import plia.framework.scene.group.shading.Color3;
-import plia.framework.scene.group.shading.Shader;
 import plia.framework.scene.view.Button;
 
 public class Scene1 extends Scene implements OnTouchListener
@@ -38,7 +37,8 @@ public class Scene1 extends Scene implements OnTouchListener
 		long start = System.nanoTime();
 		model1 = model("buffylow.FBX");
 
-		terrain = terrain("terrain/heightmap.png", "terrain/diffusemap.jpg", 60, 500);
+		terrain = terrain("terrain/heightmap.png", "terrain/diffusemap.jpg", 60, 1200);
+		terrain.setPosition(-600, -600, 0);
 
 		keyLight = directionalLight(-1, -1, -1, 0.2f, 1, 1);
 		backLight = directionalLight(3);
@@ -47,8 +47,8 @@ public class Scene1 extends Scene implements OnTouchListener
 		pointLight1 = pointLight(-100, 0, 30, 40, 2, 1, 0, 0);
 		pointLight2 = pointLight(100, 0, 30, 40, 2, 0, 0, 1);
 
-		camera = camera(Camera.PERSPECTIVE, 350, 350, 100, 250, 250, 50, 1000);
-		camera.setSkyTexture(tex2D("skytex.jpg"));
+		camera = camera(Camera.PERSPECTIVE, 350, 350, 100, 250, 250, 50, 600);
+		camera.setSky(skydome("sky_sphere01.jpg"));
 		Scene.setMainCamera(camera);
 
 		Animation animation1 = model1.getAnimation();
@@ -69,7 +69,8 @@ public class Scene1 extends Scene implements OnTouchListener
 		p2.setScale(50, 50, 0);
 		p2.setForward(0, 1, 0);
 		
-		BoundingSphere bs = new BoundingSphere(25);
+		BoundingSphere bs = new BoundingSphere(30);
+		bs.translate(0, 5, 20);
 		
 		model1.setBounds(p);
 		model2.setBounds(p2);
@@ -107,6 +108,8 @@ public class Scene1 extends Scene implements OnTouchListener
 
 	public void onUpdate()
 	{
+		camera.rotate(0, 0, 0.25f);
+		
 		Vector3 camForward = camera.getForward();
 		backLight.setForward(-camForward.x, -camForward.y, -camForward.z);
 		
@@ -116,11 +119,12 @@ public class Scene1 extends Scene implements OnTouchListener
 		
 		Debug.drawBounds(model1.getBounds(), new Color3(0.5f, 1, 0.5f));
 		Debug.drawBounds(model2.getBounds(), new Color3(0.5f, 1, 0.5f));
+		Debug.drawBounds(model3.getBounds(), new Color3(0.5f, 1, 0.5f));
 		
-		if(Bounds.intersect(model1.getBounds(), model2.getBounds()))
-		{
-			
-		}
+//		if(Bounds.intersect(model1.getBounds(), model2.getBounds()))
+//		{
+//			
+//		}
 	}
 
 	public void onTouch(Button button, int action, float x, float y)

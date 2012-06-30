@@ -7,6 +7,7 @@ import java.nio.FloatBuffer;
 
 import android.opengl.GLES20;
 
+import plia.framework.math.Matrix4;
 import plia.framework.math.Vector3;
 import plia.framework.scene.BoundingPlane;
 import plia.framework.scene.BoundingSphere;
@@ -39,6 +40,8 @@ public final class Debug
 	
 	public static void drawLine(Vector3 start, Vector3 end, Color3 color)
 	{
+		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+		
 		ShaderProgram sprogram = Shader.AMBIENT.getProgram(0);
 		int program = sprogram.getProgramID();
 
@@ -71,7 +74,7 @@ public final class Debug
 		
 		GLES20.glDisableVertexAttribArray(vh);
 	}
-	
+
 	public static void drawBounds(Bounds bounds, Color3 color)
 	{
 //		if(bounds instanceof BoundingBox)
@@ -81,7 +84,11 @@ public final class Debug
 		
 		if(bounds instanceof BoundingPlane)
 		{
-			instance.drawBoundingPlane((BoundingPlane) bounds, color);
+			drawBoundingPlane((BoundingPlane) bounds, color);
+		}
+		else if(bounds instanceof BoundingSphere)
+		{
+			drawBoundingSphere((BoundingSphere) bounds, color);
 		}
 	}
 	
@@ -117,9 +124,48 @@ public final class Debug
 		drawLine(p3, p0, color);
 	}
 	
-	private static void drawBoundingSphere(BoundingSphere bounds)
+	private static void drawBoundingSphere(BoundingSphere bounds, Color3 color)
 	{
+		float radius = bounds.getRadius();
 		
+		Matrix4 world = bounds.getWorldMatrix();
+		Matrix4 sceneMVP = Scene.getModelViewProjectionMatrix();
+
+		float[] mvp = new float[16];
+		Matrix4.multiply(sceneMVP, world).copyTo(mvp);
+		
+		Vector3 eye = Scene.getMainCamera().getPosition();
+		Vector3 pos = world.getTranslation();
+		
+		// Draw Wire-Sphere
+		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+				
+		int wsphere_program = Shader.AMBIENT.getProgram(5).getProgramID();
+		GLES20.glUseProgram(wsphere_program);
+		
+		int wsphere_vertex_handle = GLES20.glGetAttribLocation(wsphere_program, "vertex");
+		int wsphere_color_handle = GLES20.glGetUniformLocation(wsphere_program, "color");
+		int wsphere_mvp_handle = GLES20.glGetUniformLocation(wsphere_program, "modelViewProjectionMatrix");
+		int wsphere_eye = GLES20.glGetUniformLocation(wsphere_program, "eye");
+		int wsphere_position = GLES20.glGetUniformLocation(wsphere_program, "position");
+		int wsphere_radius = GLES20.glGetUniformLocation(wsphere_program, "radius");
+		
+		GLES20.glEnableVertexAttribArray(wsphere_vertex_handle);
+		GLES20.glVertexAttribPointer(wsphere_vertex_handle, 3, GLES20.GL_FLOAT, false, 0, DebugLineSphere.getVB());
+
+		GLES20.glUniform1f(wsphere_radius, radius);
+		GLES20.glUniform3f(wsphere_eye, eye.x, eye.y, eye.z);
+		GLES20.glUniform4f(wsphere_position, pos.x, pos.y, pos.z, 1);
+		GLES20.glUniform4f(wsphere_color_handle, color.r, color.g, color.b, 1);
+		GLES20.glUniformMatrix4fv(wsphere_mvp_handle, 1, false, mvp, 0);
+
+		GLES20.glLineWidth(1.5f);
+
+		GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, 64);
+		GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 64, 64);
+		GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 128, 64);
+
+		GLES20.glDisableVertexAttribArray(wsphere_vertex_handle);
 	}
 
 	private static Debug instance = new Debug();

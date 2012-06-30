@@ -24,6 +24,7 @@ final class AmbientShader extends Shader
 		instance.programs[9] = new ShaderProgram(getAmbientSrc10());
 		instance.programs[10] = new ShaderProgram(getAmbientSrc11());
 		instance.programs[11] = new ShaderProgram(getAmbientSrc12());
+		instance.programs[12] = new ShaderProgram(getAmbientSrc13());
 	}
 	
 	private static AmbientShader instance = new AmbientShader();
@@ -83,6 +84,49 @@ final class AmbientShader extends Shader
 			"	}" +
 			"	else" +
 			"		gl_FragColor = final_color;" +
+			"}";
+	
+	private static String fsWithTexture3 = 
+			"precision mediump float;" +
+			"" +
+			"uniform sampler2D frontMap;" +
+			"uniform sampler2D backMap;" +
+			"uniform sampler2D leftMap;" +
+			"uniform sampler2D rightMap;" +
+			"uniform sampler2D topMap;" +
+			"uniform sampler2D bottomMap;" +
+			"" +
+			"varying vec2 uvCoord;" +
+			"varying float texIndex;" +
+			"" +
+			"void main()" +
+			"{" +
+			"	int indx = int(texIndex);" +
+			"	if(indx == 0)" +
+			"	{" +
+			"		gl_FragColor = texture2D(frontMap, uvCoord);" +
+			"	}" +
+			"	else if(indx == 1)" +
+			"	{" +
+			"		gl_FragColor = texture2D(backMap, uvCoord);" +
+			"	}" +
+			"	else if(indx == 2)" +
+			"	{" +
+			"		gl_FragColor = texture2D(leftMap, uvCoord);" +
+			"	}" +
+			"	else if(indx == 3)" +
+			"	{" +
+			"		gl_FragColor = texture2D(rightMap, uvCoord);" +
+			"	}" +
+			"	else if(indx == 4)" +
+			"	{" +
+			"		gl_FragColor = texture2D(topMap, uvCoord);" +
+			"	}" +
+			"	else" +
+			"	{" +
+			"		gl_FragColor = texture2D(bottomMap, uvCoord);" +
+			"	}" +
+
 			"}";
 
 	private static String fsWithOutTexture = 
@@ -459,5 +503,28 @@ final class AmbientShader extends Shader
 				"}";
 
 		return new String[] { vs, fsWithTexture2 };
+	}
+	
+	private static String[] getAmbientSrc13()
+	{
+		// SkyBox
+		String vs = 
+				"uniform mat4 modelViewProjectionMatrix;" +
+				"" +
+				"attribute vec4 vertex;" +
+				"attribute vec2 uv;" +
+				"attribute float matIndex;" +
+				"" +
+				"varying vec2 uvCoord;" +
+				"varying float texIndex;" +
+				"" +
+				"void main()" +
+				"{" +
+				"	uvCoord = uv;" +
+				"	texIndex = matIndex;" +
+				"	gl_Position = modelViewProjectionMatrix * vertex;" +
+				"}";
+
+		return new String[] { vs, fsWithTexture3 };
 	}
 }

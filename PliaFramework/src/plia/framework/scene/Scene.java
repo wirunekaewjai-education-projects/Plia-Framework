@@ -14,10 +14,12 @@ import plia.framework.math.Vector2;
 import plia.framework.math.Vector3;
 import plia.framework.math.Vector4;
 import plia.framework.scene.group.animation.Animation;
+import plia.framework.scene.group.geometry.Box;
 import plia.framework.scene.group.geometry.Geometry;
 import plia.framework.scene.group.geometry.Mesh;
 import plia.framework.scene.group.geometry.Plane;
 import plia.framework.scene.group.geometry.Quad;
+import plia.framework.scene.group.geometry.Dome;
 import plia.framework.scene.group.shading.Color3;
 import plia.framework.scene.group.shading.Shader;
 import plia.framework.scene.group.shading.ShaderProgram;
@@ -251,10 +253,12 @@ public abstract class Scene extends GameObject implements IScene
 			recursiveLayer(getLayer(i));
 		}
 		
-		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-		if(mainCamera.getSkyTexture() != null)
+//		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+		GLES20.glEnable(GLES20.GL_CULL_FACE);
+		
+		if(mainCamera.getSky() != null)
 		{
-			drawSky();
+			drawSky(mainCamera.getSky());
 		}
 		
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -278,7 +282,6 @@ public abstract class Scene extends GameObject implements IScene
 		}
 		
 //		GLES20.glDisable(GLES20.GL_BLEND);
-		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 
 		sprites.clear();
 		models.clear();
@@ -286,12 +289,20 @@ public abstract class Scene extends GameObject implements IScene
 		lights.clear();
 		
 
-//		float end = (System.nanoTime() - start) / 1000000f;
-//		Log.d("Usage Time", (1000f / end)+" ms");
-//		start = System.nanoTime();
+		float end = (System.nanoTime() - start) / 1000000f;
+		Log.d("Usage Time", (1000f / end)+" ms");
+		start = System.nanoTime();
 	}
 	
-	private void drawSky()
+	private void drawSky(Sky sky)
+	{
+		if(sky instanceof SkyDome)
+		{
+			drawSkyDome((SkyDome) sky);
+		}
+	}
+	
+	private void drawSkyDome(SkyDome skyDome)
 	{
 		ShaderProgram shaderProgram = Shader.AMBIENT.getProgram(2);
 		
@@ -302,27 +313,105 @@ public abstract class Scene extends GameObject implements IScene
 		int vh = GLES20.glGetAttribLocation(program, "vertex");
 		int uvh = GLES20.glGetAttribLocation(program, "uv");
 		
-//		skyTransform.setTranslation(0, 0, 0.5f);
-//		Matrix4 mvp = Matrix4.multiply(skyOrthogonalMVP, skyTransform);
+		float sc = mainCamera.getRange() / 2.1f;
+		
+		Vector3 pos = mainCamera.getPosition();
+		Matrix4 tm = new Matrix4();
+		tm.setTranslation(pos.x, pos.y, 0);
+		tm.m11 = sc;
+		tm.m22 = sc;
+		tm.m33 = sc;
 		
 		float[] mvpm = new float[16];
-		orthogonalMVP.copyTo(mvpm);
+		Matrix4.multiply(modelViewProjectionMatrix, tm).copyTo(mvpm);
 		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "modelViewProjectionMatrix"), 1, false, mvpm, 0);
 		
 		GLES20.glEnableVertexAttribArray(vh);
-		GLES20.glVertexAttribPointer(vh, 2, GLES20.GL_FLOAT, false, 0, Quad.getVertexBuffer());
+		GLES20.glVertexAttribPointer(vh, 3, GLES20.GL_FLOAT, false, 0, Dome.getVB());
 		
 		GLES20.glEnableVertexAttribArray(uvh);
-		GLES20.glVertexAttribPointer(uvh, 2, GLES20.GL_FLOAT, false, 0, Quad.getUVBuffer());
+		GLES20.glVertexAttribPointer(uvh, 2, GLES20.GL_FLOAT, false, 0, Dome.getUVB());
 		
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mainCamera.getSkyTexture().getTextureBuffer());
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, skyDome.getTexture().getTextureBuffer());
 		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "baseTexture"), 0);
 		
-		GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_BYTE, Quad.getIndicesBuffer());
-		
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, Dome.getIB().capacity(), GLES20.GL_UNSIGNED_INT, Dome.getIB());
+
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+		
+		GLES20.glDisableVertexAttribArray(vh);
+		GLES20.glDisableVertexAttribArray(uvh);
 	}
+	
+//	private void drawSky()
+//	{
+//		ShaderProgram shaderProgram = Shader.AMBIENT.getProgram(12);
+//		
+//		int program = shaderProgram.getProgramID();
+//		
+//		GLES20.glUseProgram(program);
+//		
+//		int vh = GLES20.glGetAttribLocation(program, "vertex");
+//		int uvh = GLES20.glGetAttribLocation(program, "uv");
+//		int mh = GLES20.glGetAttribLocation(program, "matIndex");
+//		
+//		float sc = mainCamera.getRange() / 2.1f;
+//		
+//		Vector3 pos = mainCamera.getPosition();
+//		Matrix4 tm = new Matrix4();
+//		tm.setTranslation(pos.x, pos.y, 0);
+//		tm.m11 = sc;
+//		tm.m22 = sc;
+//		tm.m33 = sc;
+//		
+//		float[] mvpm = new float[16];
+//		Matrix4.multiply(modelViewProjectionMatrix, tm).copyTo(mvpm);
+//		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "modelViewProjectionMatrix"), 1, false, mvpm, 0);
+//		
+//		GLES20.glEnableVertexAttribArray(vh);
+//		GLES20.glVertexAttribPointer(vh, 3, GLES20.GL_FLOAT, false, 0, Box.getVB());
+//		
+//		GLES20.glEnableVertexAttribArray(uvh);
+//		GLES20.glVertexAttribPointer(uvh, 2, GLES20.GL_FLOAT, false, 0, Box.getUVB());
+//		
+//		GLES20.glEnableVertexAttribArray(mh);
+//		GLES20.glVertexAttribPointer(mh, 1, GLES20.GL_FLOAT, false, 0, Box.getMB());
+//		
+//		SkyBox box = mainCamera.getSkyBox();
+//		
+//		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+//		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, box.getFront().getTextureBuffer());
+//		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "frontMap"), 0);
+//		
+//		GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+//		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, box.getBack().getTextureBuffer());
+//		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "backMap"), 1);
+//		
+//		GLES20.glActiveTexture(GLES20.GL_TEXTURE2);
+//		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, box.getLeft().getTextureBuffer());
+//		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "leftMap"), 2);
+//
+//		GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
+//		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, box.getRight().getTextureBuffer());
+//		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "rightMap"), 3);
+//
+//		GLES20.glActiveTexture(GLES20.GL_TEXTURE4);
+//		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, box.getTop().getTextureBuffer());
+//		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "topMap"), 4);
+//
+//		GLES20.glActiveTexture(GLES20.GL_TEXTURE5);
+//		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, box.getBottom().getTextureBuffer());
+//		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "bottomMap"), 5);
+//
+//		GLES20.glDrawElements(GLES20.GL_TRIANGLES, Box.getIB().capacity(), GLES20.GL_UNSIGNED_INT, Box.getIB());
+//
+//		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+//		
+//		GLES20.glDisableVertexAttribArray(vh);
+//		GLES20.glDisableVertexAttribArray(uvh);
+//		GLES20.glDisableVertexAttribArray(mh);
+//	}
 	
 	private void drawSprites(Sprite view)
 	{
@@ -390,6 +479,8 @@ public abstract class Scene extends GameObject implements IScene
 		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "baseTexture"), 0);
 		
 		GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_BYTE, Quad.getIndicesBuffer());
+		
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
 	
 	private void drawModel(Model model)
@@ -580,15 +671,19 @@ public abstract class Scene extends GameObject implements IScene
 		GLES20.glDisableVertexAttribArray(bwh);
 		GLES20.glDisableVertexAttribArray(bih);
 		
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+		
 //		program.drawTriangleElements(mesh.getBuffer(1), mesh.INDICES_COUNT);
 	}
 	
 	private void drawTerrains()
 	{
-		
-		for (int i = 0; i < terrains.size(); i++)
+		if(terrains.size() > 0)
 		{
-			drawTerrain(terrains.get(i));
+			for (int i = 0; i < terrains.size(); i++)
+			{
+				drawTerrain(terrains.get(i));
+			}
 		}
 	}
 	

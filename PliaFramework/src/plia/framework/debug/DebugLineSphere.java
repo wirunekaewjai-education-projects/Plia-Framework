@@ -1,5 +1,9 @@
 package plia.framework.debug;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+
 class DebugLineSphere
 {
 	private float[] vertices = new float[576];
@@ -24,6 +28,9 @@ class DebugLineSphere
 			vertices[(i * 3) + 384] = ca;
 			vertices[(i * 3) + 385] = sa;
 		}
+		
+		vb = ByteBuffer.allocateDirect(vertices.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+		vb.put(vertices).position(0);
 	}
 	
 	public float[] getVertices()
@@ -45,5 +52,11 @@ class DebugLineSphere
 	static DebugLineSphere getInstance()
 	{
 		return instance;
+	}
+	
+	private static FloatBuffer vb;
+	static FloatBuffer getVB()
+	{
+		return vb;
 	}
 }
