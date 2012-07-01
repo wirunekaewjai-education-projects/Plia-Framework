@@ -1,8 +1,10 @@
 package plia.framework.scene;
 
+import plia.framework.debug.Debug;
 import plia.framework.math.Matrix4;
 import plia.framework.math.Vector3;
 import plia.framework.math.Vector4;
+import plia.framework.scene.group.shading.Color3;
 
 public class Bounds extends Group
 {
@@ -83,9 +85,9 @@ public class Bounds extends Group
 		float CAxBXCxD = (C * AxBxCxD) / AABBCC;
 		
 		//Intersected circle center
-		float xc = x0 - AAxBXCxD;
-		float yc = y0 - BAxBXCxD;
-		float zc = z0 - CAxBXCxD;
+		float xc = AAxBXCxD - x0;
+		float yc = BAxBXCxD - y0;
+		float zc = CAxBXCxD - z0;
 		
 		float d = (float) (Math.abs(AxBxCxD) / Math.sqrt(AABBCC));
 		
@@ -97,9 +99,14 @@ public class Bounds extends Group
 			// Circle Center inside Plane
 			circleCenter.set(xc, yc, zc);
 			boolean ccip = pointInPlane(circleCenter, p0, p1, p2, p3);
-			
+
 			if(ccip)
 			{
+				Color3 color = new Color3(1, 0, 0);
+				Debug.drawLine(circleCenter, p0, color);
+				Debug.drawLine(circleCenter, p1, color);
+				Debug.drawLine(circleCenter, p2, color);
+				Debug.drawLine(circleCenter, p3, color);
 				return true;
 			}
 			
@@ -142,6 +149,11 @@ public class Bounds extends Group
 				
 				if(pointInPlane(point, p0, p1, p2, p3))
 				{
+					Color3 color = new Color3(1, 1, 0);
+					Debug.drawLine(point, p0, color);
+					Debug.drawLine(point, p1, color);
+					Debug.drawLine(point, p2, color);
+					Debug.drawLine(point, p3, color);
 					return true;
 				}
 			}

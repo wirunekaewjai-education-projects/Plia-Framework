@@ -246,7 +246,8 @@ final class AmbientShader extends Shader
 	{
 		// Wired Sphere (3-Axis Circle)
 		String vs = 
-				"uniform mat4 modelViewProjectionMatrix;" +
+				"uniform mat4 projectionMatrix;" +
+				"uniform mat4 modelViewMatrix;" +
 				"uniform vec3 eye;" +
 				"uniform vec4 position;" +
 				"uniform float radius;" +
@@ -257,11 +258,11 @@ final class AmbientShader extends Shader
 				"" +
 				"void main()" +
 				"{" +
+				"	mat3 rot = mat3(modelViewMatrix);" +
 				"	vec3 vr = (vertex * radius).xyz;" +
-				"	vec4 V = vec4(vr, 1.0);" +
-				"	vec3 vp = vr + position.xyz;" +
-				"	vec3 N = normalize(vr);" +
-				"	vec3 E = normalize(eye - vp);" +
+				"	vec3 rvr = rot * vr;" +
+				"	vec3 N = normalize(rvr);" +
+				"	vec3 E = normalize(eye - position.xyz);" +
 				"	float d = dot(N, E);" +
 				"" +
 				"	if(d < 0.0)" +
@@ -271,7 +272,8 @@ final class AmbientShader extends Shader
 				"	else" +
 				"		intensity = 1.0;" +
 				"" +
-				"	gl_Position = modelViewProjectionMatrix * V;" +
+				"	vec4 V = modelViewMatrix * vec4(vr, 1.0);" +
+				"	gl_Position = projectionMatrix * V;" +
 				"}";
 		
 		String fs = 
@@ -293,7 +295,8 @@ final class AmbientShader extends Shader
 	{
 		// Wired Sphere (Edge)
 		String vs = 
-				"uniform mat4 modelViewProjectionMatrix;" +
+				"uniform mat4 projectionMatrix;" +
+				"uniform mat4 modelViewMatrix;" +
 				"uniform vec3 eye;" +
 				"uniform vec4 position;" +
 				"uniform float radius;" +
@@ -305,12 +308,11 @@ final class AmbientShader extends Shader
 				"void main()" +
 				"{" +
 				"	vec3 vr = (vertex * radius).xyz;" +
-				"	vec4 V = vec4(vr, 1.0);" +
-				"	vec3 vp = vr + position.xyz;" +
 				"	vec3 N = normalize(vr);" +
-				"	vec3 E = normalize(eye - vp);" +
+				"	vec3 E = normalize(eye - position.xyz);" +
 				"	d = dot(N, E);" +
-				"	gl_Position = modelViewProjectionMatrix * V;" +
+				"	vec4 V = modelViewMatrix * vec4(vr + position.xyz, 1.0);" +
+				"	gl_Position = projectionMatrix * V;" +
 				"}";
 		
 		String fs = 
@@ -321,12 +323,12 @@ final class AmbientShader extends Shader
 				"" +
 				"void main()" +
 				"{" +
-				"	if(d < 0.125 && d > 0.0)" +
+				"	if(d < 0.375 && d > 0.0)" +
 				"	{" +
 				"		gl_FragColor = color;" +
 				"	}" +
 				"	else" +
-				"		gl_FragColor = vec4(0.0);" +
+				"		discard;" +
 				"}";
 		
 		return new String[] { vs, fs };

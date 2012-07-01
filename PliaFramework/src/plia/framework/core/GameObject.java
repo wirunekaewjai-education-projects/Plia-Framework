@@ -262,6 +262,11 @@ public class GameObject
 		return sprite;
 	}
 	
+	public static final Button button()
+	{
+		return new Button();
+	}
+	
 	public static final Button button(String imgSrc)
 	{
 		return GameObjectManager.createButton(imgSrc);

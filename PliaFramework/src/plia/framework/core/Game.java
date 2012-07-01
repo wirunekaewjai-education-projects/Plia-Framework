@@ -13,6 +13,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 
 public abstract class Game extends Activity implements IFramework
@@ -105,6 +106,14 @@ public abstract class Game extends Activity implements IFramework
 	{
 		this.touchEventManager.onTouchEvent(event);
 		return true;
+	}
+	
+	@Override
+	public void onBackPressed()
+	{
+		// TODO Auto-generated method stub
+		super.onBackPressed();
+		Log.e("State", "Back");
 	}
 	
 	private class GLRenderer implements Renderer

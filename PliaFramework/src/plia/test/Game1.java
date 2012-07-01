@@ -13,6 +13,6 @@ public class Game1 extends Game
 		getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
-		Game.runWithScene(new Scene1());
+		Game.runWithScene(new Scene2());
 	}
 }

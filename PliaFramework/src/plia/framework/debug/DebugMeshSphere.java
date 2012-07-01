@@ -1,5 +1,10 @@
 package plia.framework.debug;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
 class DebugMeshSphere
 {
 	private float[] vertices;
@@ -15,6 +20,12 @@ class DebugMeshSphere
 		indices = new int[indices01.length + indices02.length];
 		System.arraycopy(indices01, 0, indices, 0, indices01.length);
 		System.arraycopy(indices02, 0, indices, indices01.length, indices02.length);
+		
+		vb = ByteBuffer.allocateDirect(vertices.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+		vb.put(vertices).position(0);
+		
+		ib = ByteBuffer.allocateDirect(indices.length * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
+		ib.put(indices).position(0);
 	}
 	
 	public float[] getVertices()
@@ -36,6 +47,18 @@ class DebugMeshSphere
 	static DebugMeshSphere getInstance()
 	{
 		return instance;
+	}
+	
+	private static FloatBuffer vb;
+	private static IntBuffer ib;
+	static FloatBuffer getVB()
+	{
+		return vb;
+	}
+
+	static IntBuffer getIB()
+	{
+		return ib;
 	}
 	
 	
@@ -511,6 +534,6 @@ class DebugMeshSphere
 		
 		return indices2;
 	}
-	
-	
+
+
 }

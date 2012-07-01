@@ -345,8 +345,15 @@ public class Group extends Node<Group>
 	
 	public void setLookAt(Vector3 target)
 	{
-		this.localRotation.setForward(Vector3.subtract(target, localTranslation));
+		Vector3 forward = Vector3.subtract(target, localTranslation);
+
 		this.hasChanged = true;
+		
+		forward = forward.getNormalized();
+
+		this.localRotation.m21 = forward.x;
+		this.localRotation.m22 = forward.y;
+		this.localRotation.m23 = forward.z;
 	}
 	
 	public void setLookAt(Group target)

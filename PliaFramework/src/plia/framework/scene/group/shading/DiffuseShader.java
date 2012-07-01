@@ -25,9 +25,13 @@ final class DiffuseShader extends Shader
 	}
 	
 	private static final String matrixUniform = 
-			"uniform mat4 modelViewMatrix;" +
-			"uniform mat4 projectionMatrix;" +
+			"uniform mat4 modelViewProjectionMatrix;" +
+			"uniform mat4 worldMatrix;" +
 			"uniform mat3 normalMatrix;";
+	
+	private static final String terrainMatrixUniform = 
+			"uniform mat4 modelViewProjectionMatrix;" +
+			"uniform mat4 worldMatrix;";
 	
 	private static final String lightAttribute = 
 			"const int MAX_LIGHTS = 6;" +
@@ -79,16 +83,16 @@ final class DiffuseShader extends Shader
 			"	}";
 	
 	private static String initialVN_WithoutSkinning = 
-			"vec4 V = modelViewMatrix * vertex;" +
+			"vec4 V = worldMatrix * vertex;" +
 			"vec3 N = normalMatrix * normal;";
 
 	private static String initialVN_WithSkinning = 
-			"vec4 V = modelViewMatrix * skinnedPosition;" +
+			"vec4 V = worldMatrix * skinnedPosition;" +
 			"vec3 N = normalMatrix * skinnedNormal;";
 	
 	private static String initalVN_Terrain = 
-			"vec4 V = modelViewMatrix * position;" +
-			"vec3 N = normalMatrix * normal;";
+			"vec4 V = worldMatrix * position;" +
+			"vec3 N = normal;";
 	
 	private static String lightLoop = 
 			"	int lCount = int(lightCount);" +
@@ -171,7 +175,7 @@ final class DiffuseShader extends Shader
 					initialVN_WithoutSkinning +
 					lightLoop +
 				"" +
-				"	gl_Position = projectionMatrix * V;" +
+				"	gl_Position = modelViewProjectionMatrix * V;" +
 				"}";
 
 		return new String[] {vs, fsWithOutTexture};
@@ -194,7 +198,7 @@ final class DiffuseShader extends Shader
 					initialVN_WithSkinning +
 					lightLoop +
 				"" +
-				"	gl_Position = projectionMatrix * V;" +
+				"	gl_Position = modelViewProjectionMatrix * V;" +
 				"}";
 
 		return new String[] {vs, fsWithOutTexture};
@@ -216,7 +220,7 @@ final class DiffuseShader extends Shader
 					initialVN_WithoutSkinning +
 					lightLoop +
 					initialUVCoordVarying +
-				"	gl_Position = projectionMatrix * V;" +
+				"	gl_Position = modelViewProjectionMatrix * V;" +
 				"}";
 
 		return new String[] {vs, fsWithTexture};
@@ -240,7 +244,7 @@ final class DiffuseShader extends Shader
 					initialVN_WithSkinning +
 					lightLoop +
 					initialUVCoordVarying +
-				"	gl_Position = projectionMatrix * V;" +
+				"	gl_Position = modelViewProjectionMatrix * V;" +
 				"}";
 
 		return new String[] {vs, fsWithTexture};
@@ -250,7 +254,7 @@ final class DiffuseShader extends Shader
 	{
 		// Terrain With Texture
 		String vs = 
-				matrixUniform + 
+				terrainMatrixUniform + 
 				lightAttribute + 
 				heightMap +
 				normalMap +
@@ -278,7 +282,7 @@ final class DiffuseShader extends Shader
 					initalVN_Terrain +
 					lightLoop +
 					initialUVCoordVarying +
-				"	gl_Position = projectionMatrix * V;" +
+				"	gl_Position = modelViewProjectionMatrix * V;" +
 				"}";
 		
 		return new String[] { vs, fsWithTexture };

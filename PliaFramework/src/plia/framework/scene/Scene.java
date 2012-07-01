@@ -166,11 +166,6 @@ public abstract class Scene extends GameObject implements IScene
 	private static final Matrix4 orthogonalProjection = new Matrix4();
 	private static final Matrix4 orthogonalModelView = new Matrix4();
 	private static final Matrix4 orthogonalMVP = new Matrix4();
-	
-	private static final Matrix4 skyTransform = new Matrix4();
-	private static final Matrix4 skyOrthogonalProjection = new Matrix4();
-	private static final Matrix4 skyOrthogonalModelView = new Matrix4();
-	private static final Matrix4 skyOrthogonalMVP = new Matrix4();
 
 	private static final Matrix4 tempPalette = new Matrix4();
 	
@@ -222,11 +217,7 @@ public abstract class Scene extends GameObject implements IScene
 			{
 				Matrix4.createOrtho(projectionMatrix, -ratio, ratio, -1, 1, 1, mainCamera.getRange());
 			}
-			
-//			Matrix4.createOrtho(skyOrthogonalProjection, 0, 1, 1, 0, 1, mainCamera.getRange());
-//			Matrix4.createLookAt(skyOrthogonalModelView, 0, 0, 1, 0, 0, 0, 0, 1, 0);
-//			Matrix4.multiply(skyOrthogonalMVP, skyOrthogonalProjection, skyOrthogonalModelView);
-			
+
 			hasChangedProjection = false;
 		}
 		if(hasChangedModelView)
@@ -253,21 +244,21 @@ public abstract class Scene extends GameObject implements IScene
 			recursiveLayer(getLayer(i));
 		}
 		
-//		GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-		GLES20.glEnable(GLES20.GL_CULL_FACE);
-		
+		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+//		GLES20.glEnable(GLES20.GL_CULL_FACE);
+//		GLES20.glCullFace(GLES20.GL_BACK);
 		if(mainCamera.getSky() != null)
 		{
 			drawSky(mainCamera.getSky());
 		}
 		
-		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-		GLES20.glDisable(GLES20.GL_CULL_FACE);
+		
+//		GLES20.glDisable(GLES20.GL_CULL_FACE);
 
+//		GLES20.glCullFace(GLES20.GL_FRONT);
 		drawTerrains();
-		
-		GLES20.glEnable(GLES20.GL_CULL_FACE);
-		
+
+//		GLES20.glCullFace(GLES20.GL_BACK);
 		for (int i = 0; i < models.size(); i++)
 		{
 			drawModel(models.get(i));
@@ -415,72 +406,77 @@ public abstract class Scene extends GameObject implements IScene
 	
 	private void drawSprites(Sprite view)
 	{
-		ShaderProgram shaderProgram = Shader.AMBIENT.getProgram(11);
+		Texture2D tex = view.getImageSrc();
 		
-		int program = shaderProgram.getProgramID();
-
-		Vector2 position = view.getPosition();
-		Vector2 scale = view.getScale();
-		Matrix4 transformM = new Matrix4();
-		transformM.setTranslation(position.x, position.y, 0);
-		transformM.m11 = scale.x;
-		transformM.m22 = scale.y;
-
-		Matrix4 mvp = Matrix4.multiply(orthogonalMVP, transformM);
-		
-		GLES20.glUseProgram(program);
-		
-		int vh = GLES20.glGetAttribLocation(program, "vertex");
-		int uvh = GLES20.glGetAttribLocation(program, "uv");
-		
-		float[] mvpm = new float[16];
-		mvp.copyTo(mvpm);
-		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "modelViewProjectionMatrix"), 1, false, mvpm, 0);
-		
-		GLES20.glEnableVertexAttribArray(vh);
-		GLES20.glVertexAttribPointer(vh, 2, GLES20.GL_FLOAT, false, 0, Quad.getVertexBuffer());
-
-		if(view.hasAnimation())
+		if(tex != null && view.isActive())
 		{
-			float[] srcRect = new float[8];
-			float frame = view.getAnimation().getCurrentFrame();
-			float width = 1f / view.getAnimation().getTotalFrame();
+			ShaderProgram shaderProgram = Shader.AMBIENT.getProgram(11);
 			
-			float x = frame * width;
-			float xw = x + width;
-
-			srcRect[0] = x;
-			srcRect[1] = 0;
+			int program = shaderProgram.getProgramID();
+	
+			Vector2 position = view.getPosition();
+			Vector2 scale = view.getScale();
+			Matrix4 transformM = new Matrix4();
+			transformM.setTranslation(position.x, position.y, 0);
+			transformM.m11 = scale.x;
+			transformM.m22 = scale.y;
+	
+			Matrix4 mvp = Matrix4.multiply(orthogonalMVP, transformM);
 			
-			srcRect[2] = x;
-			srcRect[3] = 1;
+			GLES20.glUseProgram(program);
 			
-			srcRect[4] = xw;
-			srcRect[5] = 1;
+			int vh = GLES20.glGetAttribLocation(program, "vertex");
+			int uvh = GLES20.glGetAttribLocation(program, "uv");
 			
-			srcRect[6] = xw;
-			srcRect[7] = 0;
+			float[] mvpm = new float[16];
+			mvp.copyTo(mvpm);
+			GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "modelViewProjectionMatrix"), 1, false, mvpm, 0);
 			
-			FloatBuffer sb = Quad.getSpriteUVBuffer();
-			sb.clear();
-			sb.put(srcRect).position(0);
+			GLES20.glEnableVertexAttribArray(vh);
+			GLES20.glVertexAttribPointer(vh, 2, GLES20.GL_FLOAT, false, 0, Quad.getVertexBuffer());
+	
+			if(view.hasAnimation())
+			{
+				float[] srcRect = new float[8];
+				float frame = view.getAnimation().getCurrentFrame();
+				float width = 1f / view.getAnimation().getTotalFrame();
+				
+				float x = frame * width;
+				float xw = x + width;
+	
+				srcRect[0] = x;
+				srcRect[1] = 0;
+				
+				srcRect[2] = x;
+				srcRect[3] = 1;
+				
+				srcRect[4] = xw;
+				srcRect[5] = 1;
+				
+				srcRect[6] = xw;
+				srcRect[7] = 0;
+				
+				FloatBuffer sb = Quad.getSpriteUVBuffer();
+				sb.clear();
+				sb.put(srcRect).position(0);
+				
+				GLES20.glEnableVertexAttribArray(uvh);
+				GLES20.glVertexAttribPointer(uvh, 2, GLES20.GL_FLOAT, false, 0, sb);
+			}
+			else
+			{
+				GLES20.glEnableVertexAttribArray(uvh);
+				GLES20.glVertexAttribPointer(uvh, 2, GLES20.GL_FLOAT, false, 0, Quad.getUVBuffer());
+			}
+	
+			GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex.getTextureBuffer());
+			GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "baseTexture"), 0);
 			
-			GLES20.glEnableVertexAttribArray(uvh);
-			GLES20.glVertexAttribPointer(uvh, 2, GLES20.GL_FLOAT, false, 0, sb);
+			GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_BYTE, Quad.getIndicesBuffer());
+			
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 		}
-		else
-		{
-			GLES20.glEnableVertexAttribArray(uvh);
-			GLES20.glVertexAttribPointer(uvh, 2, GLES20.GL_FLOAT, false, 0, Quad.getUVBuffer());
-		}
-
-		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, view.getImageSrc().getTextureBuffer());
-		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "baseTexture"), 0);
-		
-		GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_BYTE, Quad.getIndicesBuffer());
-		
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
 	
 	private void drawModel(Model model)
@@ -532,25 +528,23 @@ public abstract class Scene extends GameObject implements IScene
 			matrixPalette = matrixPaletteAll[frame];
 		}
 		
-		Matrix4 tmv = new Matrix4();
+		Matrix4 tmm = new Matrix4();
+		Matrix3 nm = new Matrix3();
 
 		if(geometryType == Geometry.MESH && hasAnimation)
 		{
-			Matrix4 tmm = new Matrix4();
+			Matrix4 tmv = new Matrix4();
 			
 			tempPalette.set(matrixPalette);
-			Matrix4.multiply(tmm, model.getWorldMatrix(), tempPalette);
-			Matrix4.multiply(tmv, modelViewMatrix, tmm);
+			Matrix4.multiply(tmv, model.getWorldMatrix(), tempPalette);
+			Matrix4.multiply(tmm, tmv, model.getAxisRotation());
+			
 		}
 		else
 		{
-			Matrix4.multiply(tmv, modelViewMatrix, model.getWorldMatrix());
+			Matrix4.multiply(tmm, model.getWorldMatrix(), model.getAxisRotation());
 		}
-		
-		Matrix4 tmm = new Matrix4();
-		Matrix3 nm = new Matrix3();
-		
-		Matrix4.multiply(tmm, tmv, model.getAxisRotation());
+
 		Matrix3.createNormalMatrix(nm, tmm);
 
 
@@ -568,13 +562,17 @@ public abstract class Scene extends GameObject implements IScene
 			
 			setLightUniform(prg, ls);
 			
-			float[] tm = new float[16];
-			projectionMatrix.copyTo(tm);
-			GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "projectionMatrix"), 1, false, tm, 0);
+//			float[] tm = new float[16];
+//			projectionMatrix.copyTo(tm);
+//			GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "projectionMatrix"), 1, false, tm, 0);
+//			
+//			float[] tm1 = new float[16];
+//			modelViewMatrix.copyTo(tm1);
+//			GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "modelViewMatrix"), 1, false, tm1, 0);
 			
 			float[] tm1 = new float[16];
-			tmm.copyTo(tm1);
-			GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "modelViewMatrix"), 1, false, tm1, 0);
+			modelViewProjectionMatrix.copyTo(tm1);
+			GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "modelViewProjectionMatrix"), 1, false, tm1, 0);
 			
 			float[] tm2 = new float[9];
 			nm.copyTo(tm2);
@@ -582,11 +580,19 @@ public abstract class Scene extends GameObject implements IScene
 		}
 		else
 		{
-			Matrix4 mvp = Matrix4.multiply(projectionMatrix, tmm);
-			float[] tm = new float[16];
-			mvp.copyTo(tm);
-			GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "modelViewProjectionMatrix"), 1, false, tm, 0);
+//			Matrix4 mvp = Matrix4.multiply(projectionMatrix, tmm);
+//			float[] tm = new float[16];
+//			mvp.copyTo(tm);
+//			GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "modelViewProjectionMatrix"), 1, false, tm, 0);
+			
+			float[] tm1 = new float[16];
+			modelViewProjectionMatrix.copyTo(tm1);
+			GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "modelViewProjectionMatrix"), 1, false, tm1, 0);
 		}
+		
+		float[] tm3 = new float[16];
+		tmm.copyTo(tm3);
+		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "worldMatrix"), 1, false, tm3, 0);
 
 		
 //		program.setUniform(ShaderProgram.PROJECTION_MATRIX, projectionMatrix);
@@ -689,12 +695,8 @@ public abstract class Scene extends GameObject implements IScene
 	
 	private void drawTerrain(Terrain terrain)
 	{
-//		tempTransformMatrix.setIdentity();
-//		tempTransformMatrix.setTranslation(terrain.localTranslation);
-		
-		Matrix4 tmm1 = new Matrix4();
-		tmm1.setTranslation(terrain.getWorldMatrix().getTranslation());
-		Matrix4 tmm = Matrix4.multiply(modelViewMatrix, tmm1);
+		Matrix4 tmm = new Matrix4();
+		tmm.setTranslation(terrain.getWorldMatrix().getTranslation());
 		
 		Matrix3 nm = new Matrix3();
 		Matrix3.createNormalMatrix(nm, tmm);
@@ -702,7 +704,6 @@ public abstract class Scene extends GameObject implements IScene
 		// Lights
 		ArrayList<Light> ls = new ArrayList<Light>();
 		ls.addAll(lights);
-		
 		
 		ShaderProgram shaderProgram = Shader.DIFFUSE.getProgram(5);
 		
@@ -712,23 +713,25 @@ public abstract class Scene extends GameObject implements IScene
 		
 		setLightUniform(program, ls);
 		
-		float[] tm = new float[16];
-		projectionMatrix.copyTo(tm);
-		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "projectionMatrix"), 1, false, tm, 0);
-		
+//		float[] tm = new float[16];
+//		projectionMatrix.copyTo(tm);
+//		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "projectionMatrix"), 1, false, tm, 0);
+//		
+//		float[] tm1 = new float[16];
+//		modelViewMatrix.copyTo(tm1);
+//		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "modelViewMatrix"), 1, false, tm1, 0);
+
 		float[] tm1 = new float[16];
-		tmm.copyTo(tm1);
-		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "modelViewMatrix"), 1, false, tm1, 0);
-		
-//		Log.e("MV", projectionMatrix.toString());
+		modelViewProjectionMatrix.copyTo(tm1);
+		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "modelViewProjectionMatrix"), 1, false, tm1, 0);
 		
 		float[] tm2 = new float[9];
 		nm.copyTo(tm2);
 		GLES20.glUniformMatrix3fv(GLES20.glGetUniformLocation(program, "normalMatrix"), 1, false, tm2, 0);
 		
-//		float[] tm3 = new float[16];
-//		modelViewProjectionMatrix.copyTo(tm3);
-//		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "modelViewProjectionMatrix"), 1, false, tm3, 0);
+		float[] tm3 = new float[16];
+		tmm.copyTo(tm3);
+		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "worldMatrix"), 1, false, tm3, 0);
 
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, terrain.getBaseTexture().getTextureBuffer());
@@ -785,8 +788,8 @@ public abstract class Scene extends GameObject implements IScene
 				lightPosTemp.set(world.getTranslation(), 1);
 			}
 			
-			Matrix4.multiply(lightPos4, modelViewMatrix, lightPosTemp);
-			GLES20.glUniform4f(GLES20.glGetUniformLocation(program, "lightPosition["+i+"]"), lightPos4.x, lightPos4.y, lightPos4.z, lt);
+//			Matrix4.multiply(lightPos4, modelViewMatrix, lightPosTemp);
+			GLES20.glUniform4f(GLES20.glGetUniformLocation(program, "lightPosition["+i+"]"), lightPosTemp.x, lightPosTemp.y, lightPosTemp.z, lt);
 			
 			Color3 color = light.getColor();
 			GLES20.glUniform4f(GLES20.glGetUniformLocation(program, "lightColor["+i+"]"), color.r, color.g, color.b, 1);

@@ -1,5 +1,7 @@
 package plia.framework.scene;
 
+import java.util.ArrayList;
+
 import plia.framework.scene.group.shading.Texture2D;
 
 public class Terrain extends Group
@@ -10,12 +12,22 @@ public class Terrain extends Group
 	
 	private int scale;
 	private int height;
+	
+	private ArrayList<Bounds> attached = new ArrayList<Bounds>();
 
 	public Terrain(Texture2D heightmap, int maxHeight, int scale)
 	{
 		this.heightmap = heightmap;
 		this.height = maxHeight;
 		this.scale = scale;
+	}
+	
+	@Override
+	protected void onUpdateHierarchy(boolean parentHasChanged)
+	{
+		
+		
+		super.onUpdateHierarchy(parentHasChanged);
 	}
 	
 	public void setTerrainScale(int scale)
@@ -56,6 +68,28 @@ public class Terrain extends Group
 	public void setBaseTexture(Texture2D baseTexture)
 	{
 		this.baseTexture = baseTexture;
+	}
+
+	public boolean attachBounds(Bounds bounds)
+	{
+		if(!attached.contains(bounds))
+		{
+			attached.add(bounds);
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean detachBounds(Bounds bounds)
+	{
+		if(attached.contains(bounds))
+		{
+			attached.remove(bounds);
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public static void setNormalMapTo(Terrain terrain, Texture2D normalMap)

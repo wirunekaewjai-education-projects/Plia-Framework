@@ -97,6 +97,14 @@ class Node<T extends Node> extends GameObject
 		}
 		return false;
 	}
+	
+	public void addChild(T...children)
+	{
+		for (T child : children)
+		{
+			addChild(child);
+		}
+	}
 
 	public boolean removeChild(T child)
 	{

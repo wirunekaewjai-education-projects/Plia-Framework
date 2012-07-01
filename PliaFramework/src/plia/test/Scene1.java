@@ -17,6 +17,7 @@ import plia.framework.scene.View;
 import plia.framework.scene.group.animation.Animation;
 import plia.framework.scene.group.animation.PlaybackMode;
 import plia.framework.scene.group.shading.Color3;
+import plia.framework.scene.group.shading.NormalMap;
 import plia.framework.scene.view.Button;
 
 public class Scene1 extends Scene implements OnTouchListener
@@ -31,6 +32,8 @@ public class Scene1 extends Scene implements OnTouchListener
 	
 	private Light backLight, keyLight, fillLight;
 	private Light pointLight1, pointLight2;
+	
+	private Button screenButton, hierarchy;
 
 	public void onInitialize()
 	{
@@ -47,7 +50,7 @@ public class Scene1 extends Scene implements OnTouchListener
 		pointLight1 = pointLight(-100, 0, 30, 40, 2, 1, 0, 0);
 		pointLight2 = pointLight(100, 0, 30, 40, 2, 0, 0, 1);
 
-		camera = camera(Camera.PERSPECTIVE, 350, 350, 100, 250, 250, 50, 600);
+		camera = camera(Camera.PERSPECTIVE, 450, 450, 100, 250, 250, 50, 600);
 		camera.setSky(skydome("sky_sphere01.jpg"));
 		Scene.setMainCamera(camera);
 
@@ -105,6 +108,16 @@ public class Scene1 extends Scene implements OnTouchListener
 		view2.getAnimation().stop();
 		view2.setOnTouchListener(this);
 		
+		screenButton = button();
+		hierarchy = button();
+		
+		screenButton.addChild(hierarchy);
+		hierarchy.addChild(view1, view2);
+
+		screenButton.setOnTouchListener(this);
+		
+		hierarchy.setActive(false);
+
 		layer1.addChild(model1, model2, model3, model4, model5, model6, model7, camera, keyLight, fillLight, backLight, terrain);
 		layer2.addChild(view1, view2);
 
@@ -117,7 +130,8 @@ public class Scene1 extends Scene implements OnTouchListener
 
 	public void onUpdate()
 	{
-		camera.rotate(0, 0, 0.25f);
+//		camera.rotate(0, 0, 0.25f);
+//		camera.translate(0, 0.25f, 0);
 		
 		Vector3 camForward = camera.getForward();
 		backLight.setForward(-camForward.x, -camForward.y, -camForward.z);
@@ -129,18 +143,28 @@ public class Scene1 extends Scene implements OnTouchListener
 		
 //		Debug.drawLine(model1.getPosition(), vec3(250, 250, 100), new Color3(0.5f, 1, 0.5f));
 		
-		Debug.drawBounds(model1.getBounds(), new Color3(0.5f, 1, 0.5f));
-		Debug.drawBounds(model2.getBounds(), new Color3(0.5f, 1, 0.5f));
-		Debug.drawBounds(model3.getBounds(), new Color3(0.5f, 1, 0.5f));
-		
-		if(Bounds.intersect(model1.getBounds(), model3.getBounds()))
-		{
-//			log("Intersected");
-		}
+//		Debug.drawBounds(model1.getBounds(), new Color3(0.5f, 1, 0.5f));
+//		Debug.drawBounds(model2.getBounds(), new Color3(0.5f, 1, 0.5f));
+//		Debug.drawBounds(model3.getBounds(), new Color3(0.5f, 1, 0.5f));
+//		
+//		if(Bounds.intersect(model1.getBounds(), model3.getBounds()))
+//		{
+////			log("Intersected");
+//		}
 	}
 
 	public void onTouch(Button button, int action, float x, float y)
 	{
+//		if(button == screenButton)
+//		{
+//			if(action == TouchEvent.ACTION_UP)
+//			{
+//				hierarchy.setActive(false);
+//			}
+//			else
+//				hierarchy.setActive(true);
+//		}
+//		
 		if(button == view1)
 		{
 			button.setCenter(x, y);

@@ -508,7 +508,7 @@ public final class Matrix3
 	public void setForward(Vector3 forward)
 	{
 		forward = forward.getNormalized();
-		
+
 		this.m21 = forward.x;
 		this.m22 = forward.y;
 		this.m23 = forward.z;
@@ -586,7 +586,7 @@ public final class Matrix3
 			this.m13 = right.z;
 		}
 	}
-	
+
 	////////////////////////////////////////////////////////////////////////////////////////////
 
 	// Classifier Method
