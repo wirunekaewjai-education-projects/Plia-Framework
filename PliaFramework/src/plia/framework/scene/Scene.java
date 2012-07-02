@@ -245,8 +245,8 @@ public abstract class Scene extends GameObject implements IScene
 		}
 		
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-//		GLES20.glEnable(GLES20.GL_CULL_FACE);
-//		GLES20.glCullFace(GLES20.GL_BACK);
+		GLES20.glEnable(GLES20.GL_CULL_FACE);
+		GLES20.glCullFace(GLES20.GL_BACK);
 		if(mainCamera.getSky() != null)
 		{
 			drawSky(mainCamera.getSky());
@@ -255,10 +255,10 @@ public abstract class Scene extends GameObject implements IScene
 		
 //		GLES20.glDisable(GLES20.GL_CULL_FACE);
 
-//		GLES20.glCullFace(GLES20.GL_FRONT);
+		GLES20.glCullFace(GLES20.GL_FRONT);
 		drawTerrains();
 
-//		GLES20.glCullFace(GLES20.GL_BACK);
+		GLES20.glCullFace(GLES20.GL_BACK);
 		for (int i = 0; i < models.size(); i++)
 		{
 			drawModel(models.get(i));
@@ -733,9 +733,14 @@ public abstract class Scene extends GameObject implements IScene
 		tmm.copyTo(tm3);
 		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "worldMatrix"), 1, false, tm3, 0);
 
-		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, terrain.getBaseTexture().getTextureBuffer());
-		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "diffuseMap"), 0);
+		Texture2D diffuseMap = terrain.getBaseTexture();
+		
+		if(diffuseMap != null)
+		{
+			GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, terrain.getBaseTexture().getTextureBuffer());
+			GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "diffuseMap"), 0);
+		}
 		
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, terrain.getNormalmap().getTextureBuffer());
@@ -803,53 +808,61 @@ public abstract class Scene extends GameObject implements IScene
 	
 	private void recursiveLayer(Layer layer)
 	{
-		for (int i = 0; i < layer.getChildCount(); i++)
+		if(layer.isActive())
 		{
-			Node child = layer.getChild(i);
-			if(child instanceof Group)
+			for (int i = 0; i < layer.getChildCount(); i++)
 			{
-				recursiveGroup((Group) child);
-			}
-			else if(child instanceof View)
-			{
-				recursiveView((View) child);
+				Node child = layer.getChild(i);
+				if(child instanceof Group)
+				{
+					recursiveGroup((Group) child);
+				}
+				else if(child instanceof View)
+				{
+					recursiveView((View) child);
+				}
 			}
 		}
 	}
 	
 	private void recursiveView(View view)
 	{
-		if(view instanceof Sprite)
+		if(view.isActive())
 		{
-			sprites.add((Sprite) view);
-		}
-		
-		for (int i = 0; i < view.getChildCount(); i++)
-		{
-			recursiveView(view.getChild(i));
+			if(view instanceof Sprite)
+			{
+				sprites.add((Sprite) view);
+			}
+			
+			for (int i = 0; i < view.getChildCount(); i++)
+			{
+				recursiveView(view.getChild(i));
+			}
 		}
 	}
 	
 	private void recursiveGroup(Group obj)
 	{
-		
-		if(obj instanceof Model)
+		if(obj.isActive())
 		{
-			models.add((Model) obj);
-		}
-		else if(obj instanceof Terrain)
-		{
-			terrains.add((Terrain) obj);
-		}
-		else if(obj instanceof Light)
-		{
-			lights.add((Light) obj);
-		}
-		
-		for (int i = 0; i < obj.getChildCount(); i++)
-		{
-			Group child = obj.getChild(i);
-			recursiveGroup(child);
+			if(obj instanceof Model)
+			{
+				models.add((Model) obj);
+			}
+			else if(obj instanceof Terrain)
+			{
+				terrains.add((Terrain) obj);
+			}
+			else if(obj instanceof Light)
+			{
+				lights.add((Light) obj);
+			}
+			
+			for (int i = 0; i < obj.getChildCount(); i++)
+			{
+				Group child = obj.getChild(i);
+				recursiveGroup(child);
+			}
 		}
 	}
 

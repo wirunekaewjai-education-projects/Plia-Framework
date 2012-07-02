@@ -50,7 +50,7 @@ public class Scene1 extends Scene implements OnTouchListener
 		pointLight1 = pointLight(-100, 0, 30, 40, 2, 1, 0, 0);
 		pointLight2 = pointLight(100, 0, 30, 40, 2, 0, 0, 1);
 
-		camera = camera(Camera.PERSPECTIVE, 450, 450, 100, 250, 250, 50, 600);
+		camera = camera(Camera.PERSPECTIVE, 350, 350, 100, 250, 250, 50, 600);
 		camera.setSky(skydome("sky_sphere01.jpg"));
 		Scene.setMainCamera(camera);
 
@@ -119,7 +119,7 @@ public class Scene1 extends Scene implements OnTouchListener
 		hierarchy.setActive(false);
 
 		layer1.addChild(model1, model2, model3, model4, model5, model6, model7, camera, keyLight, fillLight, backLight, terrain);
-		layer2.addChild(view1, view2);
+		layer2.addChild(screenButton);
 
 		addLayer(layer1);
 		addLayer(layer2);
@@ -155,16 +155,16 @@ public class Scene1 extends Scene implements OnTouchListener
 
 	public void onTouch(Button button, int action, float x, float y)
 	{
-//		if(button == screenButton)
-//		{
-//			if(action == TouchEvent.ACTION_UP)
-//			{
-//				hierarchy.setActive(false);
-//			}
-//			else
-//				hierarchy.setActive(true);
-//		}
-//		
+		if(button == screenButton)
+		{
+			if(action == TouchEvent.ACTION_UP)
+			{
+				hierarchy.setActive(false);
+			}
+			else
+				hierarchy.setActive(true);
+		}
+		
 		if(button == view1)
 		{
 			button.setCenter(x, y);

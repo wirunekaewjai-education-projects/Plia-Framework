@@ -35,7 +35,7 @@ public class Scene2 extends Scene implements OnTouchListener
 		camera.setProjectionType(Camera.PERSPECTIVE);
 		
 		boundingPlane.setScale(20, 20, 20);
-		boundingPlane.setUp(0, 1, 0);
+		boundingPlane.setUp(0, 0, 1);
 		
 		boundingSphere.setRadius(10);
 		
