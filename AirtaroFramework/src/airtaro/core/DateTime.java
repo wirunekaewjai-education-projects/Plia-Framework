@@ -1,6 +1,6 @@
 package airtaro.core;
 
-public class TimeProfile
+public class DateTime
 {
 	private long days;
 	private long hours;
@@ -14,7 +14,7 @@ public class TimeProfile
 	private double totalSeconds;
 	private double totalMilliseconds;
 	
-	public TimeProfile()
+	public DateTime()
 	{
 		
 	}

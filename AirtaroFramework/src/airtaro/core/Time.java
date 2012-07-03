@@ -2,16 +2,16 @@ package airtaro.core;
 
 public final class Time
 {
-	private TimeProfile elapsedGameTime;
-	private TimeProfile totalGameTime;
+	private DateTime elapsedGameTime;
+	private DateTime totalGameTime;
 	private long start;
 	
 	private long frameTime;
 	
 	private Time()
 	{
-		totalGameTime = new TimeProfile();
-		elapsedGameTime = new TimeProfile();
+		totalGameTime = new DateTime();
+		elapsedGameTime = new DateTime();
 	}
 	
 	public void start()
@@ -46,12 +46,12 @@ public final class Time
 		return instance;
 	}
 	
-	public static TimeProfile getTotalGameTime()
+	public static DateTime getTotalGameTime()
 	{
 		return instance.totalGameTime;
 	}
 	
-	public static TimeProfile getElapsedGameTime()
+	public static DateTime getElapsedGameTime()
 	{
 		return instance.elapsedGameTime;
 	}
