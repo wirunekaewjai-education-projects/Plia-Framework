@@ -366,25 +366,25 @@ public class FbxDroid
 		defaultTranslation = new Vector3(defaultT.x, defaultT.y, defaultT.z);
 		defaultRotation = new Vector3(defaultR.x, defaultR.y, defaultR.z);
 		defaultScaling = new Vector3(defaultS.x, defaultS.y, defaultS.z);
-//		
-//		// Find Max Bounds
-//		for (int i = 0; i < vertices2.length / 3; i++)
-//		{
-//			int indx = i * 3;
-//			float x = vertices2[indx];
-//			float y = vertices2[indx + 1];
-//			float z = vertices2[indx + 2];
-//			
-//			max.x = Math.max(x, max.x);
-//			max.y = Math.max(y, max.y);
-//			max.z = Math.max(z, max.z);
-//			
-//			min.x = Math.min(x, min.x);
-//			min.y = Math.min(y, min.y);
-//			min.z = Math.min(z, min.z);
-//			
-////			Log.e("Vertices : "+i, x+", "+ y+", "+z);
-//		}
+		
+		// Find Max Bounds
+		for (int i = 0; i < vertices2.length / 3; i++)
+		{
+			int indx = i * 3;
+			float x = vertices2[indx];
+			float y = vertices2[indx + 1];
+			float z = vertices2[indx + 2];
+			
+			max.x = Math.max(x, max.x);
+			max.y = Math.max(y, max.y);
+			max.z = Math.max(z, max.z);
+			
+			min.x = Math.min(x, min.x);
+			min.y = Math.min(y, min.y);
+			min.z = Math.min(z, min.z);
+			
+//			Log.e("Vertices : "+i, x+", "+ y+", "+z);
+		}
 		
 //		// Material Zone
 		FbxSurfaceMaterial surfaceMaterial = mesh.getNode(0).getMaterial();
@@ -541,6 +541,9 @@ public class FbxDroid
 			meshObject.setMatrixPalette(getMatrixPalette());
 			meshObject.setMatrixPaletteIndexOffset(getStartFrame());
 		}
+		
+		meshObject.setMin(min);
+		meshObject.setMax(max);
 		
 		nodePrefab = new NodePrefab();
 		nodePrefab.setName(getName());

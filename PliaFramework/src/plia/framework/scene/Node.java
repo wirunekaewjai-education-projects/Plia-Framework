@@ -48,6 +48,18 @@ class Node<T extends Node> extends GameObject
 		return copy;
 	}
 	
+	@Override
+	public void setActive(boolean active)
+	{
+		// TODO Auto-generated method stub
+		super.setActive(active);
+		
+		for (int i = 0; i < childCount; i++)
+		{
+			children[i].setActive(active);
+		}
+	}
+	
 	private final int indexOf(T child)
 	{
 		for (int i = 0; i < children.length; i++)

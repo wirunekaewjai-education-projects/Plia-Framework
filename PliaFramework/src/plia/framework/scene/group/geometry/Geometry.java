@@ -1,10 +1,14 @@
 package plia.framework.scene.group.geometry;
 
+import plia.framework.math.Vector3;
+
 public class Geometry
 {
 	private int type;
 	
 	protected int[] buffers = new int[10];
+	
+	private Vector3 min = new Vector3(), max = new Vector3();
 
 	public Geometry(int type)
 	{
@@ -24,6 +28,26 @@ public class Geometry
 	public int getBuffer(int index)
 	{
 		return buffers[index];
+	}
+	
+	public Vector3 getMin()
+	{
+		return min;
+	}
+	
+	public Vector3 getMax()
+	{
+		return max;
+	}
+	
+	public void setMin(Vector3 min)
+	{
+		this.min = min;
+	}
+	
+	public void setMax(Vector3 max)
+	{
+		this.max = max;
 	}
 
 	public static final int MESH			= 10001;

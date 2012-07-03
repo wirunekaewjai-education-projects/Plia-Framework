@@ -96,7 +96,7 @@ public class TouchEventManager
 		{
 			for (Button button : buttons)
 			{
-				if(button.intersect(locationX, locationY))
+				if(button.intersect(locationX, locationY) && button.isActive())
 				{
 					OnTouchListener onTouchListener = button.getOnTouchListener();
 					if(onTouchListener != null)

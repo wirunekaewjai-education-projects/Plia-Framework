@@ -161,7 +161,7 @@ public class Scene1 extends Scene implements OnTouchListener
 			{
 				hierarchy.setActive(false);
 			}
-			else
+			else 
 				hierarchy.setActive(true);
 		}
 		

@@ -278,7 +278,6 @@ public abstract class Scene extends GameObject implements IScene
 		models.clear();
 		terrains.clear();
 		lights.clear();
-		
 
 		float end = (System.nanoTime() - start) / 1000000f;
 		Log.d("Usage Time", (1000f / end)+" ms");
