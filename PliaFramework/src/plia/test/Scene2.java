@@ -29,13 +29,13 @@ public class Scene2 extends Scene implements OnTouchListener
 	public void onInitialize()
 	{
 		camera = Scene.getMainCamera();
-		camera.setPosition(0, 0, 50);
+		camera.setPosition(50, 50, 50);
 		camera.setRange(1000);
-		camera.setForward(0, 0, -1);
+		camera.setLookAt(vec3());
 		camera.setProjectionType(Camera.PERSPECTIVE);
 		
 		boundingPlane.setScale(20, 20, 20);
-		boundingPlane.setUp(0, 0, 1);
+		boundingPlane.setUp(0, 1, 0);
 		
 		boundingSphere.setRadius(10);
 		

@@ -9,6 +9,8 @@ import plia.framework.scene.Light;
 import plia.framework.scene.SkyBox;
 import plia.framework.scene.SkyDome;
 import plia.framework.scene.Terrain;
+import plia.framework.scene.group.shading.Color3;
+import plia.framework.scene.group.shading.Color4;
 import plia.framework.scene.group.shading.Texture2D;
 import plia.framework.scene.view.Button;
 import plia.framework.scene.view.Sprite;
@@ -329,5 +331,15 @@ public class GameObject
 	public static final Vector4 vec4(float x, float y, float z, float w)
 	{
 		return new Vector4(x, y, z, w);
+	}
+	
+	public static final Color3 color(float r, float g, float b)
+	{
+		return new Color3(r, g, b);
+	}
+	
+	public static final Color4 color(float r, float g, float b, float a)
+	{
+		return new Color4(r, g, b, a);
 	}
 }

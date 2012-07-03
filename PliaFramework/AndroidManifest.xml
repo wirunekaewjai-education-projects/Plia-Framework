@@ -11,7 +11,17 @@
         android:label="@string/app_name" >
         <activity
             android:name=".Game1"
-            android:label="@string/app_name" >
+            android:label="Game1" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name=".Game2"
+            android:label="Plane Collision" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

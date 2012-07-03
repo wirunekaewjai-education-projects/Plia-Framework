@@ -116,10 +116,10 @@ public class Scene1 extends Scene implements OnTouchListener
 
 		screenButton.setOnTouchListener(this);
 		
-		hierarchy.setActive(false);
+//		hierarchy.setActive(false);
 
 		layer1.addChild(model1, model2, model3, model4, model5, model6, model7, camera, keyLight, fillLight, backLight, terrain);
-		layer2.addChild(screenButton);
+		layer2.addChild(view1, view2);
 
 		addLayer(layer1);
 		addLayer(layer2);
@@ -131,7 +131,7 @@ public class Scene1 extends Scene implements OnTouchListener
 	public void onUpdate()
 	{
 //		camera.rotate(0, 0, 0.25f);
-//		camera.translate(0, 0.25f, 0);
+		camera.translate(0, 0.25f, 0);
 		
 		Vector3 camForward = camera.getForward();
 		backLight.setForward(-camForward.x, -camForward.y, -camForward.z);
@@ -155,15 +155,15 @@ public class Scene1 extends Scene implements OnTouchListener
 
 	public void onTouch(Button button, int action, float x, float y)
 	{
-		if(button == screenButton)
-		{
-			if(action == TouchEvent.ACTION_UP)
-			{
-				hierarchy.setActive(false);
-			}
-			else 
-				hierarchy.setActive(true);
-		}
+//		if(button == screenButton)
+//		{
+//			if(action == TouchEvent.ACTION_UP)
+//			{
+//				hierarchy.setActive(false);
+//			}
+//			else 
+//				hierarchy.setActive(true);
+//		}
 		
 		if(button == view1)
 		{
