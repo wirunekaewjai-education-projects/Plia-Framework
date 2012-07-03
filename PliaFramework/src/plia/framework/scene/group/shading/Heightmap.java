@@ -1,6 +1,7 @@
 package plia.framework.scene.group.shading;
 
 import android.graphics.Color;
+import android.util.Log;
 
 public final class Heightmap extends Texture2D
 {
@@ -14,7 +15,7 @@ public final class Heightmap extends Texture2D
 	{
 		int row = y * texture2d.getHeight();
 		int i = row + x;
-		
+
 		float r = Color.red(texture2d.pixels[i]) / 255f;
 		return r;
 	}

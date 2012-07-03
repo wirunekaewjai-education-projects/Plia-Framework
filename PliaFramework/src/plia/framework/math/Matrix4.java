@@ -1266,6 +1266,50 @@ public final class Matrix4
 		result.m44 = 1;
 	}
 	
+	public static Matrix4 createFromEulerAngles(float x, float y, float z)
+	{
+		// Degreen to Radian
+		float rx = x * 0.0174533f;
+		float ry = y * 0.0174533f;
+		float rz = z * 0.0174533f;
+		
+		// Heading ( Yaw :: Y Axis ) ; First
+		float ch = (float) Math.cos(ry);
+		float sh = (float) Math.sin(ry);
+			    
+		// Attitude ( Pitch :: Z Axis ) ; Second
+		float ca = (float) Math.cos(rz);
+		float sa = (float) Math.sin(rz);
+		    
+		// Bank ( Roll :: X Axis ) ; Last
+		float cb = (float) Math.cos(rx);
+		float sb = (float) Math.sin(rx);
+	    
+		Matrix4 result = new Matrix4();
+		
+	    result.m11 = ch*ca;
+	    result.m12 = sa;
+	    result.m13 = -sh*ca;
+	    result.m14 = 0;
+
+	    result.m21 = sh*sb - ch*sa*cb;
+	    result.m22 = ca*cb;
+	    result.m23 = sh*sa*cb + ch*sb;
+	    result.m24 = 0;
+
+	    result.m31 = ch*sa*sb + sh*cb;
+	    result.m32 = -ca*sb;
+	    result.m33 = -sh*sa*sb + ch*cb;
+	    result.m34 = 0;
+	    
+	    result.m41 = 0;
+	    result.m42 = 0;
+	    result.m43 = 0;
+	    result.m44 = 1;
+	    
+	    return result;
+	}
+	
 	public static void createScale(Matrix4 result, float sx, float sy, float sz)
 	{
 		result.m11 = sx;

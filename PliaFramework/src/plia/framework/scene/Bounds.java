@@ -12,6 +12,13 @@ public class Bounds extends Group
 	{
 		
 	}
+
+	@Override
+	public Bounds instantiate()
+	{
+		Bounds bounds = new Bounds();
+		return bounds;
+	}
 	
 	public static final boolean intersect(Bounds a, Bounds b)
 	{

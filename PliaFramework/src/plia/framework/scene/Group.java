@@ -18,6 +18,7 @@ public class Group extends Node<Group>
 	
 	private Matrix4 local = new Matrix4();
 	private Matrix4 world = new Matrix4();
+	private Matrix4 invParent = new Matrix4();
 	
 	protected boolean hasChanged = true;
 	
@@ -42,7 +43,14 @@ public class Group extends Node<Group>
 		group.localTranslation.set(this.localTranslation);
 		group.localRotation = this.localRotation.clone();
 		group.localScaling.set(this.localScaling);
+		group.world = this.world.clone();
+		group.invParent = this.world.clone();
 		group.axisRotation = this.axisRotation.clone();
+		
+		if(this.bounds != null)
+		{
+			group.bounds = this.bounds.instantiate();
+		}
 	}
 	
 	@Override
@@ -135,10 +143,11 @@ public class Group extends Node<Group>
 				
 				parentHasChanged = true;
 			}
-				
+	
 			if(parentHasChanged && parent != null)
 			{
 				Matrix4.multiply(world, parent.getWorldMatrix(), local);
+				invParent = parent.getWorldMatrix().getInvert();
 			}
 			
 			for (int i = 0; i < childCount; i++)
@@ -374,9 +383,16 @@ public class Group extends Node<Group>
 	{
 		if(relativeWorld)
 		{
-			this.localTranslation.x += x;
-			this.localTranslation.y += y;
-			this.localTranslation.z += z;
+			Matrix4 world = getWorldMatrix();
+			world.m41 += x;
+			world.m42 += y;
+			world.m43 += z;
+			
+			Matrix4 inv = Matrix4.multiply(invParent, world);
+			
+			this.localTranslation.x = inv.m41;
+			this.localTranslation.y = inv.m42;
+			this.localTranslation.z = inv.m43;
 		}
 		else
 		{
@@ -398,9 +414,18 @@ public class Group extends Node<Group>
 	{
 		if(relativeWorld)
 		{
-			Matrix3 rotation = Matrix3.createFromEulerAngles(x, y, z);
-			this.localRotation = localRotation.multiply(rotation);
-			this.localTranslation = rotation.multiply(localTranslation);
+			Matrix4 rotation = Matrix4.createFromEulerAngles(x, y, z);
+			Matrix4 world = getWorldMatrix();
+			world.multiply(rotation);
+			
+			Matrix4 inv = Matrix4.multiply(invParent, world);
+			
+			this.localRotation = inv.toMatrix3();
+			this.localTranslation.set(inv.getTranslation());
+			
+//			Matrix3 rotation = Matrix3.createFromEulerAngles(x, y, z);
+//			this.localRotation = localRotation.multiply(rotation);
+//			this.localTranslation = rotation.multiply(localTranslation);
 		}
 		else
 		{
