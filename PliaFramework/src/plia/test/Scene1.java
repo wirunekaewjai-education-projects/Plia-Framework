@@ -1,23 +1,11 @@
 package plia.test;
 
-import plia.framework.debug.Debug;
 import plia.framework.event.OnTouchListener;
 import plia.framework.event.TouchEvent;
 import plia.framework.math.Vector3;
-import plia.framework.scene.BoundingPlane;
-import plia.framework.scene.BoundingSphere;
-import plia.framework.scene.Bounds;
-import plia.framework.scene.Camera;
-import plia.framework.scene.Layer;
-import plia.framework.scene.Light;
-import plia.framework.scene.Group;
-import plia.framework.scene.Scene;
-import plia.framework.scene.Terrain;
-import plia.framework.scene.View;
+import plia.framework.scene.*;
 import plia.framework.scene.group.animation.Animation;
 import plia.framework.scene.group.animation.PlaybackMode;
-import plia.framework.scene.group.shading.Color3;
-import plia.framework.scene.group.shading.NormalMap;
 import plia.framework.scene.view.Button;
 
 public class Scene1 extends Scene implements OnTouchListener
@@ -68,15 +56,10 @@ public class Scene1 extends Scene implements OnTouchListener
 		model1.setPosition(250, 250, 40);
 		model1.addChild(pointLight1, pointLight2);
 		
-		BoundingSphere p = new BoundingSphere(30);
-//		p.setScale(50, 50, 0);
-//		p.setForward(0, 1, 0);
-		
-		BoundingPlane p2 = new BoundingPlane();
-		p2.setScale(50, 50, 0);
-		p2.setForward(0, 1, 0);
-		
-		BoundingSphere bs = new BoundingSphere(30);
+		BoundingSphere p = bounds(30);
+		BoundingPlane p2 = bounds(0, 0, 1, 50, 50);
+
+		BoundingSphere bs = bounds(30);
 		bs.translate(0, 5, 20);
 		
 		model1.setBounds(p);
