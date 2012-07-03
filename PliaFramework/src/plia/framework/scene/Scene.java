@@ -14,7 +14,6 @@ import plia.framework.math.Vector2;
 import plia.framework.math.Vector3;
 import plia.framework.math.Vector4;
 import plia.framework.scene.group.animation.Animation;
-import plia.framework.scene.group.geometry.Box;
 import plia.framework.scene.group.geometry.Geometry;
 import plia.framework.scene.group.geometry.Mesh;
 import plia.framework.scene.group.geometry.Plane;
@@ -170,7 +169,7 @@ public abstract class Scene extends GameObject implements IScene
 	private static final Matrix4 tempPalette = new Matrix4();
 	
 	private static final Vector3 target = new Vector3();
-	private static final Vector4 lightPos4 = new Vector4();
+//	private static final Vector4 lightPos4 = new Vector4();
 	private static final Vector4 lightPosTemp = new Vector4();
 
 	private ArrayList<Sprite> sprites = new ArrayList<Sprite>();

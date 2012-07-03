@@ -1,8 +1,6 @@
 package plia.framework.scene;
 
 import plia.framework.core.GameObject;
-import plia.framework.scene.group.shading.Texture2D;
-
 
 public class Camera extends Group
 {

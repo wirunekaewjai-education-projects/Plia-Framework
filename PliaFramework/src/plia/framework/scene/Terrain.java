@@ -27,6 +27,8 @@ public class Terrain extends Group
 	{
 		
 		
+		
+		
 		super.onUpdateHierarchy(parentHasChanged);
 	}
 	

@@ -3,7 +3,6 @@ package plia.framework.core;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import plia.framework.debug.Debug;
 import plia.framework.scene.Camera;
 import plia.framework.scene.Scene;
 import plia.framework.scene.group.shading.Shader;
