@@ -41,7 +41,7 @@ public class Scene1 extends Scene implements OnTouchListener
 		pointLight1 = pointLight(-100, 0, 30, 40, 2, 1, 0, 0);
 		pointLight2 = pointLight(100, 0, 30, 40, 2, 0, 0, 1);
 
-		camera = camera(Camera.PERSPECTIVE, 350, 400, 50, 250, 250, 50, 600);
+		camera = camera(Camera.PERSPECTIVE, 350, 400, 50, 250, 250, 50, 800);
 		camera.setSky(skydome("sky_sphere01.jpg"));
 		Scene.setMainCamera(camera);
 

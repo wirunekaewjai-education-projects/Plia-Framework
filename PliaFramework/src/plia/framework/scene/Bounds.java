@@ -8,9 +8,26 @@ import plia.framework.scene.group.shading.Color3;
 
 public class Bounds extends Group
 {
+	boolean calTerrainChanged = true;
+	private boolean isFirst = true;
+	
 	protected Bounds()
 	{
-		
+		calTerrainChanged = true;
+	}
+	
+	@Override
+	protected void onUpdateHierarchy(boolean parentHasChanged)
+	{
+		if(isFirst)
+		{
+			if(!isRoot())
+			{
+				parent.hasChanged = true;
+			}
+			isFirst = false;
+		}
+		super.onUpdateHierarchy(parentHasChanged);
 	}
 
 	@Override

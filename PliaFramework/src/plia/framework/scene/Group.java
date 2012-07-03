@@ -18,7 +18,7 @@ public class Group extends Node<Group>
 	
 	private Matrix4 local = new Matrix4();
 	private Matrix4 world = new Matrix4();
-	private Matrix4 invParent = new Matrix4();
+	Matrix4 invParent = new Matrix4();
 	
 	protected boolean hasChanged = true;
 	
@@ -140,11 +140,15 @@ public class Group extends Node<Group>
 				this.local.m43 = localTranslation.z;
 
 				this.hasChanged = false;
-				
 				parentHasChanged = true;
+				
+				if(bounds != null)
+				{
+					bounds.calTerrainChanged = true;
+				}
 			}
 	
-			if(parentHasChanged && parent != null)
+			if(parent != null)
 			{
 				Matrix4.multiply(world, parent.getWorldMatrix(), local);
 				invParent = parent.getWorldMatrix().getInvert();
