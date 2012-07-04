@@ -4,7 +4,6 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import android.opengl.GLES20;
-import android.util.Log;
 
 import plia.framework.core.GameObject;
 import plia.framework.core.Screen;
@@ -27,41 +26,22 @@ import plia.framework.scene.group.shading.Texture2D;
 import plia.framework.scene.view.Sprite;
 
 @SuppressWarnings({"rawtypes"})
-public abstract class Scene extends GameObject implements IScene
+public final class Scene extends GameObject
 {
 	private Layer[] children = new Layer[32];
 	private int childCount = 0;
-	private boolean isInitialized = false;
-	
-	private long start = System.nanoTime();
-	
+
 	public Scene()
 	{
 		setName("Scene");
 	}
-	
-	public void initialize()
-	{
-		if(!isInitialized)
-		{
-			onInitialize();
-			isInitialized = true;
-			start = System.nanoTime();
-		}
-	}
-	
-	public void resume()
-	{
-		onInitialize();
-	}
-	
+
 	
 	@Override
 	public void update()
 	{
 		if(isActive())
 		{
-			onUpdate();
 			for (int i = 0; i < childCount; i++)
 			{
 				children[i].update();
@@ -277,10 +257,6 @@ public abstract class Scene extends GameObject implements IScene
 		models.clear();
 		terrains.clear();
 		lights.clear();
-
-		float end = (System.nanoTime() - start) / 1000000f;
-		Log.d("Usage Time", (1000f / end)+" ms");
-		start = System.nanoTime();
 	}
 	
 	private void drawSky(Sky sky)
@@ -864,10 +840,4 @@ public abstract class Scene extends GameObject implements IScene
 		}
 	}
 
-}
-
-interface IScene
-{
-	void onInitialize();
-	void onUpdate();
 }

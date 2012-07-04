@@ -42,6 +42,9 @@ public class GameObjectManager
 	
 	private ArrayList<Terrain> terrains = new ArrayList<Terrain>();
 	
+	private ArrayList<Terrain> getNormalQueue = new ArrayList<Terrain>();
+//	private ArrayList<Terrain> getTextureQueue = new ArrayList<Terrain>();
+	
 	private int[] terrainBuffers = new int[2];
 	
 	private boolean isInitialized = false;
@@ -73,6 +76,11 @@ public class GameObjectManager
 		for (ScenePrefab prefab : scenePrefabs.values())
 		{
 			prefab.resume();
+		}
+		
+		for (Terrain terrain : getNormalQueue)
+		{
+			createTerrainNormalMap(terrain);
 		}
 		
 		String[] bitmapKeys = new String[bitmapList.size()];
@@ -208,23 +216,23 @@ public class GameObjectManager
 		{
 			Bitmap bitmap = BitmapFactory.decodeStream(instance.context.getAssets().open(file));
 			
-			int[] tex = new int[1];
-			
-			GLES20.glGenTextures(1, tex, 0);
-			
-			// generate color texture
-			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex[0]);
-
-			// parameters
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-
-			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
-			GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
-			
-			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+//			int[] tex = new int[1];
+//			
+//			GLES20.glGenTextures(1, tex, 0);
+//			
+//			// generate color texture
+//			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex[0]);
+//
+//			// parameters
+//			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+//			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+//			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+//			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+//
+//			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+//			GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
+//			
+//			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 			
 			String fileName = file;
 
@@ -249,7 +257,7 @@ public class GameObjectManager
 //				colors[i] = new Color4(r, g, b, a);
 //			}
 			
-			Texture2D texture = new Texture2D(fileName, tex[0], pixels, bitmap.getWidth(), bitmap.getHeight());
+			Texture2D texture = new Texture2D(fileName, -1, pixels, bitmap.getWidth(), bitmap.getHeight());
 			instance.texturesList.put(file, texture);
 			instance.bitmapList.put(file, bitmap);
 			
@@ -269,8 +277,7 @@ public class GameObjectManager
 
 		Terrain terrain = new Terrain(heightmap, maxHeight, scale);
 		
-		Texture2D normalmap = createTerrainNormalMap(terrain);
-		Terrain.setNormalMapTo(terrain, normalmap);
+		instance.getNormalQueue.add(terrain);
 
 		return terrain;
 	}
@@ -504,6 +511,7 @@ public class GameObjectManager
 		Bitmap bitmap = Bitmap.createBitmap(pixels, segment, segment, Config.RGB_565);
 
 		Texture2D normalmap = new Texture2D("normals", renderTextureBuffer[0], pixels, segment, segment);
+		Terrain.setNormalMapTo(terrain, normalmap);
 		
 		String key = ""+terrain.hashCode();
 		

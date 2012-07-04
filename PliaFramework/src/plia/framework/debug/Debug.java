@@ -1,13 +1,12 @@
 package plia.framework.debug;
 
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import android.opengl.GLES20;
 
-import plia.framework.math.Matrix3;
+//import plia.framework.math.Matrix3;
 import plia.framework.math.Matrix4;
 import plia.framework.math.Vector3;
 import plia.framework.scene.PlaneCollider;
@@ -22,21 +21,21 @@ public final class Debug
 {
 	private static float[] debugLineVerticesTemp = new float[6];
 	private FloatBuffer debugLine;
-	private DebugLineBox debugLineBox;
-	private DebugLineSphere debugLineSphere;
-	private DebugMeshSphere debugMeshSphere;
-	
-	private int[] buffers = new int[2];
-	
-	private static final float[] mvpTemp = new float[16];
+//	private DebugLineBox debugLineBox;
+//	private DebugLineSphere debugLineSphere;
+//	private DebugMeshSphere debugMeshSphere;
+//	
+//	private int[] buffers = new int[2];
+//	
+//	private static final float[] mvpTemp = new float[16];
 	
 	private Debug()
 	{
 		debugLine = ByteBuffer.allocateDirect(24).order(ByteOrder.nativeOrder()).asFloatBuffer();
 		
-		debugLineBox = DebugLineBox.getInstance();
-		debugLineSphere = DebugLineSphere.getInstance();
-		debugMeshSphere = DebugMeshSphere.getInstance();
+//		debugLineBox = DebugLineBox.getInstance();
+//		debugLineSphere = DebugLineSphere.getInstance();
+//		debugMeshSphere = DebugMeshSphere.getInstance();
 	}
 	
 	public static void drawLine(Vector3 start, Vector3 end, Color3 color)
@@ -76,20 +75,20 @@ public final class Debug
 		GLES20.glDisableVertexAttribArray(vh);
 	}
 
-	public static void drawBounds(Collider bounds, Color3 color)
+	public static void drawBounds(Collider collider, Color3 color)
 	{
 //		if(bounds instanceof BoundingBox)
 //		{
 //			instance.drawBoundingBox((BoundingBox) bounds, mvp, r, g, b);
 //		}
 		
-		if(bounds instanceof PlaneCollider)
+		if(collider instanceof PlaneCollider)
 		{
-			drawBoundingPlane((PlaneCollider) bounds, color);
+			drawBoundingPlane((PlaneCollider) collider, color);
 		}
-		else if(bounds instanceof SphereCollider)
+		else if(collider instanceof SphereCollider)
 		{
-			drawBoundingSphere((SphereCollider) bounds, color);
+			drawBoundingSphere((SphereCollider) collider, color);
 		}
 	}
 	
@@ -142,7 +141,7 @@ public final class Debug
 		Vector3 eye = Scene.getMainCamera().getWorldMatrix().getTranslation();
 		Vector3 pos = world.getTranslation();
 		
-//		drawLine(new Vector3(eye.x, eye.y, eye.z - 10), pos, new Color3(1, 0, 0));
+		drawLine(new Vector3(eye.x, eye.y, eye.z - 10), pos, new Color3(1, 0, 0));
 		
 		// Draw Wire-Sphere
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
