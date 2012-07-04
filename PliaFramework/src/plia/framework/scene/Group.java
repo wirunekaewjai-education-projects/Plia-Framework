@@ -22,7 +22,7 @@ public class Group extends Node<Group>
 	
 	protected boolean hasChanged = true;
 	
-	private Bounds bounds = null;
+	private Collider collider = null;
 
 	public Group()
 	{
@@ -47,9 +47,9 @@ public class Group extends Node<Group>
 		group.invParent = this.world.clone();
 		group.axisRotation = this.axisRotation.clone();
 		
-		if(this.bounds != null)
+		if(this.collider != null)
 		{
-			group.bounds = this.bounds.instantiate();
+			group.collider = this.collider.instantiate();
 		}
 	}
 	
@@ -91,18 +91,18 @@ public class Group extends Node<Group>
 		return null;
 	}
 
-	public Bounds getBounds()
+	public Collider getCollider()
 	{
-		return bounds;
+		return collider;
 	}
 	
-	public void setBounds(Bounds bounds)
+	public void setCollider(Collider collider)
 	{
-		if(bounds != null)
+		if(collider != null)
 		{
-			removeChild(this.bounds);
-			this.bounds = bounds;
-			addChild(this.bounds);
+			removeChild(this.collider);
+			this.collider = collider;
+			addChild(this.collider);
 		}
 	}
 	
@@ -142,9 +142,9 @@ public class Group extends Node<Group>
 				this.hasChanged = false;
 				parentHasChanged = true;
 				
-				if(bounds != null)
+				if(collider != null)
 				{
-					bounds.calTerrainChanged = true;
+					collider.calTerrainChanged = true;
 				}
 			}
 	

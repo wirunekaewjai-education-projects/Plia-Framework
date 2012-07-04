@@ -1,17 +1,17 @@
 package plia.framework.scene;
 
-import plia.framework.debug.Debug;
+//import plia.framework.debug.Debug;
 import plia.framework.math.Matrix4;
 import plia.framework.math.Vector3;
 import plia.framework.math.Vector4;
-import plia.framework.scene.group.shading.Color3;
+//import plia.framework.scene.group.shading.Color3;
 
-public class Bounds extends Group
+public class Collider extends Group
 {
 	boolean calTerrainChanged = true;
 	private boolean isFirst = true;
 	
-	protected Bounds()
+	protected Collider()
 	{
 		calTerrainChanged = true;
 	}
@@ -31,46 +31,46 @@ public class Bounds extends Group
 	}
 
 	@Override
-	public Bounds instantiate()
+	public Collider instantiate()
 	{
-		Bounds bounds = new Bounds();
+		Collider bounds = new Collider();
 		return bounds;
 	}
 	
-	public static final boolean intersect(Bounds a, Bounds b)
+	public static final boolean intersect(Collider a, Collider b)
 	{
-		if(a instanceof BoundingPlane)
+		if(a instanceof PlaneCollider)
 		{
-			if(b instanceof BoundingPlane)
+			if(b instanceof PlaneCollider)
 			{
-				return intersect((BoundingPlane)a, (BoundingPlane)b);
+				return intersect((PlaneCollider)a, (PlaneCollider)b);
 			}
-			else if(b instanceof BoundingSphere)
+			else if(b instanceof SphereCollider)
 			{
-				return intersect((BoundingPlane)a, (BoundingSphere)b);
+				return intersect((PlaneCollider)a, (SphereCollider)b);
 			}
 		}
-		else if(a instanceof BoundingSphere)
+		else if(a instanceof SphereCollider)
 		{
-			if(b instanceof BoundingPlane)
+			if(b instanceof PlaneCollider)
 			{
-				return intersect((BoundingSphere)a, (BoundingPlane)b);
+				return intersect((SphereCollider)a, (PlaneCollider)b);
 			}
-			else if(b instanceof BoundingSphere)
+			else if(b instanceof SphereCollider)
 			{
-				return intersect((BoundingSphere)a, (BoundingSphere)b);
+				return intersect((SphereCollider)a, (SphereCollider)b);
 			}
 		}
 		
 		return false;
 	}
 	
-	private static final boolean intersect(BoundingSphere a, BoundingPlane b)
+	private static final boolean intersect(SphereCollider a, PlaneCollider b)
 	{
 		return intersect(b, a);
 	}
 	
-	private static final boolean intersect(BoundingPlane a, BoundingSphere b)
+	private static final boolean intersect(PlaneCollider a, SphereCollider b)
 	{
 		Vector4 ap0 = a.getP0();
 		Vector4 ap1 = a.getP1();
@@ -126,11 +126,11 @@ public class Bounds extends Group
 
 			if(ccip)
 			{
-				Color3 color = new Color3(1, 0, 0);
-				Debug.drawLine(circleCenter, p0, color);
-				Debug.drawLine(circleCenter, p1, color);
-				Debug.drawLine(circleCenter, p2, color);
-				Debug.drawLine(circleCenter, p3, color);
+//				Color3 color = new Color3(1, 0, 0);
+//				Debug.drawLine(circleCenter, p0, color);
+//				Debug.drawLine(circleCenter, p1, color);
+//				Debug.drawLine(circleCenter, p2, color);
+//				Debug.drawLine(circleCenter, p3, color);
 				return true;
 			}
 			
@@ -173,11 +173,11 @@ public class Bounds extends Group
 				
 				if(pointInPlane(point, p0, p1, p2, p3))
 				{
-					Color3 color = new Color3(1, 1, 0);
-					Debug.drawLine(point, p0, color);
-					Debug.drawLine(point, p1, color);
-					Debug.drawLine(point, p2, color);
-					Debug.drawLine(point, p3, color);
+//					Color3 color = new Color3(1, 1, 0);
+//					Debug.drawLine(point, p0, color);
+//					Debug.drawLine(point, p1, color);
+//					Debug.drawLine(point, p2, color);
+//					Debug.drawLine(point, p3, color);
 					return true;
 				}
 			}
@@ -186,7 +186,7 @@ public class Bounds extends Group
 		return false;
 	}
 	
-	private static final boolean intersect(BoundingPlane a, BoundingPlane b)
+	private static final boolean intersect(PlaneCollider a, PlaneCollider b)
 	{
 		Vector4 ap0 = a.getP0();
 		Vector4 ap1 = a.getP1();
@@ -202,7 +202,7 @@ public class Bounds extends Group
 		return false;
 	}
 
-	private static final boolean intersect(BoundingSphere a, BoundingSphere b)
+	private static final boolean intersect(SphereCollider a, SphereCollider b)
 	{
 		Matrix4 aw = a.getWorldMatrix();
 		Matrix4 bw = b.getWorldMatrix();

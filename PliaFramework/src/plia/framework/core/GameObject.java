@@ -3,8 +3,8 @@ package plia.framework.core;
 import plia.framework.math.Vector2;
 import plia.framework.math.Vector3;
 import plia.framework.math.Vector4;
-import plia.framework.scene.BoundingPlane;
-import plia.framework.scene.BoundingSphere;
+import plia.framework.scene.PlaneCollider;
+import plia.framework.scene.SphereCollider;
 import plia.framework.scene.Camera;
 import plia.framework.scene.Group;
 import plia.framework.scene.Light;
@@ -289,25 +289,25 @@ public class GameObject
 		return GameObjectManager.loadTexture2D(path);
 	}
 	
-	public static final BoundingPlane bounds(float upX, float upY, float upZ, float scaleX, float scaleY)
+	public static final PlaneCollider collider(float upX, float upY, float upZ, float scaleX, float scaleY)
 	{
-		BoundingPlane boundingPlane = new BoundingPlane();
+		PlaneCollider boundingPlane = new PlaneCollider();
 		boundingPlane.setScale(scaleX, scaleY, 0);
 		boundingPlane.setUp(upX, upY, upZ);
 		return boundingPlane;
 	}
 	
-	public static final BoundingPlane bounds(Vector3 up, Vector2 scale)
+	public static final PlaneCollider collider(Vector3 up, Vector2 scale)
 	{
-		BoundingPlane boundingPlane = new BoundingPlane();
+		PlaneCollider boundingPlane = new PlaneCollider();
 		boundingPlane.setScale(scale.x, scale.y, 0);
 		boundingPlane.setUp(up);
 		return boundingPlane;
 	}
 	
-	public static final BoundingSphere bounds(float radius)
+	public static final SphereCollider collider(float radius)
 	{
-		return new BoundingSphere(radius);
+		return new SphereCollider(radius);
 	}
 	
 	//

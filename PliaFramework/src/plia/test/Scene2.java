@@ -2,9 +2,9 @@ package plia.test;
 
 import plia.framework.debug.Debug;
 import plia.framework.event.OnTouchListener;
-import plia.framework.scene.BoundingPlane;
-import plia.framework.scene.BoundingSphere;
-import plia.framework.scene.Bounds;
+import plia.framework.scene.PlaneCollider;
+import plia.framework.scene.SphereCollider;
+import plia.framework.scene.Collider;
 import plia.framework.scene.Camera;
 import plia.framework.scene.Group;
 import plia.framework.scene.Layer;
@@ -15,9 +15,9 @@ import plia.framework.scene.view.Button;
 
 public class Scene2 extends Scene implements OnTouchListener
 {
-	private BoundingPlane boundingPlane = new BoundingPlane();
-	private BoundingSphere boundingSphere = new BoundingSphere();
-	private BoundingSphere boundingSphere2 = new BoundingSphere(10);
+	private PlaneCollider boundingPlane = new PlaneCollider();
+	private SphereCollider boundingSphere = new SphereCollider();
+	private SphereCollider boundingSphere2 = new SphereCollider(10);
 	private Color3 color = new Color3(0.5f, 1, 0.5f);
 	
 	private Button button1, button2, button3, button4;
@@ -71,7 +71,7 @@ public class Scene2 extends Scene implements OnTouchListener
 		Debug.drawBounds(boundingPlane, color);
 		Debug.drawBounds(boundingSphere, color);
 		
-		if(Bounds.intersect(boundingPlane, boundingSphere))
+		if(Collider.intersect(boundingPlane, boundingSphere))
 		{
 			Debug.drawBounds(boundingSphere2, color);
 		}

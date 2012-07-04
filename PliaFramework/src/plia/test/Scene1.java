@@ -59,16 +59,16 @@ public class Scene1 extends Scene implements OnTouchListener
 		model1.setPosition(250, 250, 40);
 		model1.addChild(pointLight1, pointLight2);
 		
-		BoundingSphere p = bounds(30);
-		BoundingPlane p2 = bounds(0, 0, 1, 50, 50);
+		SphereCollider p = collider(30);
+		PlaneCollider p2 = collider(0, 0, 1, 50, 50);
 
-		BoundingSphere bs = bounds(30);
+		SphereCollider bs = collider(30);
 		bs.translate(0, 5, 30);
 		
-		model1.setBounds(p);
-		model2.setBounds(p2);
+		model1.setCollider(p);
+		model2.setCollider(p2);
 		
-		model3.setBounds(bs);
+		model3.setCollider(bs);
 		
 		model2.setPosition(300, 250, 40);
 		model3.setPosition(200, 250, 40);
@@ -154,7 +154,7 @@ public class Scene1 extends Scene implements OnTouchListener
 		
 //		Debug.drawBounds(model1.getBounds(), new Color3(0.5f, 1, 0.5f));
 //		Debug.drawBounds(model2.getBounds(), new Color3(0.5f, 1, 0.5f));
-		Debug.drawBounds(model3.getBounds(), color(0.5f, 1, 0.5f));
+		Debug.drawBounds(model3.getCollider(), color(0.5f, 1, 0.5f));
 //		
 //		if(Bounds.intersect(model1.getBounds(), model3.getBounds()))
 //		{

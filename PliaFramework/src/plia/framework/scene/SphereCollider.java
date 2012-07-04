@@ -2,16 +2,16 @@ package plia.framework.scene;
 
 import plia.framework.core.GameObject;
 
-public final class BoundingSphere extends Bounds
+public final class SphereCollider extends Collider
 {
 	private float radius;
 	
-	public BoundingSphere()
+	public SphereCollider()
 	{
 		this.radius = 1;
 	}
 
-	public BoundingSphere(float radius)
+	public SphereCollider(float radius)
 	{
 		this.radius = radius;
 	}
@@ -21,14 +21,14 @@ public final class BoundingSphere extends Bounds
 	{
 		super.copyTo(gameObject);
 		
-		BoundingSphere b = (BoundingSphere) gameObject;
+		SphereCollider b = (SphereCollider) gameObject;
 		b.radius = this.radius;
 	}
 
 	@Override
-	public BoundingSphere instantiate()
+	public SphereCollider instantiate()
 	{
-		BoundingSphere copy = new BoundingSphere();
+		SphereCollider copy = new SphereCollider();
 		this.copyTo(copy);
 		return copy;
 	}

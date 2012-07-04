@@ -2,7 +2,6 @@ package plia.framework.scene;
 
 import java.util.ArrayList;
 
-import plia.framework.math.Matrix3;
 import plia.framework.math.Matrix4;
 import plia.framework.math.Vector3;
 import plia.framework.scene.group.shading.Heightmap;
@@ -18,7 +17,7 @@ public class Terrain extends Group
 	private int scale;
 	private int height;
 	
-	private ArrayList<Bounds> attached = new ArrayList<Bounds>();
+	private ArrayList<Collider> attached = new ArrayList<Collider>();
 
 	public Terrain(Texture2D heightmap, int maxHeight, int scale)
 	{
@@ -32,13 +31,13 @@ public class Terrain extends Group
 	{
 		super.onUpdateHierarchy(parentHasChanged);
 		
-		for (Bounds bounds : attached)
+		for (Collider bounds : attached)
 		{
 			glueObject(bounds);
 		}		
 	}
 	
-	private void glueObject(Bounds bounds)
+	private void glueObject(Collider bounds)
 	{
 		if(bounds.calTerrainChanged)
 		{
@@ -132,9 +131,9 @@ public class Terrain extends Group
 			{
 				float bottomlength = 0;
 				
-				if(bounds instanceof BoundingSphere)
+				if(bounds instanceof SphereCollider)
 				{
-					bottomlength = ((BoundingSphere) bounds).getRadius();
+					bottomlength = ((SphereCollider) bounds).getRadius();
 				}
 				
 				float oldZ = bounds.getWorldMatrix().m43;
@@ -258,14 +257,14 @@ public class Terrain extends Group
 		this.baseTexture = baseTexture;
 	}
 
-	public boolean attachBounds(Bounds bounds)
+	public boolean attachBounds(Collider bounds)
 	{
 		attached.add(bounds);
 		
 		return true;
 	}
 	
-	public boolean detachBounds(Bounds bounds)
+	public boolean detachBounds(Collider bounds)
 	{
 		attached.remove(bounds);
 		

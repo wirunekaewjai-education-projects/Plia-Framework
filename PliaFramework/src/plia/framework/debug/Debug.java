@@ -10,9 +10,9 @@ import android.opengl.GLES20;
 import plia.framework.math.Matrix3;
 import plia.framework.math.Matrix4;
 import plia.framework.math.Vector3;
-import plia.framework.scene.BoundingPlane;
-import plia.framework.scene.BoundingSphere;
-import plia.framework.scene.Bounds;
+import plia.framework.scene.PlaneCollider;
+import plia.framework.scene.SphereCollider;
+import plia.framework.scene.Collider;
 import plia.framework.scene.Scene;
 import plia.framework.scene.group.shading.Color3;
 import plia.framework.scene.group.shading.Shader;
@@ -76,20 +76,20 @@ public final class Debug
 		GLES20.glDisableVertexAttribArray(vh);
 	}
 
-	public static void drawBounds(Bounds bounds, Color3 color)
+	public static void drawBounds(Collider bounds, Color3 color)
 	{
 //		if(bounds instanceof BoundingBox)
 //		{
 //			instance.drawBoundingBox((BoundingBox) bounds, mvp, r, g, b);
 //		}
 		
-		if(bounds instanceof BoundingPlane)
+		if(bounds instanceof PlaneCollider)
 		{
-			drawBoundingPlane((BoundingPlane) bounds, color);
+			drawBoundingPlane((PlaneCollider) bounds, color);
 		}
-		else if(bounds instanceof BoundingSphere)
+		else if(bounds instanceof SphereCollider)
 		{
-			drawBoundingSphere((BoundingSphere) bounds, color);
+			drawBoundingSphere((SphereCollider) bounds, color);
 		}
 	}
 	
@@ -116,7 +116,7 @@ public final class Debug
 //		GLES20.glDisableVertexAttribArray(vh);
 //	}
 	
-	private static void drawBoundingPlane(BoundingPlane bounds, Color3 color)
+	private static void drawBoundingPlane(PlaneCollider bounds, Color3 color)
 	{
 		Vector3 p0 = bounds.getPoint(0), p1 = bounds.getPoint(1), p2 = bounds.getPoint(2), p3 = bounds.getPoint(3);
 		drawLine(p0, p1, color);
@@ -125,7 +125,7 @@ public final class Debug
 		drawLine(p3, p0, color);
 	}
 	
-	private static void drawBoundingSphere(BoundingSphere bounds, Color3 color)
+	private static void drawBoundingSphere(SphereCollider bounds, Color3 color)
 	{
 		float radius = bounds.getRadius();
 		

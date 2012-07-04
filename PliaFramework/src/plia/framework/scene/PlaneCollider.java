@@ -5,12 +5,12 @@ import plia.framework.math.Matrix4;
 import plia.framework.math.Vector3;
 import plia.framework.math.Vector4;
 
-public final class BoundingPlane extends Bounds
+public final class PlaneCollider extends Collider
 {
 	private final Vector4[] p = new Vector4[4];
 	private final Vector4[] corner = new Vector4[4];
 	
-	public BoundingPlane()
+	public PlaneCollider()
 	{
 		for (int i = 0; i < p.length; i++)
 		{
@@ -25,7 +25,7 @@ public final class BoundingPlane extends Bounds
 	{
 		super.copyTo(gameObject);
 		
-		BoundingPlane b = (BoundingPlane) gameObject;
+		PlaneCollider b = (PlaneCollider) gameObject;
 		for (int i = 0; i < p.length; i++)
 		{
 			b.p[i] = this.p[i].clone();
@@ -34,9 +34,9 @@ public final class BoundingPlane extends Bounds
 	}
 
 	@Override
-	public BoundingPlane instantiate()
+	public PlaneCollider instantiate()
 	{
-		BoundingPlane copy = new BoundingPlane();
+		PlaneCollider copy = new PlaneCollider();
 		this.copyTo(copy);
 		return copy;
 	}
