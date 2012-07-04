@@ -271,17 +271,17 @@ public class Group extends Node<Group>
 	
 	public Vector3 getRight()
 	{
-		return localRotation.getRight();
+		return getWorldMatrix().getRight();
 	}
 	
 	public Vector3 getForward()
 	{
-		return localRotation.getForward();
+		return getWorldMatrix().getForward();
 	}
 	
 	public Vector3 getUp()
 	{
-		return localRotation.getUp();
+		return getWorldMatrix().getUp();
 	}
 	
 	public void setPosition(Vector3 position)
@@ -322,37 +322,67 @@ public class Group extends Node<Group>
 	
 	public void setRight(Vector3 right)
 	{
-		this.localRotation.setRight(right);
+		Matrix4 world = getWorldMatrix();
+		world.setRight(right);
+		
+		Matrix4 inv = Matrix4.multiply(invParent, world);
+		
+		this.localRotation.set(inv);
 		this.hasChanged = true;
 	}
 	
 	public void setRight(float x, float y, float z)
 	{
-		this.localRotation.setRight(x, y, z);
+		Matrix4 world = getWorldMatrix();
+		world.setRight(x, y, z);
+		
+		Matrix4 inv = Matrix4.multiply(invParent, world);
+		
+		this.localRotation.set(inv);
 		this.hasChanged = true;
 	}
 	
 	public void setForward(Vector3 forward)
 	{
-		this.localRotation.setForward(forward);
+		Matrix4 world = getWorldMatrix();
+		world.setForward(forward);
+		
+		Matrix4 inv = Matrix4.multiply(invParent, world);
+
+		this.localRotation.set(inv);
 		this.hasChanged = true;
 	}
 	
 	public void setForward(float x, float y, float z)
 	{
-		this.localRotation.setForward(x, y, z);
+		Matrix4 world = getWorldMatrix();
+		world.setForward(x, y, z);
+		
+		Matrix4 inv = Matrix4.multiply(invParent, world);
+
+		this.localRotation.set(inv);
 		this.hasChanged = true;
 	}
 	
 	public void setUp(Vector3 up)
 	{
-		this.localRotation.setUp(up);
+		Matrix4 world = getWorldMatrix();
+		world.setUp(up);
+		
+		Matrix4 inv = Matrix4.multiply(invParent, world);
+
+		this.localRotation.set(inv);
 		this.hasChanged = true;
 	}
 	
 	public void setUp(float x, float y, float z)
 	{
-		this.localRotation.setUp(x, y, z);
+		Matrix4 world = getWorldMatrix();
+		world.setUp(x, y, z);
+		
+		Matrix4 inv = Matrix4.multiply(invParent, world);
+
+		this.localRotation.set(inv);
 		this.hasChanged = true;
 	}
 	
@@ -426,10 +456,6 @@ public class Group extends Node<Group>
 			
 			this.localRotation = inv.toMatrix3();
 			this.localTranslation.set(inv.getTranslation());
-			
-//			Matrix3 rotation = Matrix3.createFromEulerAngles(x, y, z);
-//			this.localRotation = localRotation.multiply(rotation);
-//			this.localTranslation = rotation.multiply(localTranslation);
 		}
 		else
 		{
