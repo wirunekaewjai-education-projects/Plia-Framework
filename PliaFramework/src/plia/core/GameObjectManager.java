@@ -19,17 +19,17 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 //import plia.framework.scene.obj3d.shading.Color4;
-import plia.scene.Button;
-import plia.scene.Group;
-import plia.scene.Model;
-import plia.scene.Sprite;
-import plia.scene.Terrain;
-import plia.scene.animation.Animation;
-import plia.scene.geometry.Plane;
-import plia.scene.geometry.Quad;
-import plia.scene.shading.Shader;
-import plia.scene.shading.ShaderProgram;
-import plia.scene.shading.Texture2D;
+import plia.core.scene.Button;
+import plia.core.scene.Group;
+import plia.core.scene.Model;
+import plia.core.scene.Sprite;
+import plia.core.scene.Terrain;
+import plia.core.scene.animation.Animation;
+import plia.core.scene.geometry.Plane;
+import plia.core.scene.geometry.Quad;
+import plia.core.scene.shading.Shader;
+import plia.core.scene.shading.ShaderProgram;
+import plia.core.scene.shading.Texture2D;
 
 public class GameObjectManager
 {

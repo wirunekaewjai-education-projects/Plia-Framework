@@ -4,21 +4,21 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 import plia.core.Game;
-import plia.core.math.Vector3;
-import plia.debug.Debug;
-import plia.event.OnTouchListener;
-import plia.scene.Button;
-import plia.scene.Camera;
-import plia.scene.Group;
-import plia.scene.Layer;
-import plia.scene.Light;
-import plia.scene.PlaneCollider;
-import plia.scene.Scene;
-import plia.scene.SphereCollider;
-import plia.scene.Terrain;
-import plia.scene.View;
-import plia.scene.animation.Animation;
-import plia.scene.animation.PlaybackMode;
+import plia.core.debug.Debug;
+import plia.core.event.OnTouchListener;
+import plia.core.scene.Button;
+import plia.core.scene.Camera;
+import plia.core.scene.Group;
+import plia.core.scene.Layer;
+import plia.core.scene.Light;
+import plia.core.scene.PlaneCollider;
+import plia.core.scene.Scene;
+import plia.core.scene.SphereCollider;
+import plia.core.scene.Terrain;
+import plia.core.scene.View;
+import plia.core.scene.animation.Animation;
+import plia.core.scene.animation.PlaybackMode;
+import plia.math.Vector3;
 
 public class Game1 extends Game implements OnTouchListener
 {

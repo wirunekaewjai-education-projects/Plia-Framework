@@ -3,9 +3,9 @@ package plia.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import plia.event.OnTouchListener;
-import plia.event.TouchEvent;
-import plia.scene.Button;
+import plia.core.event.OnTouchListener;
+import plia.core.event.TouchEvent;
+import plia.core.scene.Button;
 
 import android.view.MotionEvent;
 

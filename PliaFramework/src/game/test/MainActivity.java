@@ -2,7 +2,7 @@ package game.test;
 
 import java.io.IOException;
 
-import plia.fbxplugin.fileio.FbxImporter;
+import plia.plugin.fbx.fileio.FbxImporter;
 import game.test.R;
 import android.app.Activity;
 import android.os.Bundle;

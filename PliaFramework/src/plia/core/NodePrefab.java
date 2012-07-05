@@ -1,7 +1,7 @@
 package plia.core;
 
-import plia.scene.geometry.Mesh;
-import plia.scene.shading.Material;
+import plia.core.scene.geometry.Mesh;
+import plia.core.scene.shading.Material;
 
 public class NodePrefab
 {

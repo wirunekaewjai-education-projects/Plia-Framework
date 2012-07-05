@@ -4,13 +4,13 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 import plia.core.Game;
-import plia.core.math.Vector3;
-import plia.scene.Camera;
-import plia.scene.Group;
-import plia.scene.Layer;
-import plia.scene.Light;
-import plia.scene.Scene;
-import plia.scene.Terrain;
+import plia.core.scene.Camera;
+import plia.core.scene.Group;
+import plia.core.scene.Layer;
+import plia.core.scene.Light;
+import plia.core.scene.Scene;
+import plia.core.scene.Terrain;
+import plia.math.Vector3;
 
 public class Game2 extends Game
 {
