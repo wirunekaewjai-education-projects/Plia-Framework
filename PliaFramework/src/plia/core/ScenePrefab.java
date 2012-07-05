@@ -1,6 +1,6 @@
 package plia.core;
 
-import plia.math.Matrix4;
+import plia.core.math.Matrix4;
 import plia.scene.animation.Animation;
 import plia.scene.shading.Material;
 import plia.scene.shading.Shader;

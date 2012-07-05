@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
+import plia.core.math.Matrix4;
+import plia.core.math.Vector3;
 import plia.fbxplugin.fileio.FbxImporter;
 import plia.fbxplugin.scene.FbxScene;
 import plia.fbxplugin.scene.animation.FbxAnimCurveNode;
@@ -16,8 +18,6 @@ import plia.fbxplugin.scene.shading.FbxFileTexture;
 import plia.fbxplugin.scene.shading.FbxSurfaceLambert;
 import plia.fbxplugin.scene.shading.FbxSurfaceMaterial;
 import plia.fbxplugin.scene.shading.FbxTexture;
-import plia.math.Matrix4;
-import plia.math.Vector3;
 import plia.scene.animation.Animation;
 import plia.scene.geometry.Mesh;
 import plia.scene.geometry.SkinnedMesh;

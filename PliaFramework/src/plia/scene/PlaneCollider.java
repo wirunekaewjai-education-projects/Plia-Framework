@@ -1,9 +1,9 @@
 package plia.scene;
 
 import plia.core.GameObject;
-import plia.math.Matrix4;
-import plia.math.Vector3;
-import plia.math.Vector4;
+import plia.core.math.Matrix4;
+import plia.core.math.Vector3;
+import plia.core.math.Vector4;
 
 public final class PlaneCollider extends Collider
 {

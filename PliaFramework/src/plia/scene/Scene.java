@@ -7,12 +7,12 @@ import android.opengl.GLES20;
 
 import plia.core.GameObject;
 import plia.core.Screen;
+import plia.core.math.Matrix3;
+import plia.core.math.Matrix4;
+import plia.core.math.Vector2;
+import plia.core.math.Vector3;
+import plia.core.math.Vector4;
 //import plia.framework.scene.obj3d.shading.ShaderProgram.VariableType;
-import plia.math.Matrix3;
-import plia.math.Matrix4;
-import plia.math.Vector2;
-import plia.math.Vector3;
-import plia.math.Vector4;
 import plia.scene.animation.Animation;
 import plia.scene.geometry.Dome;
 import plia.scene.geometry.Geometry;

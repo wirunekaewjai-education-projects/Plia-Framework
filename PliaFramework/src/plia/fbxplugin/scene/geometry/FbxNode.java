@@ -3,10 +3,10 @@ package plia.fbxplugin.scene.geometry;
 import java.util.ArrayList;
 
 
+import plia.core.math.*;
 import plia.fbxplugin.core.FbxObject;
 import plia.fbxplugin.scene.animation.FbxAnimCurveNode;
 import plia.fbxplugin.scene.shading.FbxSurfaceMaterial;
-import plia.math.*;
 
 public class FbxNode extends FbxObject
 {

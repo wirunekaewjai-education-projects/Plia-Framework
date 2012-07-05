@@ -1,7 +1,7 @@
 package plia.scene;
 
 import plia.core.GameObject;
-import plia.math.Vector2;
+import plia.core.math.Vector2;
 
 public class View extends Node<View>
 {

@@ -1,6 +1,6 @@
 package plia.scene.geometry;
 
-import plia.math.Vector3;
+import plia.core.math.Vector3;
 
 public class Geometry
 {

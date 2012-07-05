@@ -7,8 +7,8 @@ import java.nio.FloatBuffer;
 import android.opengl.GLES20;
 
 //import plia.framework.math.Matrix3;
-import plia.math.Matrix4;
-import plia.math.Vector3;
+import plia.core.math.Matrix4;
+import plia.core.math.Vector3;
 import plia.scene.Collider;
 import plia.scene.PlaneCollider;
 import plia.scene.Scene;

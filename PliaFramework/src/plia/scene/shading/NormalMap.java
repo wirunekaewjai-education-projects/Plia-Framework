@@ -1,6 +1,6 @@
 package plia.scene.shading;
 
-import plia.math.Vector3;
+import plia.core.math.Vector3;
 import android.graphics.Color;
 
 public final class NormalMap extends Texture2D

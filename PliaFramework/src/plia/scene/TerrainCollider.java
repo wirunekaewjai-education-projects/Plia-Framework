@@ -1,7 +1,7 @@
 package plia.scene;
 
-import plia.math.Matrix4;
-import plia.math.Vector3;
+import plia.core.math.Matrix4;
+import plia.core.math.Vector3;
 import plia.scene.shading.Heightmap;
 import plia.scene.shading.NormalMap;
 import plia.scene.shading.Texture2D;

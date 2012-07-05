@@ -1,6 +1,6 @@
 package plia.fbxplugin.scene.shading;
 
-import plia.math.Vector3;
+import plia.core.math.Vector3;
 
 public class FbxSurfaceLambert extends FbxSurfaceMaterial
 {

@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 import plia.core.Game;
-import plia.math.Vector3;
+import plia.core.math.Vector3;
 import plia.scene.Camera;
 import plia.scene.Group;
 import plia.scene.Layer;

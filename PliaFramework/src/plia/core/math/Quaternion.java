@@ -1,4 +1,4 @@
-package plia.math;
+package plia.core.math;
 
 public final class Quaternion
 {

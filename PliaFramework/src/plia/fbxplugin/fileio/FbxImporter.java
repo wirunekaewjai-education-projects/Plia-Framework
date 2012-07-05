@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
+import plia.core.math.Vector3;
+import plia.core.util.Convert;
 import plia.fbxplugin.core.FbxObject;
 import plia.fbxplugin.core.base.FbxTimeMode;
 import plia.fbxplugin.core.base.FbxTimeSpan;
@@ -25,8 +27,6 @@ import plia.fbxplugin.scene.shading.FbxFileTexture;
 import plia.fbxplugin.scene.shading.FbxSurfaceMaterial;
 import plia.fbxplugin.scene.shading.FbxSurfacePhong;
 import plia.fbxplugin.scene.shading.FbxTexture;
-import plia.math.Vector3;
-import plia.util.Convert;
 
 import android.util.Log;
 

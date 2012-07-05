@@ -3,9 +3,9 @@ package plia.core;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import plia.math.Vector2;
-import plia.math.Vector3;
-import plia.math.Vector4;
+import plia.core.math.Vector2;
+import plia.core.math.Vector3;
+import plia.core.math.Vector4;
 import plia.scene.Button;
 import plia.scene.Camera;
 import plia.scene.Group;

@@ -2,9 +2,9 @@ package plia.scene;
 
 import plia.core.AnimationPlayer;
 import plia.core.GameObject;
-import plia.math.Matrix3;
-import plia.math.Matrix4;
-import plia.math.Vector3;
+import plia.core.math.Matrix3;
+import plia.core.math.Matrix4;
+import plia.core.math.Vector3;
 
 public class Group extends Node<Group>
 {

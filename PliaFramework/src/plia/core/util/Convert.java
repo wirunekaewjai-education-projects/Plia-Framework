@@ -1,4 +1,4 @@
-package plia.util;
+package plia.core.util;
 
 public final class Convert
 {

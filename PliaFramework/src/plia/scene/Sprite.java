@@ -3,7 +3,7 @@ package plia.scene;
 import android.graphics.RectF;
 import plia.core.AnimationPlayer;
 import plia.core.GameObject;
-import plia.math.Vector2;
+import plia.core.math.Vector2;
 import plia.scene.animation.Animation;
 import plia.scene.shading.Texture2D;
 

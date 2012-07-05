@@ -1,9 +1,9 @@
 package plia.scene;
 
 //import plia.framework.debug.Debug;
-import plia.math.Matrix4;
-import plia.math.Vector3;
-import plia.math.Vector4;
+import plia.core.math.Matrix4;
+import plia.core.math.Vector3;
+import plia.core.math.Vector4;
 
 public class Collider extends Group
 {

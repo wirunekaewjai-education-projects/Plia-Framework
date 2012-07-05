@@ -1,7 +1,7 @@
 package plia.fbxplugin.scene.animation;
 
+import plia.core.math.Vector3;
 import plia.fbxplugin.core.FbxObject;
-import plia.math.Vector3;
 
 public class FbxAnimCurveNode extends FbxObject
 {
