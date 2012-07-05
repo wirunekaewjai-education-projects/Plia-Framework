@@ -1,6 +1,6 @@
 package plia.event;
 
-import plia.scene.view.Button;
+import plia.scene.Button;
 
 public interface OnTouchListener
 {

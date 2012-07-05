@@ -2,9 +2,9 @@ package plia.scene;
 
 import plia.math.Matrix4;
 import plia.math.Vector3;
-import plia.scene.group.shading.Heightmap;
-import plia.scene.group.shading.NormalMap;
-import plia.scene.group.shading.Texture2D;
+import plia.scene.shading.Heightmap;
+import plia.scene.shading.NormalMap;
+import plia.scene.shading.Texture2D;
 
 public final class TerrainCollider extends Collider
 {

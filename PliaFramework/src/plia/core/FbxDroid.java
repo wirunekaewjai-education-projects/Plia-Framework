@@ -18,12 +18,12 @@ import plia.fbxplugin.scene.shading.FbxSurfaceMaterial;
 import plia.fbxplugin.scene.shading.FbxTexture;
 import plia.math.Matrix4;
 import plia.math.Vector3;
-import plia.scene.group.animation.Animation;
-import plia.scene.group.geometry.Mesh;
-import plia.scene.group.geometry.SkinnedMesh;
-import plia.scene.group.shading.Material;
-import plia.scene.group.shading.Shader;
-import plia.scene.group.shading.Texture2D;
+import plia.scene.animation.Animation;
+import plia.scene.geometry.Mesh;
+import plia.scene.geometry.SkinnedMesh;
+import plia.scene.shading.Material;
+import plia.scene.shading.Shader;
+import plia.scene.shading.Texture2D;
 import android.content.Context;
 import android.util.Log;
 

@@ -1,9 +1,9 @@
 package plia.core;
 
 import plia.math.Matrix4;
-import plia.scene.group.animation.Animation;
-import plia.scene.group.shading.Material;
-import plia.scene.group.shading.Shader;
+import plia.scene.animation.Animation;
+import plia.scene.shading.Material;
+import plia.scene.shading.Shader;
 
 public class ScenePrefab
 {

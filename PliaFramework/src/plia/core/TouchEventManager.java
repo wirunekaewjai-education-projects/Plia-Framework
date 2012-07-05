@@ -5,7 +5,7 @@ import java.util.List;
 
 import plia.event.OnTouchListener;
 import plia.event.TouchEvent;
-import plia.scene.view.Button;
+import plia.scene.Button;
 
 import android.view.MotionEvent;
 

@@ -1,8 +1,8 @@
 package plia.scene;
 
 import plia.core.GameObject;
-import plia.scene.group.geometry.Geometry;
-import plia.scene.group.shading.Material;
+import plia.scene.geometry.Geometry;
+import plia.scene.shading.Material;
 
 
 public class Model extends Group

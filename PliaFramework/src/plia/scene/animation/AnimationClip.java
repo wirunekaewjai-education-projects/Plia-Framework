@@ -1,4 +1,4 @@
-package plia.scene.group.animation;
+package plia.scene.animation;
 
 public class AnimationClip
 {

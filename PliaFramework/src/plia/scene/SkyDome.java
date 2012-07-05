@@ -1,6 +1,6 @@
 package plia.scene;
 
-import plia.scene.group.shading.Texture2D;
+import plia.scene.shading.Texture2D;
 
 public class SkyDome extends Sky
 {

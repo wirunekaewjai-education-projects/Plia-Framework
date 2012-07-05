@@ -1,4 +1,4 @@
-package plia.scene.group.shading;
+package plia.scene.shading;
 
 import plia.math.Vector3;
 import android.graphics.Color;

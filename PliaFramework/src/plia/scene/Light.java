@@ -1,7 +1,7 @@
 package plia.scene;
 
 import plia.core.GameObject;
-import plia.scene.group.shading.Color3;
+import plia.scene.shading.Color3;
 
 public class Light extends Group
 {

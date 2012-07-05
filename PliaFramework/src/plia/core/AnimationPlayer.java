@@ -2,7 +2,7 @@ package plia.core;
 
 import java.util.Vector;
 
-import plia.scene.group.animation.Animation;
+import plia.scene.animation.Animation;
 
 public final class AnimationPlayer
 {

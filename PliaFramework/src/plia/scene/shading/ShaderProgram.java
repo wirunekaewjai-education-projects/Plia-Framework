@@ -1,4 +1,4 @@
-package plia.scene.group.shading;
+package plia.scene.shading;
 
 //import java.nio.Buffer;
 //import java.nio.IntBuffer;

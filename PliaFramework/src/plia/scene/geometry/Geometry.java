@@ -1,4 +1,4 @@
-package plia.scene.group.geometry;
+package plia.scene.geometry;
 
 import plia.math.Vector3;
 

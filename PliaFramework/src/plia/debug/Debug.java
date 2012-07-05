@@ -13,9 +13,9 @@ import plia.scene.Collider;
 import plia.scene.PlaneCollider;
 import plia.scene.Scene;
 import plia.scene.SphereCollider;
-import plia.scene.group.shading.Color3;
-import plia.scene.group.shading.Shader;
-import plia.scene.group.shading.ShaderProgram;
+import plia.scene.shading.Color3;
+import plia.scene.shading.Shader;
+import plia.scene.shading.ShaderProgram;
 
 public final class Debug
 {

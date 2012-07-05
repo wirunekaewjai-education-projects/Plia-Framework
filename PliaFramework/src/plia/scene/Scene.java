@@ -13,17 +13,16 @@ import plia.math.Matrix4;
 import plia.math.Vector2;
 import plia.math.Vector3;
 import plia.math.Vector4;
-import plia.scene.group.animation.Animation;
-import plia.scene.group.geometry.Dome;
-import plia.scene.group.geometry.Geometry;
-import plia.scene.group.geometry.Mesh;
-import plia.scene.group.geometry.Plane;
-import plia.scene.group.geometry.Quad;
-import plia.scene.group.shading.Color3;
-import plia.scene.group.shading.Shader;
-import plia.scene.group.shading.ShaderProgram;
-import plia.scene.group.shading.Texture2D;
-import plia.scene.view.Sprite;
+import plia.scene.animation.Animation;
+import plia.scene.geometry.Dome;
+import plia.scene.geometry.Geometry;
+import plia.scene.geometry.Mesh;
+import plia.scene.geometry.Plane;
+import plia.scene.geometry.Quad;
+import plia.scene.shading.Color3;
+import plia.scene.shading.Shader;
+import plia.scene.shading.ShaderProgram;
+import plia.scene.shading.Texture2D;
 
 @SuppressWarnings({"rawtypes"})
 public final class Scene extends GameObject

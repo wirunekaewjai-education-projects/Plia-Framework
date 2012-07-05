@@ -1,4 +1,4 @@
-package plia.scene.view;
+package plia.scene;
 
 //import plia.framework.core.GameObject;
 import plia.core.TouchEventManager;

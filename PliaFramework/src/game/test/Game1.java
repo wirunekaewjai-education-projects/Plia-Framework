@@ -7,6 +7,7 @@ import plia.core.Game;
 import plia.debug.Debug;
 import plia.event.OnTouchListener;
 import plia.math.Vector3;
+import plia.scene.Button;
 import plia.scene.Camera;
 import plia.scene.Group;
 import plia.scene.Layer;
@@ -16,9 +17,8 @@ import plia.scene.Scene;
 import plia.scene.SphereCollider;
 import plia.scene.Terrain;
 import plia.scene.View;
-import plia.scene.group.animation.Animation;
-import plia.scene.group.animation.PlaybackMode;
-import plia.scene.view.Button;
+import plia.scene.animation.Animation;
+import plia.scene.animation.PlaybackMode;
 
 public class Game1 extends Game implements OnTouchListener
 {

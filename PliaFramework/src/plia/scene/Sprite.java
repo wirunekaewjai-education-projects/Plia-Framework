@@ -1,12 +1,11 @@
-package plia.scene.view;
+package plia.scene;
 
 import android.graphics.RectF;
 import plia.core.AnimationPlayer;
 import plia.core.GameObject;
 import plia.math.Vector2;
-import plia.scene.View;
-import plia.scene.group.animation.Animation;
-import plia.scene.group.shading.Texture2D;
+import plia.scene.animation.Animation;
+import plia.scene.shading.Texture2D;
 
 public class Sprite extends View
 {

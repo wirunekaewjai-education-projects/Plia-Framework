@@ -1,4 +1,4 @@
-package plia.scene.group.shading;
+package plia.scene.shading;
 
 final class DiffuseShader extends Shader
 {

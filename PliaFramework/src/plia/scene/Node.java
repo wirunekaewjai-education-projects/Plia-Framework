@@ -1,7 +1,7 @@
 package plia.scene;
 
 import plia.core.GameObject;
-import plia.scene.group.animation.Animation;
+import plia.scene.animation.Animation;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 class Node<T extends Node> extends GameObject

@@ -1,4 +1,4 @@
-package plia.scene.group.geometry;
+package plia.scene.geometry;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

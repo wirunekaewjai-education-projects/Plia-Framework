@@ -2,7 +2,7 @@ package plia.scene;
 
 import java.util.ArrayList;
 
-import plia.scene.group.shading.Texture2D;
+import plia.scene.shading.Texture2D;
 
 public class Terrain extends Group
 {
