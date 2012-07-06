@@ -1,5 +1,8 @@
 package plia.core.scene;
 
+import android.util.Log;
+import plia.core.debug.Debug;
+import plia.core.scene.shading.Color3;
 import plia.core.scene.shading.Heightmap;
 import plia.core.scene.shading.NormalMap;
 import plia.core.scene.shading.Texture2D;
@@ -40,6 +43,11 @@ public final class TerrainCollider extends Collider
 			
 			// find uv by normalize object position with terrain scale
 			Vector3 terrainPosition = getWorldMatrix().getTranslation();
+			
+			if(terrain instanceof MeshTerrain)
+			{
+				terrainPosition = terrainPosition.subtract(new Vector3(scale /2f, scale /2f, scale /2f));
+			}
 	
 			float npx = Math.min(scale, Math.max(0f, bPos.x - terrainPosition.x));
 			float npy = Math.min(scale, Math.max(0f, bPos.y - terrainPosition.y));
@@ -121,6 +129,8 @@ public final class TerrainCollider extends Collider
 				normalSurface = Vector3.scale(Vector3.add(Vector3.add(normals[1], normals[2]), normals[3]), 0.333333f).getNormalized();
 			}
 			
+			Log.e("Max Height", iH+"");
+			
 			if(iH > -1)
 			{
 				float bottomlength = 0;
@@ -135,19 +145,25 @@ public final class TerrainCollider extends Collider
 
 				if(bounds.parent != null)
 				{
+					Group par = bounds.parent;
+					
 					float range = newZ - oldZ;
 					
-					Matrix4 parentWorld = bounds.parent.getWorldMatrix().clone();
+					Matrix4 parentWorld = par.getWorldMatrix();
 					
 					float currentZ = parentWorld.m43;
 					parentWorld.m43 = currentZ + range;
 					
-					Vector3 oldUp = parentWorld.getUp();
-					parentWorld.setUp(Vector3.lerp(oldUp, normalSurface, 0.25f));
+//					parentWorld.m41 += (range * parentWorld.m31);
+//					parentWorld.m42 += (range * parentWorld.m32);
+//					parentWorld.m43 += (range * parentWorld.m33);
 					
-					Matrix4 inv = Matrix4.multiply(bounds.parent.invParent, parentWorld);
-					bounds.parent.localRotation = inv.toMatrix3();
-					bounds.parent.localTranslation = inv.getTranslation();
+					par.hasChanged = true;
+					
+//					Vector3 end = Vector3.add(bPos, Vector3.scale(normalSurface, 100));
+//					Debug.drawLine(bPos, end, new Color3(1, 1, 1));
+//					
+//					par.setUp(Vector3.lerp(par.getUp(), normalSurface, 0.25f));
 				}
 				else
 				{
@@ -155,12 +171,14 @@ public final class TerrainCollider extends Collider
 					
 					world.m43 = newZ;
 					
-					Vector3 oldUp = world.getUp();
-					world.setUp(Vector3.lerp(oldUp, normalSurface, 0.25f));
+					bounds.hasChanged = true;
 					
-					Matrix4 inv = Matrix4.multiply(bounds.parent.invParent, world);
-					bounds.localRotation = inv.toMatrix3();
-					bounds.localTranslation = inv.getTranslation();
+//					Vector3 oldUp = world.getUp();
+//					world.setUp(Vector3.lerp(oldUp, normalSurface, 0.25f));
+					
+//					Matrix4 inv = Matrix4.multiply(bounds.parent.invParent, world);
+//					bounds.localRotation = inv.toMatrix3();
+//					bounds.localTranslation = inv.getTranslation();
 				}
 				
 				bounds.calTerrainChanged = false;

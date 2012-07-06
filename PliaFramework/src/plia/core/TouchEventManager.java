@@ -43,7 +43,7 @@ public class TouchEventManager
 	
 	public void update()
 	{
-		if(currentButton != null && currentButton.isActive())
+		if(currentButton != null)
 		{
 			if(currentAction == TouchEvent.ACTION_DOWN)
 			{
@@ -102,7 +102,7 @@ public class TouchEventManager
 			}
 		}
 
-		if(currentButton != null && currentButton.isActive())
+		if(currentButton != null)
 		{
 			if(!currentButton.intersect(locationX, locationY))
 			{

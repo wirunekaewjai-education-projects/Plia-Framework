@@ -14,10 +14,14 @@ import plia.core.scene.Camera;
 import plia.core.scene.Group;
 import plia.core.scene.Layer;
 import plia.core.scene.Light;
+import plia.core.scene.MeshTerrain;
 import plia.core.scene.PlaneCollider;
 import plia.core.scene.Scene;
+import plia.core.scene.SphereCollider;
 import plia.core.scene.Terrain;
 import plia.core.scene.View;
+import plia.core.scene.animation.Animation;
+import plia.core.scene.animation.PlaybackMode;
 import plia.core.scene.shading.Color3;
 import plia.math.Vector2;
 import plia.math.Vector3;
@@ -29,7 +33,8 @@ public class Game2 extends Game
 	private Layer<View> layer2 = new Layer<View>();
 	
 	private Camera camera;
-	private Group map, buffy;
+	private Terrain map;
+	private Group buffy;
 	
 	private Button padButton;
 	
@@ -39,33 +44,35 @@ public class Game2 extends Game
 		getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
-		map = model("tscene.FBX");
+		setScene(scene);
+		
+		map = terrain("terrain/heightmap.png", "terrain/diffusemap.jpg", 80, 600);
+		map.setPosition(-300, -300, 0);
+		
 		buffy = model("buffylow.FBX");
 		buffy.setScale(0.1f, 0.1f, 0.1f);
+		
+		SphereCollider bs = collider(3);
+		bs.translate(0, 0.5f, 3);
+		buffy.setCollider(bs);
 
-		layer1.addChild(map, buffy);
 		
 		
+		Animation animation1 = buffy.getAnimation();
+		animation1.play("idle");
+		animation1.getAnimationClip("idle").set(35, 50, PlaybackMode.LOOP);
+
 		camera = Scene.getMainCamera();
 //		camera.setPosition(-300, 300, 200);
 //		camera.setLookAt(vec3());
-		camera.setPosition(0, -100, 90);
+		camera.setPosition(0, -10, 9);
 		camera.rotate(-10, 0, 0);
 		camera.setRange(2500);
 		camera.setSky(skydome("sky_sphere01.jpg"));
 
 //		layer1.addChild(camera);
 		buffy.addChild(camera);
-		
-		Vector3 min = map.asModel().getGeometry().getMin();
-		Vector3 max = map.asModel().getGeometry().getMax();
-		
-		Vector3 size = Vector3.subtract(max, min);
-		
-		collider = collider(vec3(0, 0, 1), vec2(size.x, size.y));
-		
-		
-		
+
 		padButton = button("pad.png");
 		
 		float ratio = (float)Screen.getWidth() / Screen.getHeight();
@@ -84,7 +91,7 @@ public class Game2 extends Game
 				
 				Vector2 dir = vec2(dx, dy).getNormalized();
 				
-				buffy.translate(0, dir.y * 1f, 0);
+				buffy.translate(0, 0.5f * dir.y, 0);
 
 				if(dir.x != 0.0f)
 				{
@@ -92,26 +99,31 @@ public class Game2 extends Game
 				}
 			}
 		});
-		
 
-		layer1.addChild(collider);
+		layer1.addChild(map, buffy);
 		layer2.addChild(padButton);
 		
 		scene.addLayer(layer1);
 		scene.addLayer(layer2);
 		
-		this.setScene(scene);
+		map.attachCollider(bs);
+		
+		
 	}
 	PlaneCollider collider;
 
 	public void onUpdate()
 	{
-		Log.e("Buffy", buffy.getPosition().toString());
-		
-//		buffy.rotate(0.05f, 0, 0);
+//		Vector3 position = Vector3.add(buffy.getPosition(), vec3(0, -10, 9));
+//		camera.setPosition(position);
+//		camera.setLookAt(buffy);
+//		camera.rotate(10, 0, 0);
+//		Log.e("Buffy", buffy.getPosition().toString());
+//		Log.e("Bounds", buffy.getCollider().getPosition().toString());
+//		buffy.translate(0, 1, 0);
 //		buffy.translate(0, 1, 0);
 
-//		Debug.drawBounds(collider, new Color3(0.5f, 1, 0.5f));
+		Debug.drawBounds(buffy.getCollider(), new Color3(0.5f, 1, 0.5f));
 	}
 
 	@Override

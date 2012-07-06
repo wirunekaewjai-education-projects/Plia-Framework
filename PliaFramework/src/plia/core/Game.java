@@ -8,6 +8,7 @@ import plia.core.scene.Button;
 import plia.core.scene.Camera;
 import plia.core.scene.Group;
 import plia.core.scene.Light;
+import plia.core.scene.MeshTerrain;
 import plia.core.scene.PlaneCollider;
 import plia.core.scene.Scene;
 import plia.core.scene.SkyBox;
@@ -15,6 +16,7 @@ import plia.core.scene.SkyDome;
 import plia.core.scene.SphereCollider;
 import plia.core.scene.Sprite;
 import plia.core.scene.Terrain;
+import plia.core.scene.geometry.Geometry;
 import plia.core.scene.shading.Color3;
 import plia.core.scene.shading.Color4;
 import plia.core.scene.shading.Shader;
@@ -22,6 +24,7 @@ import plia.core.scene.shading.Texture2D;
 import plia.math.Vector2;
 import plia.math.Vector3;
 import plia.math.Vector4;
+import plia.racing.RaceCourse;
 
 import android.app.Activity;
 import android.opengl.GLES20;
@@ -256,6 +259,27 @@ public abstract class Game extends Activity implements IFramework
 		t.setBaseTexture(GameObjectManager.loadTexture2D(diffusemapSrc));
 		
 		return t;
+	}
+	
+	public static final MeshTerrain terrain(String fbx_path, String heightmapSrc, String normalmapSrc)
+	{
+		Group mdl = model(fbx_path);
+		
+		Texture2D heightMap = tex2D(heightmapSrc);
+		Texture2D normalMap = tex2D(normalmapSrc);
+		
+		Geometry geo = mdl.asModel().getGeometry();
+		
+		float maxHeight = geo.getMax().z;
+
+		Vector3 min = geo.getMin();
+		Vector3 max = geo.getMax();
+		
+		Vector3 size = Vector3.subtract(max, min);
+		
+		MeshTerrain terr = new MeshTerrain(mdl, heightMap, normalMap, (int)maxHeight, (int)size.y);
+//		terr.getTerrainModel().asModel().getMaterial().setBaseTexture(normalMap);
+		return terr;
 	}
 	
 	public static final Light directionalLight(float intensity)

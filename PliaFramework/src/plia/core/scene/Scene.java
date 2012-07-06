@@ -508,19 +508,33 @@ public final class Scene extends GameObject
 		
 		Matrix4 tmm = new Matrix4();
 		Matrix3 nm = new Matrix3();
+		
+		Vector3 scale = model.getScale();
+		Matrix4 world = model.getWorldMatrix().clone();
+		world.m11 *= scale.x;
+		world.m12 *= scale.y;
+		world.m13 *= scale.z;
+		
+		world.m21 *= scale.x;
+		world.m22 *= scale.y;
+		world.m23 *= scale.z;
+		
+		world.m31 *= scale.x;
+		world.m32 *= scale.y;
+		world.m33 *= scale.z;
 
 		if(geometryType == Geometry.MESH && hasAnimation)
 		{
 			Matrix4 tmv = new Matrix4();
 			
 			tempPalette.set(matrixPalette);
-			Matrix4.multiply(tmv, model.getWorldMatrix(), tempPalette);
+			Matrix4.multiply(tmv, world, tempPalette);
 			Matrix4.multiply(tmm, tmv, model.getAxisRotation());
 			
 		}
 		else
 		{
-			Matrix4.multiply(tmm, model.getWorldMatrix(), model.getAxisRotation());
+			Matrix4.multiply(tmm, world, model.getAxisRotation());
 		}
 
 		Matrix3.createNormalMatrix(nm, tmm);
@@ -666,12 +680,23 @@ public final class Scene extends GameObject
 		{
 			for (int i = 0; i < terrains.size(); i++)
 			{
-				drawTerrain(terrains.get(i));
+				Terrain terrain = terrains.get(i);
+				
+//				drawDisplacementTerrain(terrain);
+				
+				if(terrain instanceof MeshTerrain)
+				{
+					recursiveGroup(((MeshTerrain) terrain).getTerrainModel());
+				}
+				else
+				{
+					drawDisplacementTerrain(terrain);
+				}
 			}
 		}
 	}
 	
-	private void drawTerrain(Terrain terrain)
+	private void drawDisplacementTerrain(Terrain terrain)
 	{
 		Matrix4 tmm = new Matrix4();
 		tmm.setTranslation(terrain.getWorldMatrix().getTranslation());
