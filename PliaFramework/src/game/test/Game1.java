@@ -147,7 +147,7 @@ public class Game1 extends Game implements OnTouchListener
 		button3.setOnTouchListener(this);
 		button4.setOnTouchListener(this);
 		
-		terrain.getCollider().attachBounds(bs);
+		terrain.attachCollider(bs);
 		
 		model3.setLookAt(camera);
 	}

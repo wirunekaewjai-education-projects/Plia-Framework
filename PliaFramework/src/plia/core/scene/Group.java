@@ -1,5 +1,6 @@
 package plia.core.scene;
 
+import android.util.Log;
 import plia.core.AnimationPlayer;
 import plia.core.GameObject;
 import plia.math.Matrix3;
@@ -407,14 +408,43 @@ public class Group extends Node<Group>
 	
 	public void translate(float x, float y, float z)
 	{
-		this.localTranslation.x += (x * localRotation.m11) + (y * localRotation.m21) + (z * localRotation.m31);
-		this.localTranslation.y += (x * localRotation.m12) + (y * localRotation.m22) + (z * localRotation.m32);
-		this.localTranslation.z += (x * localRotation.m13) + (y * localRotation.m23) + (z * localRotation.m33);
+		float vx = (x * localRotation.m11) + (y * localRotation.m21) + (z * localRotation.m31);
+		float vy = (x * localRotation.m12) + (y * localRotation.m22) + (z * localRotation.m32);
+		float vz = (x * localRotation.m13) + (y * localRotation.m23) + (z * localRotation.m33);
+		
+		if(!Float.isNaN(vx))
+		{
+			this.localTranslation.x += vx;
+		}
+		
+		if(!Float.isNaN(vy))
+		{
+			this.localTranslation.y += vy;
+		}
+		
+		if(!Float.isNaN(vz))
+		{
+			this.localTranslation.z += vz;
+		}
+		
 		this.hasChanged = true;
 	}
 	
 	public void translate(float x, float y, float z, boolean relativeWorld)
 	{
+		if(Float.isNaN(x))
+		{
+			x = 0;
+		}
+		if(Float.isNaN(y))
+		{
+			y = 0;
+		}
+		if(Float.isNaN(z))
+		{
+			z = 0;
+		}
+		
 		if(relativeWorld)
 		{
 			Matrix4 world = getWorldMatrix();
@@ -440,12 +470,38 @@ public class Group extends Node<Group>
 	
 	public void rotate(float x, float y, float z)
 	{
+		if(Float.isNaN(x))
+		{
+			x = 0;
+		}
+		if(Float.isNaN(y))
+		{
+			y = 0;
+		}
+		if(Float.isNaN(z))
+		{
+			z = 0;
+		}
+		
 		this.localRotation = Matrix3.createFromEulerAngles(x, y, z).multiply(localRotation);
 		this.hasChanged = true;
 	}
 	
 	public void rotate(float x, float y, float z, boolean relativeWorld)
 	{
+		if(Float.isNaN(x))
+		{
+			x = 0;
+		}
+		if(Float.isNaN(y))
+		{
+			y = 0;
+		}
+		if(Float.isNaN(z))
+		{
+			z = 0;
+		}
+		
 		if(relativeWorld)
 		{
 			Matrix4 rotation = Matrix4.createFromEulerAngles(x, y, z);

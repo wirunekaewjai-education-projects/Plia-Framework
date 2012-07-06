@@ -7,7 +7,7 @@ import plia.core.event.OnTouchListener;
 import plia.core.event.TouchEvent;
 import plia.core.scene.Button;
 
-import android.view.MotionEvent;
+import android.util.Log;
 
 public class TouchEventManager
 {
@@ -43,7 +43,7 @@ public class TouchEventManager
 	
 	public void update()
 	{
-		if(currentButton != null)
+		if(currentButton != null && currentButton.isActive())
 		{
 			if(currentAction == TouchEvent.ACTION_DOWN)
 			{
@@ -78,19 +78,10 @@ public class TouchEventManager
 		}
 	}
 	
-	public void onTouchEvent(MotionEvent event)
+	public void onTouchEvent(int action, float x, float y)
 	{
-		int action = TouchEvent.ACTION_NONE;
-		
-		switch(event.getAction())
-		{
-			case MotionEvent.ACTION_DOWN : action = TouchEvent.ACTION_DOWN; break;
-			case MotionEvent.ACTION_MOVE : action = TouchEvent.ACTION_DRAG; break;
-			case MotionEvent.ACTION_UP : action = TouchEvent.ACTION_UP; break;
-		}
-		
-		locationX = event.getX() / Screen.getWidth();
-		locationY = event.getY() / Screen.getHeight();
+		locationX = x;
+		locationY = y;
 		
 		if(action == TouchEvent.ACTION_DOWN)
 		{
@@ -110,8 +101,8 @@ public class TouchEventManager
 				}
 			}
 		}
-		
-		if(currentButton != null)
+
+		if(currentButton != null && currentButton.isActive())
 		{
 			if(!currentButton.intersect(locationX, locationY))
 			{

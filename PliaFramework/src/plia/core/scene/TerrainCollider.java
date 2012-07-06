@@ -27,20 +27,6 @@ public final class TerrainCollider extends Collider
 		}	
 	}
 	
-	public boolean attachBounds(Collider bounds)
-	{
-		terrain.attached.add(bounds);
-		
-		return true;
-	}
-	
-	public boolean detachBounds(Collider bounds)
-	{
-		terrain.attached.remove(bounds);
-		
-		return true;
-	}
-	
 	private void glueObject(Collider bounds)
 	{
 		if(bounds.calTerrainChanged)

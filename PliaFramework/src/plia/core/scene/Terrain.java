@@ -13,7 +13,7 @@ public class Terrain extends Group
 	private int scale;
 	private int height;
 
-	ArrayList<Collider> attached = new ArrayList<Collider>();
+	protected ArrayList<Collider> attached = new ArrayList<Collider>();
 
 	public Terrain(Texture2D heightmap, int maxHeight, int scale)
 	{
@@ -22,6 +22,21 @@ public class Terrain extends Group
 		this.scale = scale;
 		
 		this.setCollider(new TerrainCollider(this));
+	}
+	
+	
+	public boolean attachCollider(Collider collider)
+	{
+		attached.add(collider);
+		
+		return true;
+	}
+	
+	public boolean detachCollider(Collider collider)
+	{
+		attached.remove(collider);
+		
+		return true;
 	}
 
 	public void setTerrainScale(int scale)

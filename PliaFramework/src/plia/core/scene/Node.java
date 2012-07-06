@@ -51,7 +51,6 @@ class Node<T extends Node> extends GameObject
 	@Override
 	public void setActive(boolean active)
 	{
-		// TODO Auto-generated method stub
 		super.setActive(active);
 		
 		for (int i = 0; i < childCount; i++)

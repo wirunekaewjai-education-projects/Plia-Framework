@@ -3,6 +3,7 @@ package plia.core;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import plia.core.event.TouchEvent;
 import plia.core.scene.Button;
 import plia.core.scene.Camera;
 import plia.core.scene.Group;
@@ -52,7 +53,10 @@ public abstract class Game extends Activity implements IFramework
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
-//		instance = this;
+		instance = this;
+		
+		Screen.w = getWindowManager().getDefaultDisplay().getWidth();
+		Screen.h = getWindowManager().getDefaultDisplay().getHeight();
 		
 		this.gameObjectManager = GameObjectManager.getInstance();
 		this.gameObjectManager.setContext(this);
@@ -154,10 +158,29 @@ public abstract class Game extends Activity implements IFramework
 	}
 	
 	@Override
-	public boolean onTouchEvent(MotionEvent event)
+	public final boolean onTouchEvent(MotionEvent event)
 	{
-		this.touchEventManager.onTouchEvent(event);
+		int action = TouchEvent.ACTION_NONE;
+		
+		switch(event.getAction())
+		{
+			case MotionEvent.ACTION_DOWN : action = TouchEvent.ACTION_DOWN; break;
+			case MotionEvent.ACTION_MOVE : action = TouchEvent.ACTION_DRAG; break;
+			case MotionEvent.ACTION_UP : action = TouchEvent.ACTION_UP; break;
+		}
+		
+		float x = event.getX() / Screen.getWidth();
+		float y = event.getY() / Screen.getHeight();
+		
+		onTouchEvent(action, x, y);
+		touchEventManager.onTouchEvent(action, x, y);
+
 		return true;
+	}
+	
+	public void onTouchEvent(int action, float x, float y)
+	{
+		
 	}
 	
 	@Override
@@ -191,6 +214,8 @@ public abstract class Game extends Activity implements IFramework
 			Screen.w = width;
 			Screen.h = height;
 			
+			Log.e("Screen", Screen.getWidth()+", "+Screen.getHeight());
+			
 			Scene.onSurfaceChanged();
 		}
 
@@ -203,7 +228,11 @@ public abstract class Game extends Activity implements IFramework
 
 	private Scene currentScene;
 	
-//	private static Game instance;
+	private static Game instance;
+	static Game getInstance()
+	{
+		return instance;
+	}
 
 	public void setScene(Scene scene)
 	{
