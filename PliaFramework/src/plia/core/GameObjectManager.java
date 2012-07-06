@@ -20,6 +20,7 @@ import android.opengl.Matrix;
 import android.util.Log;
 //import plia.framework.scene.obj3d.shading.Color4;
 import plia.core.scene.Button;
+import plia.core.scene.DisplacementTerrain;
 import plia.core.scene.Group;
 import plia.core.scene.Model;
 import plia.core.scene.Sprite;
@@ -80,6 +81,7 @@ public class GameObjectManager
 		
 		for (Terrain terrain : getNormalQueue)
 		{
+//			createTerrainHeightMap(terrain);
 			createTerrainNormalMap(terrain);
 		}
 		
@@ -275,9 +277,10 @@ public class GameObjectManager
 	{
 		Texture2D heightmap = loadTexture2D(heightmapSrc);
 
-		Terrain terrain = new Terrain(heightmap, maxHeight, scale);
+		Terrain terrain = new DisplacementTerrain(heightmap, maxHeight, scale);
 		
 		instance.getNormalQueue.add(terrain);
+		
 
 		return terrain;
 	}
@@ -395,6 +398,134 @@ public class GameObjectManager
 		Terrain.setTerrainBuffer(instance.terrainBuffers);
 	}
 	
+	private static Texture2D createTerrainHeightMap(Terrain terrain)
+	{
+//		glEnable(GL_DEPTH_TEST);
+//		glEnable(GL_CULL_FACE);
+		
+		int segment = Plane.getInstance().getSegment();
+		IntBuffer normalmapTextureBuffer = ByteBuffer.allocateDirect(segment*segment*4).order(ByteOrder.nativeOrder()).asIntBuffer();
+		
+		int[] frameBuffer = new int[1];
+		int[] depthRenderBuffer = new int[1];
+		int[] renderTextureBuffer = new int[1];
+		IntBuffer textureBuffer;
+
+		// generate
+		glGenFramebuffers(1, frameBuffer, 0);
+		glGenRenderbuffers(1, depthRenderBuffer, 0);
+		glGenTextures(1, renderTextureBuffer, 0);
+
+		// generate color texture
+		glBindTexture(GL_TEXTURE_2D, renderTextureBuffer[0]);
+
+		// parameters
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+		// create it
+		// create an empty intbuffer first?
+		int[] buf = new int[segment * segment];
+		textureBuffer = ByteBuffer.allocateDirect(buf.length * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, segment, segment, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureBuffer);
+
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer[0]);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, segment, segment);
+		
+		// Bind Normal Buffer
+		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer[0]);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTextureBuffer[0], 0);
+		
+		// attach render buffer as depth buffer
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBuffer[0]);
+
+		float[] projection = new float[16];
+		float[] modelView = new float[16];
+		float[] mvp = new float[16];
+		
+		int scale = terrain.getTerrainScale();
+		int height = terrain.getTerrainMaxHeight();
+		
+		Matrix.orthoM(projection, 0, 0, segment, 0, segment, 1, 10);
+		Matrix.setLookAtM(modelView, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0);
+		Matrix.multiplyMM(mvp, 0, projection, 0, modelView, 0);
+
+		glViewport(0, 0, segment, segment);
+		glClearColor(0.3f, 0.6f, 0.9f, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		ShaderProgram sprogram = Shader.AMBIENT.getProgram(7);
+		int program = sprogram.getProgramID();
+		
+		glUseProgram(program);
+		
+		glUniform1f(glGetUniformLocation(program, "gH"), 1);
+		
+		int vertex_handle = glGetAttribLocation(program, "vertex");
+		int mvp_handle = glGetUniformLocation(program, "modelViewProjectionMatrix");
+		
+		int heightmap_handle = glGetUniformLocation(program, "heightmap");
+		int terrainData_handle = glGetUniformLocation(program, "terrainData");
+		
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, terrain.getHeightmap().getTextureBuffer());
+		glUniform1i(heightmap_handle, 0);
+		
+		glUniform3f(terrainData_handle, height, segment, scale);
+
+		glUniformMatrix4fv(mvp_handle, 1, false, mvp, 0);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, instance.terrainBuffers[0]);
+		glEnableVertexAttribArray(vertex_handle);
+		glVertexAttribPointer(vertex_handle, 2, GL_FLOAT, false, 0, 0);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, instance.terrainBuffers[1]);
+		glDrawElements(GL_TRIANGLES, Plane.getInstance().getIndicesCount(), GL_UNSIGNED_INT, 0);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		
+		glDisableVertexAttribArray(vertex_handle);
+		
+		// Unbind Normal
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		
+		// Bind Normal Again
+		// Bind Normal Buffer
+		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer[0]);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTextureBuffer[0], 0);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBuffer[0]);
+		// Read Pixels
+		glReadPixels(0, 0, segment, segment, GL_RGBA, GL_UNSIGNED_BYTE, normalmapTextureBuffer);
+		// Unbind Normal
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+		
+		int[] pixels = new int[normalmapTextureBuffer.capacity()];
+		for (int i = 0; i < normalmapTextureBuffer.capacity(); i++)
+		{
+			pixels[i] = normalmapTextureBuffer.get(i);
+//			Log.e(i+"", Color.red(pixels[i])+", "+Color.green(pixels[i])+", "+Color.blue(pixels[i]));
+		}
+		
+		Bitmap bitmap = Bitmap.createBitmap(pixels, segment, segment, Config.RGB_565);
+
+		Texture2D heightmap = new Texture2D("heights", renderTextureBuffer[0], pixels, segment, segment);
+		Terrain.setHeightMapTo(terrain, heightmap);
+		
+		String key = ""+terrain.hashCode();
+		
+		instance.texturesList.put(key, heightmap);
+		instance.bitmapList.put(key, bitmap);
+		
+		return heightmap;
+	}
+	
 	private static Texture2D createTerrainNormalMap(Terrain terrain)
 	{
 //		glEnable(GL_DEPTH_TEST);
@@ -460,6 +591,7 @@ public class GameObjectManager
 		int program = sprogram.getProgramID();
 		
 		glUseProgram(program);
+		glUniform1f(glGetUniformLocation(program, "gH"), 0);
 		
 		int vertex_handle = glGetAttribLocation(program, "vertex");
 		int mvp_handle = glGetUniformLocation(program, "modelViewProjectionMatrix");

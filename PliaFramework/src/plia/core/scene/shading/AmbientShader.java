@@ -336,7 +336,7 @@ final class AmbientShader extends Shader
 	
 	private static String[] getAmbientSrc08()
 	{
-		// Gen Terrain NormalMap
+		// Gen Terrain NormalMap / Heightmap
 		String vs = 
 				"uniform mat4 modelViewProjectionMatrix;" +
 				"" +
@@ -344,6 +344,8 @@ final class AmbientShader extends Shader
 				"uniform sampler2D heightmap;" +
 				"" +
 				"attribute vec2 vertex;" +
+				"" +
+				"uniform float gH;" +
 				"" +
 				"varying vec4 vertex_color;" +
 				"" +
@@ -388,7 +390,21 @@ final class AmbientShader extends Shader
 				"" +
 				"	vec3 N = (n1+n2+n3+n4+n5+n6)/6.0;" +
 				"	vec3 C = normalize(N);" +
-				"	vertex_color = vec4(((C.gbr/2.0) + 0.5), 1.0);" +
+				"	if(gH >= 0.5)" +
+				"	{" +
+				"		float u = min(0.99, max(0.01, point.x/terrainData.z));" +
+				"		float v = min(0.99, max(0.01, point.y/terrainData.z));" +
+				"" +
+				"		vec2 coord = vec2(u, v);" +
+				"		vec4 displace = texture2D(heightmap, coord);" +
+				"		float height = displace.x;" +
+				
+				"		vertex_color = displace;" +
+				"	}" +
+				"	else" +
+				"	{" +
+				"		vertex_color = vec4(((C.gbr/2.0) + 0.5), 1.0);" +
+				"	}" +
 				"" +
 				"	vec4 position = vec4(vertex.x, vertex.y, 0.0, 1.0);" +
 				"" +

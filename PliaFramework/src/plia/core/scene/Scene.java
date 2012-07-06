@@ -690,13 +690,13 @@ public final class Scene extends GameObject
 				}
 				else
 				{
-					drawDisplacementTerrain(terrain);
+					drawDisplacementTerrain((DisplacementTerrain) terrain);
 				}
 			}
 		}
 	}
 	
-	private void drawDisplacementTerrain(Terrain terrain)
+	private void drawDisplacementTerrain(DisplacementTerrain terrain)
 	{
 		Matrix4 tmm = new Matrix4();
 		tmm.setTranslation(terrain.getWorldMatrix().getTranslation());
@@ -756,7 +756,7 @@ public final class Scene extends GameObject
 		GLES20.glUniform3f(GLES20.glGetUniformLocation(program, "terrainData"), terrain.getTerrainMaxHeight(), Plane.getInstance().getSegment(), terrain.getTerrainScale());
 		
 		int vh = GLES20.glGetAttribLocation(program, "vertex");
-		
+
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, Terrain.getTerrainBuffer(0));
 		GLES20.glEnableVertexAttribArray(vh);
 		GLES20.glVertexAttribPointer(vh, 2, GLES20.GL_FLOAT, false, 0, 0);

@@ -141,7 +141,7 @@ public final class Debug
 		Vector3 eye = Scene.getMainCamera().getWorldMatrix().getTranslation();
 		Vector3 pos = world.getTranslation();
 		
-		drawLine(new Vector3(eye.x, eye.y, eye.z - 10), pos, new Color3(1, 0, 0));
+//		drawLine(new Vector3(eye.x, eye.y, eye.z - 10), pos, new Color3(1, 0, 0));
 		
 		// Draw Wire-Sphere
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);

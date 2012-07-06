@@ -84,6 +84,11 @@ public class Terrain extends Group
 		terrain.normalmap = normalMap;
 	}
 	
+	public static void setHeightMapTo(Terrain terrain, Texture2D heightMap)
+	{
+		terrain.heightmap = heightMap;
+	}
+	
 	@Override
 	public TerrainCollider getCollider()
 	{

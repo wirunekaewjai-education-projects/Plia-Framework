@@ -34,9 +34,10 @@ public class Game2 extends Game
 	
 	private Camera camera;
 	private Terrain map;
-	private Group buffy;
+	private Group buffy, guard;
 	
 	private Button padButton;
+
 	
 	public void onInitialize(Bundle savedInstanceState)
 	{
@@ -45,8 +46,10 @@ public class Game2 extends Game
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		setScene(scene);
+
+		guard = model("woodguard.FBX");
 		
-		map = terrain("terrain/heightmap.png", "terrain/diffusemap.jpg", 80, 600);
+		map = terrain("terrain2/heightmap32.jpg", "terrain2/diffusemap.jpg", 200, 600);
 		map.setPosition(-300, -300, 0);
 		
 		buffy = model("buffylow.FBX");
@@ -114,14 +117,6 @@ public class Game2 extends Game
 
 	public void onUpdate()
 	{
-//		Vector3 position = Vector3.add(buffy.getPosition(), vec3(0, -10, 9));
-//		camera.setPosition(position);
-//		camera.setLookAt(buffy);
-//		camera.rotate(10, 0, 0);
-//		Log.e("Buffy", buffy.getPosition().toString());
-//		Log.e("Bounds", buffy.getCollider().getPosition().toString());
-//		buffy.translate(0, 1, 0);
-//		buffy.translate(0, 1, 0);
 
 		Debug.drawBounds(buffy.getCollider(), new Color3(0.5f, 1, 0.5f));
 	}

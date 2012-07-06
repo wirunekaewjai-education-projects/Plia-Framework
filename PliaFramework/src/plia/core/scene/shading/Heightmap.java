@@ -19,5 +19,15 @@ public final class Heightmap extends Texture2D
 		return r;
 	}
 	
-	
+	public static float getHeightFromPixel(Texture2D texture2d, float u, int v)
+	{
+		int x = (int) (u * (texture2d.getWidth() - 1));
+		int y = (int) (v * (texture2d.getHeight() - 1));
+		
+		int row = y * texture2d.getHeight();
+		int i = row + x;
+
+		float r = Color.red(texture2d.pixels[i]) / 255f;
+		return r;
+	}
 }
