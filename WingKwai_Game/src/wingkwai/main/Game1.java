@@ -7,6 +7,7 @@ import plia.core.scene.Scene;
 import plia.core.scene.View;
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -28,7 +29,7 @@ public class Game1 extends Game
 
 	public void onUpdate()
 	{
-		
+
 	}
 
 }
