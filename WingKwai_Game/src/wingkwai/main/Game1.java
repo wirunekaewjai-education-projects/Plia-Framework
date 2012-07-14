@@ -28,7 +28,6 @@ public class Game1 extends Game
 	@Override
 	public void onUpdate()
 	{
-		// TODO Auto-generated method stub
 		
 	}
 
