@@ -37,15 +37,15 @@ public class StaticTerrain extends Terrain
 				int index = ((v*length)+u);
 				int vertex_index = index*3;
 				
-				float hu = (float)u / segment;
-				float hv = (float)v / segment;
+				float hu = (float)u / length;
+				float hv = (float)v / length;
 
 				vertices[vertex_index] = hu * getTerrainScale();
 				vertices[vertex_index+1] = hv * getTerrainScale();
 				
 				Texture2D heightmap = getHeightmap();
-				float hw = (heightmap.getWidth() - 1);
-				float hh = (heightmap.getHeight() - 1);
+				float hw = (heightmap.getWidth());
+				float hh = (heightmap.getHeight());
 				
 				float hs = (hu * hw);
 				float ht = (hv * hh);

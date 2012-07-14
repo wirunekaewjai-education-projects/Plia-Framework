@@ -9,6 +9,7 @@ import plia.core.scene.animation.Animation;
 import plia.core.scene.animation.PlaybackMode;
 import plia.math.Vector2;
 import android.os.Bundle;
+import android.text.method.Touch;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -48,7 +49,7 @@ public class Game1 extends Game
 	
 	private void loadContent()
 	{
-		terrain = terrain("terrain/heightmap.jpg", "terrain/diffusemap.jpg", 400, 2000);
+		terrain = terrain("terrain/heightmap.bmp", "terrain/diffusemap.jpg", 400, 2000);
 		buffy = model("model/buffylow.FBX");
 		
 		controller = button("ui/controller.png");

@@ -259,13 +259,13 @@ public abstract class Game extends Activity implements IFramework
 		return t;
 	}
 	
-//	public static final Terrain terrain(String heightmapSrc, String diffusemapSrc, int maxHeight, int scale, int segment)
-//	{
-//		Terrain t = GameObjectManager.createStaticTerrain(heightmapSrc, maxHeight, scale, segment);
-//		t.setBaseTexture(GameObjectManager.loadTexture2D(diffusemapSrc));
-//		
-//		return t;
-//	}
+	public static final Terrain terrain(String heightmapSrc, String diffusemapSrc, int maxHeight, int scale, int segment)
+	{
+		Terrain t = GameObjectManager.createStaticTerrain(heightmapSrc, maxHeight, scale, segment);
+		t.setBaseTexture(GameObjectManager.loadTexture2D(diffusemapSrc));
+		
+		return t;
+	}
 //	
 //	public static final MeshTerrain terrain(String fbx_path, String heightmapSrc, String normalmapSrc)
 //	{
