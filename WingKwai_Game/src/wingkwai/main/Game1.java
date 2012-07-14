@@ -2,13 +2,11 @@ package wingkwai.main;
 
 import plia.core.Game;
 import plia.core.Screen;
-import plia.core.debug.Debug;
 import plia.core.event.OnTouchListener;
 import plia.core.event.TouchEvent;
 import plia.core.scene.*;
 import plia.core.scene.animation.Animation;
 import plia.core.scene.animation.PlaybackMode;
-import plia.core.scene.shading.Color3;
 import plia.math.Vector2;
 import android.os.Bundle;
 import android.view.Window;
@@ -32,6 +30,10 @@ public class Game1 extends Game
 	// UI
 	private Button controller;
 	
+	// Vehicle CTRL
+	private Vehicle vehicle;
+	private VehicleController vehicleController;
+	
 	public void onInitialize(Bundle arg0)
 	{
 		setRequestedOrientation(0);
@@ -46,7 +48,7 @@ public class Game1 extends Game
 	
 	private void loadContent()
 	{
-		terrain = terrain("terrain/heightmap.jpg", "terrain/diffusemap.jpg", 200, 1000);
+		terrain = terrain("terrain/heightmap.jpg", "terrain/diffusemap.jpg", 400, 2000);
 		buffy = model("model/buffylow.FBX");
 		
 		controller = button("ui/controller.png");
@@ -58,7 +60,7 @@ public class Game1 extends Game
 		buffy.setName("Buffy");
 		
 		// Translate Terrain Center to (0, 0)
-		terrain.setPosition(-500, -500, 0);
+		terrain.setPosition(-1000, -1000, 0);
 		
 		// Create Collider for Buffy
 		SphereCollider buffyCollider = collider(3);
@@ -84,6 +86,9 @@ public class Game1 extends Game
 		
 		// Camera Follow Buffy
 		buffy.addChild(camera);
+		
+		vehicle = new Vehicle(buffy);
+		vehicleController = new VehicleController(vehicle);
 
 		float ratio = (float)Screen.getWidth() / Screen.getHeight();
 		float scalef = 0.2f;
@@ -94,43 +99,22 @@ public class Game1 extends Game
 			
 			public void onTouch(Button button, int action, float x, float y)
 			{
-				if(action == TouchEvent.ACTION_UP)
-				{
-					if(!buffy.getAnimation().isPlaying("idle"))
-					{
-						buffy.getAnimation().play("idle");
-					}
-				}
-				else
-				{
-					Vector2 center = button.getCenter();
-					
-					float dx = center.x - x;
-					float dy = center.y - y;
-					
-					Vector2 dir = vec2(dx, dy).getNormalized();
-					
-					if(dir.y != 0.0f)
-					{
-						buffy.translate(0, 0.5f * dir.y, 0);
-						
-						if(!buffy.getAnimation().isPlaying("run"))
-						{
-							buffy.getAnimation().play("run");
-						}
-					}
+				Vector2 center = button.getCenter();
+				
+				float dx = center.x - x;
+				float dy = center.y - y;
+				
+				Vector2 dir = vec2(dx, dy).getNormalized();
 
-					if(dir.x != 0.0f)
-					{
-						buffy.rotate(0, 0, 1.5f * dir.x);
-						
-						if(!buffy.getAnimation().isPlaying("run"))
-						{
-							buffy.getAnimation().play("run");
-						}
-					}
+				if(dir.y != 0.0f && !Float.isNaN(dir.y))
+				{
+					vehicleController.accelerate(0.03f * dir.y);
 				}
 
+				if(dir.x != 0.0f && !Float.isNaN(dir.x))
+				{
+					vehicleController.turn(dir.x);
+				}
 			}
 		});
 		
@@ -145,7 +129,7 @@ public class Game1 extends Game
 
 	public void onUpdate()
 	{
-//		Debug.drawBounds(buffy.getCollider(), new Color3(0.5f, 1, 0.5f));
+		vehicleController.update();
 	}
 
 	@Override
