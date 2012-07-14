@@ -16,7 +16,6 @@ public class Game1 extends Game
 	private Layer<Group> layer1 = new Layer<Group>();
 	private Layer<View> layer2 = new Layer<View>();
 	
-	@Override
 	public void onInitialize(Bundle arg0)
 	{
 		setRequestedOrientation(0);
@@ -25,7 +24,8 @@ public class Game1 extends Game
 		
 		setScene(scene);
 	}
-	@Override
+
+
 	public void onUpdate()
 	{
 		

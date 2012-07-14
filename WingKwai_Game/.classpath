@@ -4,6 +4,6 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry exported="true" kind="lib" path="/Users/Inori/Dropbox/Public/Library/Framework_Library/plia_framework_1.jar"/>
+	<classpathentry exported="true" kind="lib" path="jlib/plia_framework_1.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
