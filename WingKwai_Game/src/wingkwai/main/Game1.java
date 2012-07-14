@@ -145,7 +145,7 @@ public class Game1 extends Game
 
 	public void onUpdate()
 	{
-		Debug.drawBounds(buffy.getCollider(), new Color3(0.5f, 1, 0.5f));
+//		Debug.drawBounds(buffy.getCollider(), new Color3(0.5f, 1, 0.5f));
 	}
 
 	@Override

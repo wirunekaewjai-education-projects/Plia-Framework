@@ -1,8 +1,8 @@
 package plia.core.scene;
 
-import android.util.Log;
-import plia.core.debug.Debug;
-import plia.core.scene.shading.Color3;
+//import android.util.Log;
+//import plia.core.debug.Debug;
+//import plia.core.scene.shading.Color3;
 import plia.core.scene.shading.Heightmap;
 import plia.core.scene.shading.NormalMap;
 import plia.core.scene.shading.Texture2D;
@@ -279,7 +279,7 @@ public final class TerrainCollider extends Collider
 			heights[2] = (z4 + z5 + z7 + z8) / 4f;
 			heights[3] = (z3 + z4 + z6 + z7) / 4f;
 			
-			Log.e("", heights[0]+", "+heights[1]+", "+heights[2]+", "+heights[3]);
+//			Log.e("", heights[0]+", "+heights[1]+", "+heights[2]+", "+heights[3]);
 
 			Vector3[] plane = new Vector3[4];
 			plane[0] = new Vector3(ihS, ihT, 0); // b
@@ -330,16 +330,16 @@ public final class TerrainCollider extends Collider
 			
 			float iH = -1;
 
-			Vector3 v0 = Vector3.add(plane[0], new Vector3(0, 0, 50));
-			Vector3 v1 = Vector3.add(plane[1], new Vector3(0, 0, 50));
-			Vector3 v2 = Vector3.add(plane[2], new Vector3(0, 0, 50));
-			Vector3 v3 = Vector3.add(plane[3], new Vector3(0, 0, 50));
-			
-			Debug.drawLine(plane[0], v0, new Color3(1, 0, 0));
-			Debug.drawLine(plane[1], v1, new Color3(0, 1, 0));
-			Debug.drawLine(plane[2], v2, new Color3(0, 0, 1));
-			Debug.drawLine(plane[3], v3, new Color3(1, 1, 1));
-
+//			Vector3 v0 = Vector3.add(plane[0], new Vector3(0, 0, 50));
+//			Vector3 v1 = Vector3.add(plane[1], new Vector3(0, 0, 50));
+//			Vector3 v2 = Vector3.add(plane[2], new Vector3(0, 0, 50));
+//			Vector3 v3 = Vector3.add(plane[3], new Vector3(0, 0, 50));
+//			
+//			Debug.drawLine(plane[0], v0, new Color3(1, 0, 0));
+//			Debug.drawLine(plane[1], v1, new Color3(0, 1, 0));
+//			Debug.drawLine(plane[2], v2, new Color3(0, 0, 1));
+//			Debug.drawLine(plane[3], v3, new Color3(1, 1, 1));
+//
 //			for (int i = 0; i < 4; i++)
 //			{
 //				Log.e("Plane["+i+"]", plane[i].toString());
@@ -347,28 +347,28 @@ public final class TerrainCollider extends Collider
 			
 			if(pabc)
 			{
-				Vector3 ss1 = Vector3.add(plane[0], new Vector3(0, 0, 0.1f));
-				Vector3 ss2 = Vector3.add(plane[1], new Vector3(0, 0, 0.1f));
-				Vector3 ss3 = Vector3.add(plane[3], new Vector3(0, 0, 0.1f));
-				
-				Color3 color = new Color3(0.5f, 1, 0.5f);
-				Debug.drawLine(ss1, ss2, color);
-				Debug.drawLine(ss2, ss3, color);
-				Debug.drawLine(ss3, ss1, color);
+//				Vector3 ss1 = Vector3.add(plane[0], new Vector3(0, 0, 0.1f));
+//				Vector3 ss2 = Vector3.add(plane[1], new Vector3(0, 0, 0.1f));
+//				Vector3 ss3 = Vector3.add(plane[3], new Vector3(0, 0, 0.1f));
+//				
+//				Color3 color = new Color3(0.5f, 1, 0.5f);
+//				Debug.drawLine(ss1, ss2, color);
+//				Debug.drawLine(ss2, ss3, color);
+//				Debug.drawLine(ss3, ss1, color);
 				
 				iH = interpolateHeight(bPos , plane[3], plane[0], plane[1]);
 //				normalSurface = Vector3.scale(Vector3.add(Vector3.add(normals[3], normals[0]), normals[1]), 0.333333f).getNormalized();
 			}
 			else if(pacd)
 			{
-				Vector3 ss1 = Vector3.add(plane[1], new Vector3(0, 0, 0.1f));
-				Vector3 ss2 = Vector3.add(plane[2], new Vector3(0, 0, 0.1f));
-				Vector3 ss3 = Vector3.add(plane[3], new Vector3(0, 0, 0.1f));
-				
-				Color3 color = new Color3(0.5f, 1, 0.5f);
-				Debug.drawLine(ss1, ss2, color);
-				Debug.drawLine(ss2, ss3, color);
-				Debug.drawLine(ss3, ss1, color);
+//				Vector3 ss1 = Vector3.add(plane[1], new Vector3(0, 0, 0.1f));
+//				Vector3 ss2 = Vector3.add(plane[2], new Vector3(0, 0, 0.1f));
+//				Vector3 ss3 = Vector3.add(plane[3], new Vector3(0, 0, 0.1f));
+//				
+//				Color3 color = new Color3(0.5f, 1, 0.5f);
+//				Debug.drawLine(ss1, ss2, color);
+//				Debug.drawLine(ss2, ss3, color);
+//				Debug.drawLine(ss3, ss1, color);
 				
 				iH = interpolateHeight(bPos, plane[1], plane[2], plane[3]);
 //				normalSurface = Vector3.scale(Vector3.add(Vector3.add(normals[1], normals[2]), normals[3]), 0.333333f).getNormalized();
