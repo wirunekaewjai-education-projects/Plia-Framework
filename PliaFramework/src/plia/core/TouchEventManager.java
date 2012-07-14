@@ -7,8 +7,6 @@ import plia.core.event.OnTouchListener;
 import plia.core.event.TouchEvent;
 import plia.core.scene.Button;
 
-import android.util.Log;
-
 public class TouchEventManager
 {
 	private final List<Button> buttons = new ArrayList<Button>();

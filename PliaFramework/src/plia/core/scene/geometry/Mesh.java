@@ -29,6 +29,26 @@ public class Mesh extends Geometry
 	private float[] uv; 
 	private int[] indices;
 	
+	public Mesh(float[] vertices, int[] indices)
+	{
+		super(Geometry.MESH);
+		INDICES_COUNT = indices.length;
+		NORMALS_OFFSET = 0;
+		UV_OFFSET = 0;
+		
+		init(vertices, indices);
+	}
+	
+	public Mesh(float[] vertices, float[] uv, int[] indices)
+	{
+		super(Geometry.MESH);
+		INDICES_COUNT = indices.length;
+		NORMALS_OFFSET = 0;
+		UV_OFFSET = vertices.length * 4;
+		
+		init(vertices, uv, indices);
+	}
+	
 	public Mesh(float[] vertices, float[] normals, float[] uv, int[] indices)
 	{
 		super(Geometry.MESH);
@@ -49,6 +69,19 @@ public class Mesh extends Geometry
 		init(vertices, normals, uv, indices);
 	}
 	
+	private void init(float[] vertices, int[] indices)
+	{
+		this.vertices = vertices;
+		this.indices = indices;
+	}
+	
+	private void init(float[] vertices, float[] uv, int[] indices)
+	{
+		this.vertices = vertices;
+		this.uv = uv;
+		this.indices = indices;
+	}
+	
 	private void init(float[] vertices, float[] normals, float[] uv, int[] indices)
 	{
 		this.vertices = vertices;
@@ -59,10 +92,34 @@ public class Mesh extends Geometry
 	
 	public void resume()
 	{
-		int capacity = (vertices.length + vertices.length + uv.length) * 4;
-		
-		fb = ByteBuffer.allocateDirect(capacity).order(ByteOrder.nativeOrder()).asFloatBuffer();
-		fb.put(vertices).put(normals).put(uv).position(0);
+		if(normals != null && uv != null)
+		{
+			int capacity = (vertices.length + normals.length + uv.length) * 4;
+			
+			fb = ByteBuffer.allocateDirect(capacity).order(ByteOrder.nativeOrder()).asFloatBuffer();
+			fb.put(vertices).put(normals).put(uv).position(0);
+		}
+		else if(normals != null && uv == null)
+		{
+			int capacity = (vertices.length + normals.length) * 4;
+			
+			fb = ByteBuffer.allocateDirect(capacity).order(ByteOrder.nativeOrder()).asFloatBuffer();
+			fb.put(vertices).put(normals).position(0);
+		}
+		else if(normals == null && uv != null)
+		{
+			int capacity = (vertices.length + uv.length) * 4;
+			
+			fb = ByteBuffer.allocateDirect(capacity).order(ByteOrder.nativeOrder()).asFloatBuffer();
+			fb.put(vertices).put(uv).position(0);
+		}
+		else
+		{
+			int capacity = (vertices.length) * 4;
+			
+			fb = ByteBuffer.allocateDirect(capacity).order(ByteOrder.nativeOrder()).asFloatBuffer();
+			fb.put(vertices).position(0);
+		}
 		
 		ib = ByteBuffer.allocateDirect(indices.length * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
 		ib.put(indices).position(0);

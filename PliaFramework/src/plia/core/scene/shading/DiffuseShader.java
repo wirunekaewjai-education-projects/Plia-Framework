@@ -16,6 +16,7 @@ final class DiffuseShader extends Shader
 		instance.programs[2] = new ShaderProgram(getDiffuseSrc03());
 		instance.programs[3] = new ShaderProgram(getDiffuseSrc04());
 		instance.programs[5] = new ShaderProgram(getDiffuseSrc06());
+		instance.programs[6] = new ShaderProgram(getDiffuseSrc07());
 	}
 	
 	private static DiffuseShader instance = new DiffuseShader();
@@ -92,6 +93,10 @@ final class DiffuseShader extends Shader
 	
 	private static String initalVN_Terrain = 
 			"vec4 V = worldMatrix * position;" +
+			"vec3 N = normal;";
+	
+	private static String initalVN_Terrain2 = 
+			"vec4 V = worldMatrix * vertex;" +
 			"vec3 N = normal;";
 	
 	private static String lightLoop = 
@@ -280,6 +285,38 @@ final class DiffuseShader extends Shader
 				"	vec4 position = vec4(vertex.x * segSize, vertex.y * segSize, height, 1.0);" +
 				
 					initalVN_Terrain +
+					lightLoop +
+					initialUVCoordVarying +
+				"	gl_Position = modelViewProjectionMatrix * V;" +
+				"}";
+		
+		return new String[] { vs, fsWithTexture };
+	}
+	
+	private static String[] getDiffuseSrc07()
+	{
+		// Static Terrain With Texture
+		String vs = 
+				terrainMatrixUniform + 
+				lightAttribute + 
+				normalMap +
+				iDifVarying +
+				uvVarying +
+				"uniform vec3 terrainData;" +
+				"attribute vec4 vertex;" +
+				"" +
+				"void main()" +
+				"{" +
+					initialIDif +
+
+				"	float segSize = terrainData.z / terrainData.y;" +
+				"	float u = clamp(vertex.x / terrainData.z, 0.0, 1.0);" +
+				"	float v = clamp(vertex.y / terrainData.z, 0.0, 1.0);" +
+				"	vec2 uv = vec2(u, v);" +
+				
+				"	vec3 normal = vec3((texture2D(normalMap, uv).xyz - 0.5) * 2.0);" +
+
+					initalVN_Terrain2 +
 					lightLoop +
 					initialUVCoordVarying +
 				"	gl_Position = modelViewProjectionMatrix * V;" +

@@ -1,7 +1,6 @@
 package plia.core.scene;
 
 //import plia.framework.core.GameObject;
-import android.util.Log;
 import plia.core.TouchEventManager;
 import plia.core.event.OnTouchListener;
 

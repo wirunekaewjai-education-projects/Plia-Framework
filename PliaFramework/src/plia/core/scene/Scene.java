@@ -684,7 +684,11 @@ public final class Scene extends GameObject
 				
 //				drawDisplacementTerrain(terrain);
 				
-				if(terrain instanceof MeshTerrain)
+				if(terrain instanceof StaticTerrain)
+				{
+					drawStaticTerrain((StaticTerrain) terrain);
+				}
+				else if(terrain instanceof MeshTerrain)
 				{
 					recursiveGroup(((MeshTerrain) terrain).getTerrainModel());
 				}
@@ -694,6 +698,72 @@ public final class Scene extends GameObject
 				}
 			}
 		}
+	}
+	
+	private void drawStaticTerrain(StaticTerrain terrain)
+	{
+		Matrix4 tmm = new Matrix4();
+		tmm.setTranslation(terrain.getWorldMatrix().getTranslation());
+		
+		Matrix3 nm = new Matrix3();
+		Matrix3.createNormalMatrix(nm, tmm);
+		
+		// Lights
+		ArrayList<Light> ls = new ArrayList<Light>();
+		ls.addAll(lights);
+		
+		ShaderProgram shaderProgram = Shader.DIFFUSE.getProgram(6);
+		
+		int program = shaderProgram.getProgramID();
+
+		GLES20.glUseProgram(program);
+		
+		setLightUniform(program, ls);
+		
+		float[] tm1 = new float[16];
+		modelViewProjectionMatrix.copyTo(tm1);
+		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "modelViewProjectionMatrix"), 1, false, tm1, 0);
+		
+		float[] tm2 = new float[9];
+		nm.copyTo(tm2);
+		GLES20.glUniformMatrix3fv(GLES20.glGetUniformLocation(program, "normalMatrix"), 1, false, tm2, 0);
+		
+		float[] tm3 = new float[16];
+		tmm.copyTo(tm3);
+		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "worldMatrix"), 1, false, tm3, 0);
+
+		Texture2D diffuseMap = terrain.getBaseTexture();
+		
+		if(diffuseMap != null)
+		{
+			GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, terrain.getBaseTexture().getTextureBuffer());
+			GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "diffuseMap"), 0);
+		}
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, terrain.getNormalmap().getTextureBuffer());
+		GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "normalMap"), 1);
+
+		GLES20.glUniform3f(GLES20.glGetUniformLocation(program, "terrainData"), terrain.getTerrainMaxHeight(), Plane.getInstance().getSegment(), terrain.getTerrainScale());
+		
+		Mesh mesh = terrain.getMesh();
+		
+		int vh = GLES20.glGetAttribLocation(program, "vertex");
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mesh.getBuffer(0));
+		GLES20.glEnableVertexAttribArray(vh);
+		GLES20.glVertexAttribPointer(vh, 3, GLES20.GL_FLOAT, false, 0, 0);
+		
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, mesh.getBuffer(1));
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, mesh.INDICES_COUNT, GLES20.GL_UNSIGNED_INT, 0);
+		
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+		
+		GLES20.glDisableVertexAttribArray(vh);
+		
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
 	
 	private void drawDisplacementTerrain(DisplacementTerrain terrain)

@@ -545,4 +545,96 @@ final class AmbientShader extends Shader
 
 		return new String[] { vs, fsWithTexture3 };
 	}
+	
+//	private static String[] getAmbientSrc14()
+//	{
+//		// Gen Terrain NormalMap Static
+//		String vs = 
+//				"uniform mat4 modelViewProjectionMatrix;" +
+//				"" +
+//				"uniform vec3 terrainData;" +
+//				"uniform sampler2D heightmap;" +
+//				"" +
+//				"attribute vec2 vertex;" +
+//				"" +
+//				"uniform float gH;" +
+//				"" +
+//				"varying vec4 vertex_color;" +
+//				"" +
+//				"vec3 displacement(float x, float z)" +
+//				"{" +
+//				"	float u = min(0.99, max(0.01, x/terrainData.z));" +
+//				"	float v = min(0.99, max(0.01, z/terrainData.z));" +
+//				"" +
+//				"	vec2 coord = vec2(u, v);" +
+//				"	vec4 displace = texture2D(heightmap, coord);" +
+//				"	float height = displace.x * terrainData.x;" +
+//				"" +
+//				"	return vec3(x, height, z);" +
+//				"}" +
+//				"" +
+//				"vec3 normalSurface(vec3 a, vec3 b, vec3 c)" +
+//				"{" +
+//				"	return normalize( cross(a, b) + cross(b, c) + cross(c, a) );" +
+//				"}" +
+//				"" +
+//				"void main()" +
+//				"{" +
+//				"	float segSize = terrainData.z / terrainData.y;" +
+//				"	vec2 point = vertex*segSize;" +
+//				"" +
+//				"	vec3 vert[7];" +
+//				"" +
+//				"	vert[0] = displacement(point.x, 		point.y);" +
+//				"	vert[1] = displacement(point.x, 		point.y+segSize);" +
+//				"	vert[2] = displacement(point.x+segSize, point.y+segSize);" +
+//				"	vert[3] = displacement(point.x+segSize, point.y);" +
+//				"	vert[4] = displacement(point.x, 		point.y-segSize);" +
+//				"	vert[5] = displacement(point.x-segSize, point.y-segSize);" +
+//				"	vert[6] = displacement(point.x-segSize, point.y);" +
+//				"" +
+//				"	vec3 n1 = normalSurface(vert[0], vert[1], vert[2]);" +
+//				"	vec3 n2 = normalSurface(vert[0], vert[2], vert[3]);" +
+//				"	vec3 n3 = normalSurface(vert[0], vert[3], vert[4]);" +
+//				"	vec3 n4 = normalSurface(vert[0], vert[4], vert[5]);" +
+//				"	vec3 n5 = normalSurface(vert[0], vert[5], vert[6]);" +
+//				"	vec3 n6 = normalSurface(vert[0], vert[6], vert[1]);" +
+//				"" +
+//				"	vec3 N = (n1+n2+n3+n4+n5+n6)/6.0;" +
+//				"	vec3 C = normalize(N);" +
+//				"	if(gH >= 0.5)" +
+//				"	{" +
+//				"		float u = min(0.99, max(0.01, point.x/terrainData.z));" +
+//				"		float v = min(0.99, max(0.01, point.y/terrainData.z));" +
+//				"" +
+//				"		vec2 coord = vec2(u, v);" +
+//				"		vec4 displace = texture2D(heightmap, coord);" +
+//				"		float height = displace.x;" +
+//				
+//				"		vertex_color = displace;" +
+//				"	}" +
+//				"	else" +
+//				"	{" +
+//				"		vertex_color = vec4(((C.gbr/2.0) + 0.5), 1.0);" +
+//				"	}" +
+//				"" +
+//				"	vec4 position = vec4(vertex.x, vertex.y, 0.0, 1.0);" +
+//				"" +
+//				"	gl_Position = modelViewProjectionMatrix * position;" +
+//				"}";
+//				
+//		
+//		String fs = 
+//				"precision mediump float;" +
+//				"" +
+//				"varying vec4 vertex_color;" +
+//				"" +
+//				"void main()" +
+//				"{" +
+//				"	gl_FragColor = vertex_color;" +
+//				"}";
+//				
+//		
+//		return new String[] { vs, fs };
+//	}
 }

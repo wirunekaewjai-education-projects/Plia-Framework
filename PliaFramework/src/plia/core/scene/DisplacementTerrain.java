@@ -1,9 +1,5 @@
 package plia.core.scene;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-
 import plia.core.scene.geometry.Plane;
 import plia.core.scene.shading.Heightmap;
 import plia.core.scene.shading.Texture2D;

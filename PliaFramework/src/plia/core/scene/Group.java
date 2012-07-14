@@ -1,6 +1,5 @@
 package plia.core.scene;
 
-import android.util.Log;
 import plia.core.AnimationPlayer;
 import plia.core.GameObject;
 import plia.math.Matrix3;
