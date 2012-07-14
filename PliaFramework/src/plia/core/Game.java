@@ -241,6 +241,22 @@ public abstract class Game extends Activity implements IFramework
 	}
 	
 	///
+	public void log(Object value)
+	{
+		Log.d("Plia Framework", value + "");
+	}
+	
+	public void err(Object value)
+	{
+		Log.e("Error", value + "");
+	}
+	
+	public void print(Object value)
+	{
+		Log.println(Log.ASSERT, "", value + "");
+	}
+	
+	///
 	public static final Group model(String fbx_path)
 	{
 		return GameObjectManager.loadModel(fbx_path);

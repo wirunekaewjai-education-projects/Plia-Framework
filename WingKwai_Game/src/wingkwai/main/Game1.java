@@ -131,6 +131,8 @@ public class Game1 extends Game
 	public void onUpdate()
 	{
 		vehicleController.update();
+		
+		print(buffy.getPosition());
 	}
 
 	@Override
