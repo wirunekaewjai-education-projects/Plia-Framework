@@ -31,6 +31,13 @@ public final class Vector3
 		this.y = vec.y;
 		this.z = vec.z;
 	}
+	
+	public Vector3(Vector4 vec)
+	{
+		this.x = vec.x;
+		this.y = vec.y;
+		this.z = vec.z;
+	}
 
 	@Override
 	public String toString()
@@ -178,6 +185,17 @@ public final class Vector3
 		result.z = (vec1.x * vec2.y) - (vec1.y * vec2.x);
 		
 		return result;
+	}
+	
+	public static Vector3 reflect(Vector3 d, Vector3 n)
+	{
+		n = n.getNormalized();
+		//r = d-2(d.n)n
+		
+		float dn = 2f * Vector3.dot(d, n);
+		Vector3 _2dnn = Vector3.scale(n, dn);
+		
+		return Vector3.subtract(d, _2dnn);
 	}
 	
 	//////

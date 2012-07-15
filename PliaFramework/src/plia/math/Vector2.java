@@ -28,6 +28,12 @@ public final class Vector2
 		this.x = vec.x;
 		this.y = vec.y;
 	}
+	
+	public Vector2(Vector3 vec)
+	{
+		this.x = vec.x;
+		this.y = vec.y;
+	}
 
 	@Override
 	public String toString()
@@ -123,6 +129,14 @@ public final class Vector2
 		result.y = start.y + ((end.y - start.y) * t);
 		
 		return result;
+	}
+	
+	public static float distance(Vector2 vec1, Vector2 vec2)
+	{
+		float dx = vec1.x - vec2.x;
+		float dy = vec1.y - vec2.y;
+
+		return (float) Math.sqrt((dx*dx)+(dy*dy));
 	}
 	
 	public static Vector2 normalize(Vector2 result, Vector2 vec)

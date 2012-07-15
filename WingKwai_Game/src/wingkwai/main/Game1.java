@@ -2,11 +2,13 @@ package wingkwai.main;
 
 import plia.core.Game;
 import plia.core.Screen;
+import plia.core.debug.Debug;
 import plia.core.event.OnTouchListener;
 import plia.core.event.TouchEvent;
 import plia.core.scene.*;
 import plia.core.scene.animation.Animation;
 import plia.core.scene.animation.PlaybackMode;
+import plia.core.scene.shading.Color3;
 import plia.math.Vector2;
 import android.os.Bundle;
 import android.text.method.Touch;
@@ -34,6 +36,9 @@ public class Game1 extends Game
 	// Vehicle CTRL
 	private Vehicle vehicle;
 	private VehicleController vehicleController;
+	
+	// Race Track
+	BSplineCollider trackOutside, trackInside;
 	
 	public void onInitialize(Bundle arg0)
 	{
@@ -121,7 +126,26 @@ public class Game1 extends Game
 		
 		Scene.setMainCamera(camera);
 		
-		layer1.addChild(terrain, buffy);
+		Vector2[] p = new Vector2[14];
+		p[0] = new Vector2(514, 190);
+		p[1] = new Vector2(791, 10);
+		p[2] = new Vector2(800, -172);
+		p[3] = new Vector2(621, -409);
+		p[4] = new Vector2(80, -658);
+		p[5] = new Vector2(-218, -631);
+		p[6] = new Vector2(-569, -427);
+		p[7] = new Vector2(-815, -158);
+		p[8] = new Vector2(-780, 95);
+		p[9] = new Vector2(-617, 188);
+		p[10] = new Vector2(317, 209);
+		p[11] = new Vector2(514, 190);
+		p[12] = new Vector2(791, 10);
+		p[13] = new Vector2(800, -172);
+		
+		trackOutside = new BSplineCollider(0.25f, 200, false, p);
+		trackOutside.addCollider(buffyCollider);
+		
+		layer1.addChild(terrain, buffy, trackOutside);
 		layer2.addChild(controller);
 		
 		scene.addLayer(layer1);
@@ -132,7 +156,9 @@ public class Game1 extends Game
 	{
 		vehicleController.update();
 		
-		print(buffy.getPosition());
+//		print(buffy.getPosition());
+		
+//		Debug.drawBounds(trackOutside, new Color3(0.5f, 1, 0.5f));
 	}
 
 	@Override

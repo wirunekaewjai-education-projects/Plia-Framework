@@ -63,6 +63,7 @@ public class Collider extends Group
 		
 		return false;
 	}
+
 	
 	private static final boolean intersect(SphereCollider a, PlaneCollider b)
 	{
@@ -80,10 +81,15 @@ public class Collider extends Group
 		p1.set(ap1.x, ap1.y, ap1.z);
 		p2.set(ap2.x, ap2.y, ap2.z);
 		p3.set(ap3.x, ap3.y, ap3.z);
-
+		
 		Matrix4 aw = a.getWorldMatrix();
 		va.set(aw.m41, aw.m42, aw.m43);
 		
+		return intersect(b, va, p0, p1, p2, p3);
+	}
+	
+	static final boolean intersect(SphereCollider b, Vector3 center, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
+	{
 		Matrix4 bw = b.getWorldMatrix();
 		vb.set(bw.m41, bw.m42, bw.m43);
 		
@@ -138,7 +144,7 @@ public class Collider extends Group
 			Vector3.subtract(p[1], p1, circleCenter);
 			Vector3.subtract(p[2], p2, circleCenter);
 			Vector3.subtract(p[3], p3, circleCenter);
-			Vector3.subtract(pc, va, circleCenter); //va = plane origin
+			Vector3.subtract(pc, center, circleCenter); //va = plane origin
 			
 			Vector3.normalize(pc, pc);
 			
