@@ -1,7 +1,6 @@
 package plia.core.scene;
 
 //import plia.framework.debug.Debug;
-import android.util.Log;
 import plia.core.debug.Debug;
 import plia.core.scene.shading.Color3;
 import plia.math.Matrix4;

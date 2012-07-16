@@ -2,8 +2,6 @@ package plia.racing;
 
 import java.util.ArrayList;
 
-import android.util.Log;
-
 import plia.core.debug.Debug;
 import plia.core.scene.Collider;
 import plia.core.scene.Group;
@@ -235,14 +233,14 @@ public class CurveCollider extends Collider
 					
 					// Plane Axis
 					Vector3 n = Vector3.cross(v1, v2).getNormalized();
-					Vector3 up = new Vector3(0, 0, 1);
-					Vector3 left = Vector3.cross(up, n).getNormalized();
-					Vector3 right = Vector3.cross(n, up).getNormalized();
-					Vector3 back = Vector3.cross(up, left).getNormalized();
+//					Vector3 up = new Vector3(0, 0, 1);
+//					Vector3 left = Vector3.cross(up, n).getNormalized();
+//					Vector3 right = Vector3.cross(n, up).getNormalized();
+//					Vector3 back = Vector3.cross(up, left).getNormalized();
 
 					Group group = controller.getVehicle().getObject();
-					Vector3 forward = group.getForward();
-					Vector3 reflect = Vector3.reflect(forward, n);
+//					Vector3 forward = group.getForward();
+//					Vector3 reflect = Vector3.reflect(forward, n);
 					
 //					Log.e("Dist", d+"");
 					
@@ -385,7 +383,8 @@ public class CurveCollider extends Collider
 		return sum >= 6.283185307f;
 	}
 	
-	private static Vector3 circleCenter = new Vector3(), pc = new Vector3(), dir = new Vector3(), lerp = new Vector3(), point = new Vector3();
+//	private static Vector3 circleCenter = new Vector3();
+	private static Vector3 pc = new Vector3(), dir = new Vector3(), lerp = new Vector3(), point = new Vector3();
 	private static final Vector3[] p = { new Vector3(), new Vector3(), new Vector3(), new Vector3() };
 	private static final Vector3 p5 = new Vector3(), p6 = new Vector3(), p7 = new Vector3(), p8 = new Vector3();
 }

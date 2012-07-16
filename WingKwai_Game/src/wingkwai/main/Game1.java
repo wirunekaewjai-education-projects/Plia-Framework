@@ -13,10 +13,10 @@ import plia.core.scene.animation.PlaybackMode;
 import plia.core.scene.shading.Color3;
 import plia.math.Vector2;
 import plia.racing.BSplineCollider;
+import plia.racing.Checkpoint;
 import plia.racing.Vehicle;
 import plia.racing.VehicleController;
 import android.os.Bundle;
-import android.text.method.Touch;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
@@ -47,7 +47,7 @@ public class Game1 extends Game
 	BSplineCollider trackOutside, trackInside;
 	
 	// Checkpoint
-	private ArrayList<PlaneCollider> checkpoints = new ArrayList<PlaneCollider>();
+	private Checkpoint checkpoint = new Checkpoint();
 	
 	public void onInitialize(Bundle arg0)
 	{
@@ -179,33 +179,27 @@ public class Game1 extends Game
 		trackInside = new BSplineCollider(0.25f, 190, false, inside);
 		trackInside.addVehicleCtrl(vehicleController);
 		
-		
-		checkpoints.add(collider(0.99f, 0.01f, 0, 250, 100, 	134, 106, 140));
-		checkpoints.add(collider(0.88f, -0.473f, 0, 250, 100, 	551, 90, 140));
+		checkpoint.add(collider(0.99f, 0.01f, 0, 250, 100, 	134, 106, 140));
+		checkpoint.add(collider(0.88f, -0.473f, 0, 250, 100, 	551, 90, 140));
 
-		checkpoints.add(collider(0.23f, -0.973f, 0, 250, 100, 	683, -55, 140));
-		checkpoints.add(collider(-0.836f, -0.548f, 0, 250, 100, 591, -327, 140));
+		checkpoint.add(collider(0.23f, -0.973f, 0, 250, 100, 	683, -55, 140));
+		checkpoint.add(collider(-0.836f, -0.548f, 0, 250, 100, 591, -327, 140));
 		
-		checkpoints.add(collider(-0.956f, -0.293f, 0, 250, 100, 68, -574, 140));
-		checkpoints.add(collider(-0.852f, 0.524f, 0, 250, 100, 	-277, -521, 140));
+		checkpoint.add(collider(-0.956f, -0.293f, 0, 250, 100, 68, -574, 140));
+		checkpoint.add(collider(-0.852f, 0.524f, 0, 250, 100, 	-277, -521, 140));
 		
-		checkpoints.add(collider(-0.319f, 0.948f, 0, 250, 100, 	-657, -236, 140));
-		checkpoints.add(collider(0.82f, 0.572f, 0, 250, 100, 	-652, 8, 140));
+		checkpoint.add(collider(-0.319f, 0.948f, 0, 250, 100, 	-657, -236, 140));
+		checkpoint.add(collider(0.82f, 0.572f, 0, 250, 100, 	-652, 8, 140));
 		
-		checkpoints.add(collider(0.99f, 0.948f, 0, 250, 100, 	-404, 95, 140));
-		checkpoints.add(collider(0.951f, 0.31f, 0, 250, 100, 	-71, 96, 140));
-		
-//		collider = new PlaneCollider();
-//		collider.setScale(50, 50, 0);
-//		collider.setForward(0, 0, 1);
-//		collider.setPosition(152, 218, 140);
+		checkpoint.add(collider(0.99f, 0.948f, 0, 250, 100, 	-404, 95, 140));
+		checkpoint.add(collider(0.951f, 0.31f, 0, 250, 100, 	-71, 96, 140));
 		
 		layer1.addChild(terrain, buffy, trackOutside, trackInside);
 		layer2.addChild(controller);
 		
-		for (PlaneCollider planeCollider : checkpoints)
+		for (int i = 0; i < checkpoint.size(); i++)
 		{
-			layer1.addChild(planeCollider);
+			layer1.addChild(checkpoint.get(i));
 		}
 		
 		scene.addLayer(layer1);
@@ -217,14 +211,10 @@ public class Game1 extends Game
 		vehicleController.update();
 
 		Log.println(Log.ASSERT, buffy.getCollider().getForward().toString(), buffy.getCollider().getPosition().toString());
-//		
-//		Debug.drawBounds(collider, new Color3(1, 1, 0));
-		
-//		Debug.drawBounds(trackInside, new Color3(0.5f, 1, 0.5f));
-		
-		for (PlaneCollider planeCollider : checkpoints)
+
+		for (int i = 0; i < checkpoint.size(); i++)
 		{
-			Debug.drawBounds(planeCollider, new Color3(0.5f, 1, 0.5f));
+			Debug.drawBounds(checkpoint.get(i), new Color3(0.5f, 1, 0.5f));
 		}
 		
 		Debug.drawBounds(buffy.getCollider(), new Color3(0.5f, 1, 0.5f));
