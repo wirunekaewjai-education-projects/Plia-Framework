@@ -10,6 +10,9 @@ import plia.core.scene.animation.Animation;
 import plia.core.scene.animation.PlaybackMode;
 import plia.core.scene.shading.Color3;
 import plia.math.Vector2;
+import plia.racing.BSplineCollider;
+import plia.racing.Vehicle;
+import plia.racing.VehicleController;
 import android.os.Bundle;
 import android.text.method.Touch;
 import android.util.Log;
@@ -127,31 +130,56 @@ public class Game1 extends Game
 		
 		Scene.setMainCamera(camera);
 		
-		Vector2[] p = new Vector2[14];
-		p[0] = new Vector2(514, 190);
-		p[1] = new Vector2(791, 10);
-		p[2] = new Vector2(800, -172);
-		p[3] = new Vector2(621, -409);
-		p[4] = new Vector2(80, -658);
-		p[5] = new Vector2(-218, -631);
-		p[6] = new Vector2(-569, -427);
-		p[7] = new Vector2(-815, -158);
-		p[8] = new Vector2(-780, 95);
-		p[9] = new Vector2(-617, 188);
-		p[10] = new Vector2(317, 209);
-		p[11] = new Vector2(514, 190);
-		p[12] = new Vector2(791, 10);
-		p[13] = new Vector2(800, -172);
+		Vector2[] outside = new Vector2[14];
+		outside[0] = new Vector2(514, 190);
+		outside[1] = new Vector2(791, 10);
+		outside[2] = new Vector2(800, -172);
+		outside[3] = new Vector2(621, -409);
+		outside[4] = new Vector2(80, -658);
+		outside[5] = new Vector2(-218, -631);
+		outside[6] = new Vector2(-569, -427);
+		outside[7] = new Vector2(-815, -158);
+		outside[8] = new Vector2(-780, 95);
+		outside[9] = new Vector2(-617, 188);
+		outside[10] = new Vector2(317, 209);
+		outside[11] = new Vector2(514, 190);
+		outside[12] = new Vector2(791, 10);
+		outside[13] = new Vector2(800, -172);
 		
-		trackOutside = new BSplineCollider(0.25f, 200, false, p);
-		trackOutside.addCollider(buffyCollider);
+		Vector2[] inside = new Vector2[20];
+		inside[0] = new Vector2(0, 0);
+		inside[1] = new Vector2(-370, 2.7f);
+		inside[2] = new Vector2(-504, -2.7f);
+		inside[3] = new Vector2(-614, -110);
+		inside[4] = new Vector2(-607, -191);
+		inside[5] = new Vector2(-551, -288);
+		inside[6] = new Vector2(-381, -374);
+		inside[7] = new Vector2(-143, -485);
+		inside[8] = new Vector2(-89, -483);
+		inside[9] = new Vector2(110, -474);
+		inside[10] = new Vector2(265, -364);
+		inside[11] = new Vector2(512, -290);
+		inside[12] = new Vector2(604, -183);
+		inside[13] = new Vector2(604, -38);
+		inside[14] = new Vector2(554, 20);
+		inside[15] = new Vector2(435, 43);
+		inside[16] = new Vector2(278, 36);
+		inside[17] = new Vector2(0, 0);
+		inside[18] = new Vector2(-370, 2.7f);
+		inside[19] = new Vector2(-504, -2.7f);
+		
+		trackOutside = new BSplineCollider(0.25f, 190, false, outside);
+		trackOutside.addVehicleCtrl(vehicleController);
+		
+		trackInside = new BSplineCollider(0.25f, 190, false, inside);
+		trackInside.addVehicleCtrl(vehicleController);
 		
 		collider = new PlaneCollider();
 		collider.setScale(50, 50, 0);
 		collider.setForward(0, 0, 1);
 		collider.setPosition(152, 218, 140);
 		
-		layer1.addChild(terrain, buffy, trackOutside, collider);
+		layer1.addChild(terrain, buffy, trackOutside, trackInside);
 		layer2.addChild(controller);
 		
 		scene.addLayer(layer1);
@@ -161,18 +189,12 @@ public class Game1 extends Game
 	public void onUpdate()
 	{
 		vehicleController.update();
-		
-//		if(Collider.intersect(collider, buffy.getCollider()))
-//		{
-//			Log.println(Log.ASSERT, "", "Is Collision");
-//		}
-//		
-//		print(collider.getPosition());
-//		print(buffy.getCollider().getPosition());
+
+		Log.println(Log.ASSERT, buffy.getCollider().getForward().toString(), buffy.getCollider().getPosition().toString());
 //		
 //		Debug.drawBounds(collider, new Color3(1, 1, 0));
 		
-//		Debug.drawBounds(trackOutside, new Color3(0.5f, 1, 0.5f));
+//		Debug.drawBounds(trackInside, new Color3(0.5f, 1, 0.5f));
 		
 		Debug.drawBounds(buffy.getCollider(), new Color3(0.5f, 1, 0.5f));
 	}

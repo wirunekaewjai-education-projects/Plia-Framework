@@ -8,7 +8,6 @@ import android.opengl.GLES20;
 
 //import plia.framework.math.Matrix3;
 import plia.core.scene.Collider;
-import plia.core.scene.CurveCollider;
 import plia.core.scene.PlaneCollider;
 import plia.core.scene.Scene;
 import plia.core.scene.SphereCollider;
@@ -17,6 +16,7 @@ import plia.core.scene.shading.Shader;
 import plia.core.scene.shading.ShaderProgram;
 import plia.math.Matrix4;
 import plia.math.Vector3;
+import plia.racing.CurveCollider;
 
 public final class Debug
 {

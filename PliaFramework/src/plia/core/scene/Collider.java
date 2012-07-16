@@ -354,7 +354,7 @@ public class Collider extends Group
 	private static final Vector3 p0 = new Vector3(), p1 = new Vector3(), p2 = new Vector3(), p3 = new Vector3();
 	private static final Vector3 p5 = new Vector3(), p6 = new Vector3(), p7 = new Vector3(), p8 = new Vector3();
 
-	static final boolean pointInPlane(Vector3 point, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
+	private static final boolean pointInPlane(Vector3 point, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
 	{
 		Vector3.subtract(p5, p0, point);
 		Vector3.subtract(p6, p1, point);

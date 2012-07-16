@@ -1,10 +1,13 @@
-package plia.core.scene;
+package plia.racing;
 
 import java.util.ArrayList;
 
 import android.util.Log;
 
 import plia.core.debug.Debug;
+import plia.core.scene.Collider;
+import plia.core.scene.Group;
+import plia.core.scene.SphereCollider;
 import plia.core.scene.shading.Color3;
 import plia.math.Matrix4;
 import plia.math.Vector2;
@@ -13,7 +16,7 @@ import plia.math.Vector4;
 
 public class CurveCollider extends Collider
 {
-	private ArrayList<SphereCollider> colliders = new ArrayList<SphereCollider>();
+	private ArrayList<VehicleController> vehicleControllers = new ArrayList<VehicleController>();
 	
 	protected ArrayList<Vector2> corners = new ArrayList<Vector2>();
 	protected float z0, z1;
@@ -38,30 +41,47 @@ public class CurveCollider extends Collider
 	{
 		super.onUpdateHierarchy(parentHasChanged);
 		
-		for (SphereCollider collider : colliders)
+		for (VehicleController controller : vehicleControllers)
 		{
-			collision(collider);
+			Collider c = controller.getVehicle().getObject().getCollider();
+			
+			if(c != null && c instanceof SphereCollider)
+				collision(controller);
 		}
 	}
 	
-	private static int[] indx = new int[3];
+	private static int[] indx = new int[5];
 	
-	private void collision(SphereCollider b)
+	private void collision(VehicleController controller)
 	{
+		SphereCollider b = (SphereCollider) controller.getVehicle().getObject().getCollider();
+		
 		indx[0] = getClosetPlaneIndex(b);
-		indx[1] = indx[0]-1;
-		indx[2] = indx[0]+1;
+		indx[1] = indx[0]-2;
+		indx[2] = indx[0]-1;
+		indx[3] = indx[0]+1;
+		indx[4] = indx[0]+2;
 		
 		if(indx[1] < 0)
 		{
-			indx[1] = getPlaneCount()-1;
+			indx[1] += getPlaneCount();
 		}
 		
-		if(indx[2] == getPlaneCount())
+		if(indx[2] < 0)
 		{
-			indx[2] = 0;
+			indx[2] += getPlaneCount();
 		}
 		
+		if(indx[3] >= getPlaneCount())
+		{
+			indx[3] -= getPlaneCount();
+		}
+		
+		if(indx[4] >= getPlaneCount())
+		{
+			indx[4] -= getPlaneCount();
+		}
+
 //		Log.e("Indx", indx[0]+", "+indx[1]+", "+indx[2]);
 		
 		Color3 color = new Color3(1, 0, 0);
@@ -126,7 +146,7 @@ public class CurveCollider extends Collider
 			{
 				// Circle Center inside Plane
 				circleCenter = new Vector3(xc, yc, zc);
-				boolean ccip = Collider.pointInPlane(circleCenter, p0, p1, p2, p3);
+				boolean ccip = pointInPlane(circleCenter, p0, p1, p2, p3);
 
 				if(ccip)
 				{
@@ -206,44 +226,67 @@ public class CurveCollider extends Collider
 				if(isOverlap)
 				{
 //					Log.e("Is Overlap", b.getName());
-					Vector3 intersectionPoint = Vector3.add(center, circleCenter);
-					Vector3 objPoint = Vector3.add(center, point);
-					
-					Vector3 dir = Vector3.subtract(objPoint, intersectionPoint).getNormalized();
-					float dist = Vector3.distance(intersectionPoint, objPoint);
+
+//					Vector3 dir = Vector3.subtract(objPoint, intersectionPoint).getNormalized();
+//					float dist = Vector3.distance(intersectionPoint, objPoint);
 
 					Vector3 v1 = Vector3.subtract(plane[2], plane[0]);
 					Vector3 v2 = Vector3.subtract(plane[3], plane[0]);
 					
+					// Plane Axis
 					Vector3 n = Vector3.cross(v1, v2).getNormalized();
-					
-					Vector3 surfaceBack = new Vector3(-n.x, -n.y, -n.z);
-					
-					
 					Vector3 up = new Vector3(0, 0, 1);
 					Vector3 left = Vector3.cross(up, n).getNormalized();
 					Vector3 right = Vector3.cross(n, up).getNormalized();
+					Vector3 back = Vector3.cross(up, left).getNormalized();
 
-					Group group = (!b.isRoot()) ? b.parent : b;
-					
+					Group group = controller.getVehicle().getObject();
 					Vector3 forward = group.getForward();
+					Vector3 reflect = Vector3.reflect(forward, n);
 					
-					float dleft = Vector3.dot(left, forward);
-					float dright = Vector3.dot(right, forward);
-					float dford = Vector3.dot(n, forward);
-					float dback = Vector3.dot(surfaceBack, forward);
+//					Log.e("Dist", d+"");
 					
-					if(dback > dford)
-					{
-						if(dleft >= dright && dleft < 1)
-						{
-							group.setForward(left);
-						}
-						else if(dright < 1)
-						{
-							group.setForward(right);
-						}
-					}
+					Vector3 dir = new Vector3(n.x * (r-d), n.y * (r-d), 0);
+					Vector3 pos = Vector3.add(group.getPosition(), dir);
+					
+					group.setPosition(pos);
+					
+
+					// Behind Plane
+//					Vector3 intersectionPoint = Vector3.add(center, circleCenter);
+//					Vector3 objPoint = Vector3.add(center, point);
+//					
+//					Vector3 dimensionOfFar = Vector3.scale(back, r);
+//					Vector3 farPoint = Vector3.add(point, dimensionOfFar);
+//					
+//					Vector3 dir = Vector3.subtract(circleCenter, farPoint);
+//					
+//					Debug.drawLine(intersectionPoint, Vector3.add(objPoint, dimensionOfFar), new Color3(1, 1, 1));
+					
+//					Vector3 reflect = Vector3.reflect(forward, n);
+//					group.setForward(reflect);
+//					group.translate(0, dir.getMagnituded(), 0);
+//					
+//					controller.setVelocity(controller.getVelocity() / 2f);
+					
+//					Vector3 forward = group.getForward();
+//					
+//					float dleft = Vector3.dot(left, forward);
+//					float dright = Vector3.dot(right, forward);
+//					float dford = Vector3.dot(n, forward);
+//					float dback = Vector3.dot(back, forward);
+//					
+//					if(dback > dford)
+//					{
+//						if(dleft >= dright && dleft < 1)
+//						{
+//							group.setForward(left);
+//						}
+//						else if(dright < 1)
+//						{
+//							group.setForward(right);
+//						}
+//					}
 
 //					Vector3 reflect = Vector3.reflect(forward, n);
 //					group.setForward(reflect);
@@ -311,16 +354,38 @@ public class CurveCollider extends Collider
 		return Math.min(getPlaneCount(), Math.max(0, indx-1));
 	}
 	
-	public void addCollider(SphereCollider collider)
+	public void addVehicleCtrl(VehicleController vehicleController)
 	{
-		colliders.add(collider);
+		vehicleControllers.add(vehicleController);
 	}
 	
-	public void removeCollider(SphereCollider collider)
+	public void removeVehicleCtrl(VehicleController vehicleController)
 	{
-		colliders.remove(collider);
+		vehicleControllers.remove(vehicleController);
+	}
+	
+	private boolean pointInPlane(Vector3 point, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
+	{
+		Vector3.subtract(p5, p0, point);
+		Vector3.subtract(p6, p1, point);
+		Vector3.subtract(p7, p2, point);
+		Vector3.subtract(p8, p3, point);
+		
+		Vector3.normalize(p5, p5);
+		Vector3.normalize(p6, p6);
+		Vector3.normalize(p7, p7);
+		Vector3.normalize(p8, p8);
+		
+		float d1 = Vector3.dot(p5, p6);
+		float d2 = Vector3.dot(p6, p7);
+		float d3 = Vector3.dot(p7, p8);
+		float d4 = Vector3.dot(p8, p5);
+
+		float sum = (float) (Math.acos(d1)+Math.acos(d2)+Math.acos(d3)+Math.acos(d4));
+		return sum >= 6.283185307f;
 	}
 	
 	private static Vector3 circleCenter = new Vector3(), pc = new Vector3(), dir = new Vector3(), lerp = new Vector3(), point = new Vector3();
 	private static final Vector3[] p = { new Vector3(), new Vector3(), new Vector3(), new Vector3() };
+	private static final Vector3 p5 = new Vector3(), p6 = new Vector3(), p7 = new Vector3(), p8 = new Vector3();
 }

@@ -1,4 +1,4 @@
-package wingkwai.main;
+package plia.racing;
 
 import plia.core.scene.Group;
 import plia.core.scene.animation.Animation;
@@ -19,7 +19,7 @@ public class VehicleController
 		return vehicle;
 	}
 	
-	public float getSpeed()
+	public float getVelocity()
 	{
 		return speed;
 	}
@@ -27,6 +27,11 @@ public class VehicleController
 	public float getAngle()
 	{
 		return angle;
+	}
+	
+	public void setVelocity(float v)
+	{
+		speed = v;
 	}
 	
 	public void update()

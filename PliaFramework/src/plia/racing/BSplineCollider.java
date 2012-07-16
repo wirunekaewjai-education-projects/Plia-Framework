@@ -1,4 +1,4 @@
-package plia.core.scene;
+package plia.racing;
 
 import plia.math.Curve;
 import plia.math.Vector2;
