@@ -144,7 +144,7 @@ public class Game1 extends Game
 		p[13] = new Vector2(800, -172);
 		
 		trackOutside = new BSplineCollider(0.25f, 200, false, p);
-//		trackOutside.addCollider(buffyCollider);
+		trackOutside.addCollider(buffyCollider);
 		
 		collider = new PlaneCollider();
 		collider.setScale(50, 50, 0);
@@ -162,15 +162,15 @@ public class Game1 extends Game
 	{
 		vehicleController.update();
 		
-		if(Collider.intersect(collider, buffy.getCollider()))
-		{
-			Log.println(Log.ASSERT, "", "Is Collision");
-		}
-		
-		print(collider.getPosition());
-		print(buffy.getCollider().getPosition());
-		
-		Debug.drawBounds(collider, new Color3(1, 1, 0));
+//		if(Collider.intersect(collider, buffy.getCollider()))
+//		{
+//			Log.println(Log.ASSERT, "", "Is Collision");
+//		}
+//		
+//		print(collider.getPosition());
+//		print(buffy.getCollider().getPosition());
+//		
+//		Debug.drawBounds(collider, new Color3(1, 1, 0));
 		
 //		Debug.drawBounds(trackOutside, new Color3(0.5f, 1, 0.5f));
 		

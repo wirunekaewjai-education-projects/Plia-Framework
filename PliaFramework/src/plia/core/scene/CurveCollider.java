@@ -62,7 +62,7 @@ public class CurveCollider extends Collider
 			indx[2] = 0;
 		}
 		
-		Log.e("Indx", indx[0]+", "+indx[1]+", "+indx[2]);
+//		Log.e("Indx", indx[0]+", "+indx[1]+", "+indx[2]);
 		
 		Color3 color = new Color3(1, 0, 0);
 		
@@ -79,7 +79,7 @@ public class CurveCollider extends Collider
 			Debug.drawLine(plane[3], plane[0], color);
 			
 			boolean isOverlap = Collider.intersect(b, center, plane[0], plane[3], plane[2], plane[1]);
-			Log.e("Center", center.toString());
+//			Log.e("Center", center.toString());
 			if(isOverlap)
 			{
 				Log.e("Is Overlap", b.getName());
@@ -88,11 +88,23 @@ public class CurveCollider extends Collider
 				Vector3 v2 = Vector3.subtract(plane[3], plane[0]);
 				
 				Vector3 n = Vector3.cross(v1, v2);
-				Vector3 forward = b.getForward();
-				
-				Vector3 reflect = Vector3.reflect(forward, n);
-				
-				b.setForward(reflect);
+				Vector3 up = new Vector3(0, 0, 1);
+				Vector3 ford = Vector3.cross(up, n);
+
+				if(!b.isRoot())
+				{
+					Vector3 forward = b.parent.getForward();
+					
+					Vector3 reflect = Vector3.reflect(forward, n);
+					b.parent.setForward(ford);
+				}
+				else
+				{
+					Vector3 forward = b.getForward();
+					
+					Vector3 reflect = Vector3.reflect(forward, n);
+					b.setForward(ford);
+				}
 			}
 		}
 	}
