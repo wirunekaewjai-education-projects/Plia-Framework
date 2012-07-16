@@ -248,7 +248,6 @@ public class CurveCollider extends Collider
 					Vector3 pos = Vector3.add(group.getPosition(), dir);
 					
 					group.setPosition(pos);
-					
 
 					// Behind Plane
 //					Vector3 intersectionPoint = Vector3.add(center, circleCenter);

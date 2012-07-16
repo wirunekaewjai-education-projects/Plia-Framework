@@ -11,6 +11,7 @@ import plia.core.scene.*;
 import plia.core.scene.animation.Animation;
 import plia.core.scene.animation.PlaybackMode;
 import plia.core.scene.shading.Color3;
+import plia.core.scene.shading.Texture2D;
 import plia.math.Vector2;
 import plia.racing.BSplineCollider;
 import plia.racing.Checkpoint;
@@ -49,6 +50,10 @@ public class Game1 extends Game
 	// Checkpoint
 	private Checkpoint checkpoint = new Checkpoint();
 	
+	private AIScript aiScript;
+	
+	private Texture2D superBuffy;
+	
 	public void onInitialize(Bundle arg0)
 	{
 		setRequestedOrientation(0);
@@ -76,17 +81,7 @@ public class Game1 extends Game
 		
 		// Translate Terrain Center to (0, 0)
 		terrain.setPosition(-1000, -1000, 0);
-		
-		// Create Collider for Buffy
-		SphereCollider buffyCollider = collider(3);
-		buffyCollider.translate(0, 0.5f, 2);
-		
-		// Set Scale and Add Collider to Buffy
-		buffy.setScale(0.1f, 0.1f, 0.1f);
-		buffy.setCollider(buffyCollider);
-		
-		terrain.attachCollider(buffyCollider);
-		
+
 		// Set Buffy's Animation Clip
 		Animation buffyAnimation = buffy.getAnimation();
 		buffyAnimation.getAnimationClip("idle").set(0, 30, PlaybackMode.LOOP);
@@ -102,8 +97,23 @@ public class Game1 extends Game
 		// Camera Follow Buffy
 		buffy.addChild(camera);
 		
+		// Set Scale Buffy
+		buffy.setScale(0.1f, 0.1f, 0.1f);
+		
+		superBuffy = tex2D("model/superBuffy.jpg");
+		buffy.asModel().getMaterial().setBaseTexture(superBuffy);
+		
 		vehicle = new Vehicle(buffy);
 		vehicleController = new VehicleController(vehicle);
+		
+		// Create Collider for Buffy
+		SphereCollider buffyCollider = vehicle.getCollider();
+		buffyCollider.setRadius(3);
+		buffyCollider.translate(0, 0.5f, 2);
+		
+		aiScript = new AIScript(vehicleController, checkpoint);
+		
+		terrain.attachCollider(buffyCollider);
 
 		float ratio = (float)Screen.getWidth() / Screen.getHeight();
 		float scalef = 0.2f;
@@ -209,9 +219,17 @@ public class Game1 extends Game
 	public void onUpdate()
 	{
 		vehicleController.update();
-
+//		aiScript.update();
+		
+		
+		//
+		debuging();
+	}
+	
+	private void debuging()
+	{
 		Log.println(Log.ASSERT, buffy.getCollider().getForward().toString(), buffy.getCollider().getPosition().toString());
-
+		
 		for (int i = 0; i < checkpoint.size(); i++)
 		{
 			Debug.drawBounds(checkpoint.get(i), new Color3(0.5f, 1, 0.5f));
