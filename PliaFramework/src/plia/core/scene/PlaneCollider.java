@@ -50,13 +50,13 @@ public final class PlaneCollider extends Collider
 		
 		if(isActive() && (hc || parentHasChanged))
 		{
-			Vector3 scl = getScale();
-			Matrix4 sm = new Matrix4(scl.x, 0, 0, 0, 0, scl.y, 0, 0, 0, 0, scl.z, 0, 0, 0, 0, 1);
-			Matrix4 w = Matrix4.multiply(getWorldMatrix(), sm);
+//			Vector3 scl = getScale();
+//			Matrix4 sm = new Matrix4(scl.x, 0, 0, 0, 0, scl.y, 0, 0, 0, 0, scl.z, 0, 0, 0, 0, 1);
+//			Matrix4 w = Matrix4.multiply(getWorldMatrix(), sm);
 			
 			for (int i = 0; i < p.length; i++)
 			{
-				Matrix4.multiply(p[i], w, corner[i]);
+				Matrix4.multiply(p[i], getWorldMatrix(), corner[i]);
 			}
 		}
 	}
@@ -65,6 +65,13 @@ public final class PlaneCollider extends Collider
 	public void setScale(Vector3 scale)
 	{
 		super.setScale(scale);
+		this.updateCorner();
+	}
+	
+	@Override
+	public void setScale(float x, float y, float z)
+	{
+		super.setScale(x, y, z);
 		this.updateCorner();
 	}
 	

@@ -146,7 +146,9 @@ public class Game1 extends Game
 		trackOutside = new BSplineCollider(0.25f, 200, false, p);
 //		trackOutside.addCollider(buffyCollider);
 		
-		collider = collider(0, -1, 0, 50, 50);
+		collider = new PlaneCollider();
+		collider.setScale(50, 50, 0);
+		collider.setForward(0, 0, 1);
 		collider.setPosition(152, 218, 140);
 		
 		layer1.addChild(terrain, buffy, trackOutside, collider);
@@ -165,8 +167,8 @@ public class Game1 extends Game
 			Log.println(Log.ASSERT, "", "Is Collision");
 		}
 		
-//		print(collider.getScale().toString());
-//		print(buffy.getPosition());
+		print(collider.getPosition());
+		print(buffy.getCollider().getPosition());
 		
 		Debug.drawBounds(collider, new Color3(1, 1, 0));
 		
