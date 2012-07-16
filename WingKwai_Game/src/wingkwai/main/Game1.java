@@ -12,6 +12,7 @@ import plia.core.scene.shading.Color3;
 import plia.math.Vector2;
 import android.os.Bundle;
 import android.text.method.Touch;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -143,9 +144,12 @@ public class Game1 extends Game
 		p[13] = new Vector2(800, -172);
 		
 		trackOutside = new BSplineCollider(0.25f, 200, false, p);
-		trackOutside.addCollider(buffyCollider);
+//		trackOutside.addCollider(buffyCollider);
 		
-		layer1.addChild(terrain, buffy, trackOutside);
+		collider = collider(0, -1, 0, 50, 50);
+		collider.setPosition(152, 218, 140);
+		
+		layer1.addChild(terrain, buffy, trackOutside, collider);
 		layer2.addChild(controller);
 		
 		scene.addLayer(layer1);
@@ -156,10 +160,22 @@ public class Game1 extends Game
 	{
 		vehicleController.update();
 		
+		if(Collider.intersect(collider, buffy.getCollider()))
+		{
+			Log.println(Log.ASSERT, "", "Is Collision");
+		}
+		
+//		print(collider.getScale().toString());
 //		print(buffy.getPosition());
 		
+		Debug.drawBounds(collider, new Color3(1, 1, 0));
+		
 //		Debug.drawBounds(trackOutside, new Color3(0.5f, 1, 0.5f));
+		
+		Debug.drawBounds(buffy.getCollider(), new Color3(0.5f, 1, 0.5f));
 	}
+	
+	PlaneCollider collider;
 
 	@Override
 	public void onTouchEvent(int action, float x, float y)

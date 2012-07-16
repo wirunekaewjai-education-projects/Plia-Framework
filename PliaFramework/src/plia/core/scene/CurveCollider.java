@@ -70,7 +70,8 @@ public class CurveCollider extends Collider
 		{
 			Vector3[] plane = getCorner(indx[i]);
 			
-			Vector3 center = Vector3.scale(Vector3.add(Vector3.add(plane[0], plane[1]), Vector3.add(plane[2], plane[3])), 0.25f);
+			Vector3 c1 = Vector3.add(Vector3.add(plane[0], plane[1]), Vector3.add(plane[2], plane[3]));
+			Vector3 center = new Vector3(c1.x / 4f, c1.y / 4f, c1.z / 4f);
 			
 			Debug.drawLine(plane[0], plane[1], color);
 			Debug.drawLine(plane[1], plane[2], color);
@@ -78,7 +79,7 @@ public class CurveCollider extends Collider
 			Debug.drawLine(plane[3], plane[0], color);
 			
 			boolean isOverlap = Collider.intersect(b, center, plane[0], plane[3], plane[2], plane[1]);
-			
+			Log.e("Center", center.toString());
 			if(isOverlap)
 			{
 				Log.e("Is Overlap", b.getName());

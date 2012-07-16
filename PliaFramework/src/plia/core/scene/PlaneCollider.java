@@ -50,9 +50,13 @@ public final class PlaneCollider extends Collider
 		
 		if(isActive() && (hc || parentHasChanged))
 		{
+			Vector3 scl = getScale();
+			Matrix4 sm = new Matrix4(scl.x, 0, 0, 0, 0, scl.y, 0, 0, 0, 0, scl.z, 0, 0, 0, 0, 1);
+			Matrix4 w = Matrix4.multiply(getWorldMatrix(), sm);
+			
 			for (int i = 0; i < p.length; i++)
 			{
-				Matrix4.multiply(p[i], getWorldMatrix(), corner[i]);
+				Matrix4.multiply(p[i], w, corner[i]);
 			}
 		}
 	}

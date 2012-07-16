@@ -12,7 +12,7 @@ public class Group extends Node<Group>
 	
 //	protected Vector3 localTranslation = new Vector3();
 	protected Vector3 localScaling = new Vector3(1, 1, 1);
-	protected Matrix3 localRotation = new Matrix3();
+//	protected Matrix3 localRotation = new Matrix3();
 	
 	private Matrix4 axisRotation = new Matrix4();
 	
@@ -44,7 +44,7 @@ public class Group extends Node<Group>
 //		group.localRotation = this.localRotation.clone();
 		group.localScaling.set(this.localScaling);
 		group.world = this.world.clone();
-		group.invParent = this.world.clone();
+		group.invParent = this.invParent.clone();
 		group.axisRotation = this.axisRotation.clone();
 		
 		if(this.collider != null)

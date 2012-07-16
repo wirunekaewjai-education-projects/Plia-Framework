@@ -38,6 +38,7 @@ public class Game2 extends Game
 	
 	private Button padButton;
 
+	PlaneCollider collider2;
 	
 	public void onInitialize(Bundle savedInstanceState)
 	{
@@ -102,8 +103,11 @@ public class Game2 extends Game
 				}
 			}
 		});
+		
+		collider2 = collider(0, 1, 0, 200, 200);
+		collider2.setPosition(152, 218, 120);
 
-		layer1.addChild(map, buffy);
+		layer1.addChild(map, buffy, collider2);
 		layer2.addChild(padButton);
 		
 		scene.addLayer(layer1);
@@ -117,7 +121,7 @@ public class Game2 extends Game
 
 	public void onUpdate()
 	{
-
+		Debug.drawBounds(collider2, new Color3(0.5f, 1, 0.5f));
 		Debug.drawBounds(buffy.getCollider(), new Color3(0.5f, 1, 0.5f));
 	}
 
