@@ -1,7 +1,5 @@
 package wingkwai.main;
 
-import java.util.ArrayList;
-
 import plia.core.Game;
 import plia.core.Screen;
 import plia.core.debug.Debug;
@@ -50,9 +48,14 @@ public class Game1 extends Game
 	// Checkpoint
 	private Checkpoint checkpoint = new Checkpoint();
 	
-	private AIScript aiScript;
-	
 	private Texture2D superBuffy;
+	
+	private int currentCheckpoint = 0;
+	private int checkpointCount = 0;
+	
+	private boolean isEnd = false;
+	
+	private Sprite endSprite;
 	
 	public void onInitialize(Bundle arg0)
 	{
@@ -110,9 +113,7 @@ public class Game1 extends Game
 		SphereCollider buffyCollider = vehicle.getCollider();
 		buffyCollider.setRadius(3);
 		buffyCollider.translate(0, 0.5f, 2);
-		
-		aiScript = new AIScript(vehicleController, checkpoint);
-		
+
 		terrain.attachCollider(buffyCollider);
 
 		float ratio = (float)Screen.getWidth() / Screen.getHeight();
@@ -124,21 +125,24 @@ public class Game1 extends Game
 			
 			public void onTouch(Button button, int action, float x, float y)
 			{
-				Vector2 center = button.getCenter();
-				
-				float dx = center.x - x;
-				float dy = center.y - y;
-				
-				Vector2 dir = vec2(dx, dy).getNormalized();
-
-				if(dir.y != 0.0f && !Float.isNaN(dir.y))
+				if(!isEnd)
 				{
-					vehicleController.accelerate(0.03f * dir.y);
-				}
+					Vector2 center = button.getCenter();
+					
+					float dx = center.x - x;
+					float dy = center.y - y;
+					
+					Vector2 dir = vec2(dx, dy).getNormalized();
 
-				if(dir.x != 0.0f && !Float.isNaN(dir.x))
-				{
-					vehicleController.turn(dir.x);
+					if(dir.y != 0.0f && !Float.isNaN(dir.y))
+					{
+						vehicleController.accelerate(0.03f * dir.y);
+					}
+
+					if(dir.x != 0.0f && !Float.isNaN(dir.x))
+					{
+						vehicleController.turn(dir.x);
+					}
 				}
 			}
 		});
@@ -204,6 +208,9 @@ public class Game1 extends Game
 		checkpoint.add(collider(0.99f, 0.948f, 0, 250, 100, 	-404, 95, 140));
 		checkpoint.add(collider(0.951f, 0.31f, 0, 250, 100, 	-71, 96, 140));
 		
+		endSprite = sprite("ui/goal.jpg");
+		endSprite.setScale(0.25f, 0.25f);
+		
 		layer1.addChild(terrain, buffy, trackOutside, trackInside);
 		layer2.addChild(controller);
 		
@@ -219,8 +226,30 @@ public class Game1 extends Game
 	public void onUpdate()
 	{
 		vehicleController.update();
-//		aiScript.update();
+
+		PlaneCollider chp = checkpoint.get(currentCheckpoint);
+		SphereCollider spr = vehicle.getCollider();
 		
+		if(Collider.intersect(chp, spr))
+		{
+			currentCheckpoint++;
+			checkpointCount++;
+			
+			if(currentCheckpoint >= checkpoint.size())
+			{
+				currentCheckpoint -= checkpoint.size();
+			}
+			
+			if(checkpointCount > checkpoint.size())
+			{
+				if(!isEnd)
+				{
+					layer2.addChild(endSprite);
+					
+					isEnd = true;
+				}
+			}
+		}
 		
 		//
 		debuging();
