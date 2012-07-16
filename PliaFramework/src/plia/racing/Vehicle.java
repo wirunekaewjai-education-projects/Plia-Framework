@@ -1,10 +1,12 @@
 package plia.racing;
 
 import plia.core.scene.Group;
+import plia.core.scene.SphereCollider;
 
 public class Vehicle
 {
 	private Group object;
+	private SphereCollider collider = new SphereCollider(3);
 	
 	private String idleClipName = "idle";
 	private String runClipName = "run";
@@ -12,11 +14,17 @@ public class Vehicle
 	public Vehicle(Group object)
 	{
 		this.object = object;
+		this.object.setCollider(collider);
 	}
 	
 	public Group getObject()
 	{
 		return object;
+	}
+	
+	public SphereCollider getCollider()
+	{
+		return collider;
 	}
 	
 	public String getIdleClipName()

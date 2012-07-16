@@ -119,7 +119,7 @@ public final class Scene extends GameObject
 		}
 		return false;
 	}
-	
+
 	static Light defaultLight = new Light();
 	static Camera mainCamera = new Camera();
 	static boolean hasChangedProjection = true;

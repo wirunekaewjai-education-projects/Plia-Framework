@@ -240,6 +240,11 @@ public abstract class Game extends Activity implements IFramework
 		currentScene = scene;
 	}
 	
+	public Scene getScene()
+	{
+		return currentScene;
+	}
+	
 	///
 	public void log(Object value)
 	{
@@ -496,6 +501,15 @@ public abstract class Game extends Activity implements IFramework
 	public static final Texture2D tex2D(String path)
 	{
 		return GameObjectManager.loadTexture2D(path);
+	}
+	
+	public static final PlaneCollider collider(float upX, float upY, float upZ, float scaleX, float scaleY, float posX, float posY, float posZ)
+	{
+		PlaneCollider boundingPlane = new PlaneCollider();
+		boundingPlane.setScale(scaleX, scaleY, 0);
+		boundingPlane.setUp(upX, upY, upZ);
+		boundingPlane.setPosition(posX, posY, posZ);
+		return boundingPlane;
 	}
 	
 	public static final PlaneCollider collider(float upX, float upY, float upZ, float scaleX, float scaleY)
