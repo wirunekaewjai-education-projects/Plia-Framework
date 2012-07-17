@@ -1,7 +1,6 @@
 package wingkwai.main;
 
 import plia.core.scene.Group;
-import plia.core.scene.SphereCollider;
 import plia.core.scene.animation.Animation;
 
 public class Vehicle
@@ -38,11 +37,6 @@ public class Vehicle
 	public Group getObject()
 	{
 		return object;
-	}
-	
-	public SphereCollider getCollider()
-	{
-		return collider;
 	}
 	
 	public String getIdleClipName()

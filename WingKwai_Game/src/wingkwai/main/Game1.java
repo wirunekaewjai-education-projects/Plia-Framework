@@ -109,12 +109,13 @@ public class Game1 extends Game
 		berserkerDif = tex2D("model/superBuffy.jpg");
 		buffyDif = buffy.asModel().getMaterial().getBaseTexture();
 		
-		vehicle = new Vehicle(buffy);
-		
 		// Create Collider for Buffy
-		SphereCollider buffyCollider = vehicle.getCollider();
-		buffyCollider.setRadius(3);
+		SphereCollider buffyCollider = collider(3);
 		buffyCollider.translate(0, 0.5f, 2);
+		
+		buffy.setCollider(buffyCollider);
+		
+		vehicle = new Vehicle(buffy);
 
 		terrain.attachCollider(buffyCollider);
 
@@ -249,7 +250,7 @@ public class Game1 extends Game
 		vehicle.update();
 
 		PlaneCollider chp = checkpoint.get(currentCheckpoint);
-		SphereCollider spr = vehicle.getCollider();
+		SphereCollider spr = (SphereCollider) buffy.getCollider();
 		
 		if(Collider.intersect(chp, spr))
 		{

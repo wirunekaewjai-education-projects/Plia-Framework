@@ -19,18 +19,18 @@ public class AIScript
 		this.checkpoint = checkpoint;
 	}
 	
-	private void set()
-	{
-		PlaneCollider chkp = checkpoint.get(currentCheckPoint);
-		SphereCollider sphr = vehicle.getCollider();
-
-		Vector3 dir = Vector3.subtract(chkp.getPosition(), sphr.getPosition());
-		
-		float distance = dir.getMagnituded();
-		Vector3 dirn = dir.getNormalized();
-		
-		vehicle.getObject().setLookAt(chkp.getPosition());
-	}
+//	private void set()
+//	{
+//		PlaneCollider chkp = checkpoint.get(currentCheckPoint);
+//		SphereCollider sphr = vehicle.getCollider();
+//
+//		Vector3 dir = Vector3.subtract(chkp.getPosition(), sphr.getPosition());
+//		
+//		float distance = dir.getMagnituded();
+//		Vector3 dirn = dir.getNormalized();
+//		
+//		vehicle.getObject().setLookAt(chkp.getPosition());
+//	}
 	
 	public void update()
 	{
@@ -41,7 +41,7 @@ public class AIScript
 		}
 		
 		PlaneCollider chkp = checkpoint.get(currentCheckPoint);
-		SphereCollider sphr = vehicle.getCollider();
+		SphereCollider sphr = (SphereCollider) vehicle.getObject().getCollider();
 		
 		vehicle.accelerate(1);
 		
