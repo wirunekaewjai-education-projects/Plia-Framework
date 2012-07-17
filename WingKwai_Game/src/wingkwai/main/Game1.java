@@ -14,7 +14,6 @@ import plia.math.Vector2;
 import plia.racing.BSplineCollider;
 import plia.racing.Checkpoint;
 import plia.racing.Vehicle;
-import plia.racing.VehicleController;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
@@ -40,7 +39,6 @@ public class Game1 extends Game
 	
 	// Vehicle CTRL
 	private Vehicle vehicle;
-	private VehicleController vehicleController;
 	
 	// Race Track
 	BSplineCollider trackOutside, trackInside;
@@ -107,7 +105,6 @@ public class Game1 extends Game
 		buffy.asModel().getMaterial().setBaseTexture(superBuffy);
 		
 		vehicle = new Vehicle(buffy);
-		vehicleController = new VehicleController(vehicle);
 		
 		// Create Collider for Buffy
 		SphereCollider buffyCollider = vehicle.getCollider();
@@ -136,12 +133,12 @@ public class Game1 extends Game
 
 					if(dir.y != 0.0f && !Float.isNaN(dir.y))
 					{
-						vehicleController.accelerate(0.03f * dir.y);
+						vehicle.accelerate(0.03f * dir.y);
 					}
 
 					if(dir.x != 0.0f && !Float.isNaN(dir.x))
 					{
-						vehicleController.turn(dir.x);
+						vehicle.turn(dir.x);
 					}
 				}
 			}
@@ -188,10 +185,10 @@ public class Game1 extends Game
 		inside[19] = new Vector2(-504, -2.7f);
 		
 		trackOutside = new BSplineCollider(0.25f, 190, false, outside);
-		trackOutside.addVehicleCtrl(vehicleController);
+		trackOutside.addVehicleCtrl(vehicle);
 		
 		trackInside = new BSplineCollider(0.25f, 190, false, inside);
-		trackInside.addVehicleCtrl(vehicleController);
+		trackInside.addVehicleCtrl(vehicle);
 		
 		checkpoint.add(collider(0.99f, 0.01f, 0, 250, 100, 	134, 106, 140));
 		checkpoint.add(collider(0.88f, -0.473f, 0, 250, 100, 	551, 90, 140));
@@ -225,7 +222,7 @@ public class Game1 extends Game
 
 	public void onUpdate()
 	{
-		vehicleController.update();
+		vehicle.update();
 
 		PlaneCollider chp = checkpoint.get(currentCheckpoint);
 		SphereCollider spr = vehicle.getCollider();

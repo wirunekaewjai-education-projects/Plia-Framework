@@ -5,33 +5,33 @@ import plia.core.scene.PlaneCollider;
 import plia.core.scene.SphereCollider;
 import plia.math.Vector3;
 import plia.racing.Checkpoint;
-import plia.racing.VehicleController;
+import plia.racing.Vehicle;
 
 public class AIScript
 {
-	private VehicleController controller;
+	private Vehicle vehicle;
 	private Checkpoint checkpoint;
 	
 	private int currentCheckPoint = 0;
 	private boolean isStarted = false;
 	
-	public AIScript(VehicleController controller, Checkpoint checkpoint)
+	public AIScript(Vehicle vehicle, Checkpoint checkpoint)
 	{
-		this.controller = controller;
+		this.vehicle = vehicle;
 		this.checkpoint = checkpoint;
 	}
 	
 	private void set()
 	{
 		PlaneCollider chkp = checkpoint.get(currentCheckPoint);
-		SphereCollider sphr = controller.getVehicle().getCollider();
+		SphereCollider sphr = vehicle.getCollider();
 
 		Vector3 dir = Vector3.subtract(chkp.getPosition(), sphr.getPosition());
 		
 		float distance = dir.getMagnituded();
 		Vector3 dirn = dir.getNormalized();
 		
-		controller.getVehicle().getObject().setLookAt(chkp.getPosition());
+		vehicle.getObject().setLookAt(chkp.getPosition());
 	}
 	
 	public void update()
@@ -43,9 +43,9 @@ public class AIScript
 		}
 		
 		PlaneCollider chkp = checkpoint.get(currentCheckPoint);
-		SphereCollider sphr = controller.getVehicle().getCollider();
+		SphereCollider sphr = vehicle.getCollider();
 		
-		controller.accelerate(1);
+		vehicle.accelerate(1);
 		
 		if(Collider.intersect(chkp, sphr))
 		{

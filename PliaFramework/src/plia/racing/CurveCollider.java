@@ -14,7 +14,7 @@ import plia.math.Vector4;
 
 public class CurveCollider extends Collider
 {
-	private ArrayList<VehicleController> vehicleControllers = new ArrayList<VehicleController>();
+	private ArrayList<Vehicle> vehicleControllers = new ArrayList<Vehicle>();
 	
 	protected ArrayList<Vector2> corners = new ArrayList<Vector2>();
 	protected float z0, z1;
@@ -39,9 +39,9 @@ public class CurveCollider extends Collider
 	{
 		super.onUpdateHierarchy(parentHasChanged);
 		
-		for (VehicleController controller : vehicleControllers)
+		for (Vehicle controller : vehicleControllers)
 		{
-			Collider c = controller.getVehicle().getObject().getCollider();
+			Collider c = controller.getObject().getCollider();
 			
 			if(c != null && c instanceof SphereCollider)
 				collision(controller);
@@ -50,9 +50,9 @@ public class CurveCollider extends Collider
 	
 	private static int[] indx = new int[5];
 	
-	private void collision(VehicleController controller)
+	private void collision(Vehicle controller)
 	{
-		SphereCollider b = (SphereCollider) controller.getVehicle().getObject().getCollider();
+		SphereCollider b = (SphereCollider) controller.getObject().getCollider();
 		
 		indx[0] = getClosetPlaneIndex(b);
 		indx[1] = indx[0]-2;
@@ -238,7 +238,7 @@ public class CurveCollider extends Collider
 //					Vector3 right = Vector3.cross(n, up).getNormalized();
 //					Vector3 back = Vector3.cross(up, left).getNormalized();
 
-					Group group = controller.getVehicle().getObject();
+					Group group = controller.getObject();
 //					Vector3 forward = group.getForward();
 //					Vector3 reflect = Vector3.reflect(forward, n);
 					
@@ -351,12 +351,12 @@ public class CurveCollider extends Collider
 		return Math.min(getPlaneCount(), Math.max(0, indx-1));
 	}
 	
-	public void addVehicleCtrl(VehicleController vehicleController)
+	public void addVehicleCtrl(Vehicle vehicleController)
 	{
 		vehicleControllers.add(vehicleController);
 	}
 	
-	public void removeVehicleCtrl(VehicleController vehicleController)
+	public void removeVehicleCtrl(Vehicle vehicleController)
 	{
 		vehicleControllers.remove(vehicleController);
 	}
