@@ -15,7 +15,8 @@ public class Vehicle
 	private float speed;
 	private float angle;
 	
-	private float maxVelocityMultiplier = 1;
+	private float velocityMultiplier = 1;
+	private float angularVelocityMultiplier = 1;
 	
 	public Vehicle(Group object)
 	{
@@ -111,8 +112,8 @@ public class Vehicle
 	{
 		speed += dir;
 		
-		float maxFV = Vehicle.MAX_FORWARD_VELOCITY * maxVelocityMultiplier;
-		float maxBV = Vehicle.MAX_BACKWARD_VELOCITY * maxVelocityMultiplier;
+		float maxFV = Vehicle.MAX_FORWARD_VELOCITY * velocityMultiplier;
+		float maxBV = Vehicle.MAX_BACKWARD_VELOCITY * velocityMultiplier;
 		
 		if (speed > maxFV)
         {
@@ -138,24 +139,34 @@ public class Vehicle
 	{
 		if (speed > 0f)
         {
-            angle += dir;
+            angle += dir * angularVelocityMultiplier;
             speed -= 0.008f;
         }
         else if (speed < 0f)
         {
-            angle -= dir;
+            angle -= dir * angularVelocityMultiplier;
             speed += 0.008f;
         }
 	}
 	
-	public float getMaxVelocityMultiplier()
+	public float getAngularVelocityMultiplier()
 	{
-		return maxVelocityMultiplier;
+		return angularVelocityMultiplier;
 	}
 	
-	public void setMaxVelocityMultiplier(float maxVelocityMultiplier)
+	public float getVelocityMultiplier()
 	{
-		this.maxVelocityMultiplier = maxVelocityMultiplier;
+		return velocityMultiplier;
+	}
+	
+	public void setAngularVelocityMultiplier(float angularVelocityMultiplier)
+	{
+		this.angularVelocityMultiplier = angularVelocityMultiplier;
+	}
+	
+	public void setVelocityMultiplier(float velocityMultiplier)
+	{
+		this.velocityMultiplier = velocityMultiplier;
 	}
 	
 	public static float MAX_FORWARD_VELOCITY = 1.7f;

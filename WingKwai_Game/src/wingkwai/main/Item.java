@@ -10,7 +10,7 @@ public class Item extends GameObject
 	private float luck = 0;
 	private long time = 0;
 	
-	public Item(String name, float str, float spd, float ctrl, float luck, long time)
+	protected Item(String name, float str, float spd, float ctrl, float luck, long time)
 	{
 		super(name);
 		this.strength = str;
@@ -51,8 +51,4 @@ public class Item extends GameObject
 	{
 		return time;
 	}
-	
-	
-	//
-	public static final Item none = new Item("None", 0, 0, 1, 0, 0);
 }
