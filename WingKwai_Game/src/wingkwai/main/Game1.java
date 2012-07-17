@@ -11,6 +11,7 @@ import plia.core.scene.*;
 import plia.core.scene.animation.Animation;
 import plia.core.scene.animation.PlaybackMode;
 import plia.core.scene.shading.Color3;
+import plia.core.scene.shading.Shader;
 import plia.core.scene.shading.Texture2D;
 import plia.math.Vector2;
 import android.os.Bundle;
@@ -29,6 +30,8 @@ public class Game1 extends Game
 	
 	// Character
 	private Group buffy;
+	private Texture2D buffyDif;
+	private Texture2D berserkerDif;
 	
 	// Terrain
 	private Terrain terrain;
@@ -36,7 +39,11 @@ public class Game1 extends Game
 	// UI
 	private Button controller;
 	
-	// Vehicle CTRL
+	// //
+	private Group itemBox;
+	// //
+	
+	// Vehicle
 	private Vehicle vehicle;
 	
 	// Race Track
@@ -44,10 +51,7 @@ public class Game1 extends Game
 	
 	// Checkpoint
 	private Checkpoint checkpoint = new Checkpoint();
-	
-	private Texture2D buffyDif;
-	private Texture2D berserkerDif;
-	
+
 	private int currentCheckpoint = 0;
 	private int checkpointCount = 0;
 	
@@ -75,7 +79,10 @@ public class Game1 extends Game
 	private void loadContent()
 	{
 		terrain = terrain("terrain/heightmap.bmp", "terrain/diffusemap.jpg", 400, 2000);
-		buffy = model("model/buffylow.FBX");
+		buffy = model("model/player/buffylow.FBX");
+		
+		itemBox = model("model/item/itembox.FBX");
+		itemBox.asModel().getMaterial().setLightAbsorbMultipler(12);
 		
 		controller = button("ui/controller.png");
 	}
@@ -84,7 +91,8 @@ public class Game1 extends Game
 	{
 		terrain.setName("Terrain");
 		buffy.setName("Buffy");
-		
+		itemBox.setName("ItemBox");
+
 		// Translate Terrain Center to (0, 0)
 		terrain.setPosition(-1000, -1000, 0);
 
@@ -106,7 +114,7 @@ public class Game1 extends Game
 		// Set Scale Buffy
 		buffy.setScale(0.1f, 0.1f, 0.1f);
 		
-		berserkerDif = tex2D("model/superBuffy.jpg");
+		berserkerDif = tex2D("model/player/superBuffy.jpg");
 		buffyDif = buffy.asModel().getMaterial().getBaseTexture();
 		
 		// Create Collider for Buffy
@@ -151,6 +159,13 @@ public class Game1 extends Game
 		});
 		
 		Scene.setMainCamera(camera);
+		
+		// Item
+		itemBox.setCollider(collider(5));
+		itemBox.setScale(6, 6, 6);
+		itemBox.setPosition(0, 15, 144);
+		itemBox.rotate(10, 10, 0);
+		//
 		
 		Vector2[] outside = new Vector2[14];
 		outside[0] = new Vector2(514, 190);
@@ -214,7 +229,7 @@ public class Game1 extends Game
 		endSprite = sprite("ui/goal.jpg");
 		endSprite.setScale(0.25f, 0.25f);
 		
-		layer1.addChild(terrain, buffy, trackOutside, trackInside);
+		layer1.addChild(terrain, buffy, itemBox, trackOutside, trackInside);
 		layer2.addChild(controller);
 		
 		for (int i = 0; i < checkpoint.size(); i++)
@@ -273,6 +288,8 @@ public class Game1 extends Game
 			}
 		}
 		
+		itemBox.rotate(1, 1, 0);
+		
 		//
 		debuging();
 	}
@@ -283,13 +300,14 @@ public class Game1 extends Game
 		
 		for (int i = 0; i < checkpoint.size(); i++)
 		{
-			Debug.drawBounds(checkpoint.get(i), new Color3(0.5f, 1, 0.5f));
+			Debug.drawBounds(checkpoint.get(i), color3);
 		}
 		
-		Debug.drawBounds(buffy.getCollider(), new Color3(0.5f, 1, 0.5f));
+		Debug.drawBounds(buffy.getCollider(), color3);
+		Debug.drawBounds(itemBox.getCollider(), color3);
 	}
 	
-	PlaneCollider collider;
+	private Color3 color3 = new Color3(0.5f, 1, 0.5f);
 
 	@Override
 	public void onTouchEvent(int action, float x, float y)

@@ -40,6 +40,7 @@ final class DiffuseShader extends Shader
 			"uniform vec4 lightColor[MAX_LIGHTS];" +
 			"uniform float lightRange[MAX_LIGHTS];" +
 			"uniform float lightIntensity[MAX_LIGHTS];" +
+			"uniform float lightAbsorbMultiplier;" +
 			"uniform float lightCount;";
 	
 	private static final String vertexAndNormalAttribute = 
@@ -115,7 +116,7 @@ final class DiffuseShader extends Shader
 			"				float att = dist / lightRange[l];" +
 			"				lambertTerm /= max(0.01, att);" +
 			"			}" +
-			"			Idif += lightColor[l] * lambertTerm * lightIntensity[l];" +
+			"			Idif += lightColor[l] * lambertTerm * lightIntensity[l] * lightAbsorbMultiplier;" +
 			"		}" +
 			"	}";
 	

@@ -6,6 +6,7 @@ public class Material
 	private Shader shader;
 	private Color3 baseColor = new Color3(0.5f, 0.5f, 0.5f);
 	private Texture2D baseTexture;
+	private float lightAbsorbMultipler = 1;
 	
 	public Material()
 	{
@@ -42,5 +43,15 @@ public class Material
 	public void setBaseTexture(Texture2D baseTexture)
 	{
 		this.baseTexture = baseTexture;
+	}
+	
+	public float getLightAbsorbMultipler()
+	{
+		return lightAbsorbMultipler;
+	}
+	
+	public void setLightAbsorbMultipler(float lightAbsorbMultipler)
+	{
+		this.lightAbsorbMultipler = lightAbsorbMultipler;
 	}
 }

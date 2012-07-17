@@ -158,8 +158,8 @@ public class Group extends Node<Group>
 			{
 				if(parent != null)
 				{
-					world = Matrix4.multiply(invParent, world);
-					world = Matrix4.multiply(parent.world, world);
+					Matrix4 local = Matrix4.multiply(invParent, world);
+					world = Matrix4.multiply(parent.world, local);
 					
 					invParent = parent.world.getInvert();
 				}
@@ -523,9 +523,15 @@ public class Group extends Node<Group>
 			z = 0;
 		}
 		
+		Matrix3 rot = Matrix3.createFromEulerAngles(x, y, z);
+		Matrix3 w3 = getWorldMatrix().toMatrix3();
+		
+		Matrix3 nWorld = Matrix3.multiply(w3, rot);
 
-		Matrix3 rot = Matrix3.createFromEulerAngles(x, y, z).multiply(getWorldMatrix().toMatrix3());
-		getWorldMatrix().set(rot);
+		getWorldMatrix().set(nWorld);
+		
+//		Matrix3 rot = Matrix3.createFromEulerAngles(x, y, z).multiply(getWorldMatrix().toMatrix3());
+//		getWorldMatrix().set(rot);
 		
 //		this.localRotation = Matrix3.createFromEulerAngles(x, y, z).multiply(localRotation);
 		this.hasChanged = true;
@@ -557,13 +563,21 @@ public class Group extends Node<Group>
 //			this.localRotation = inv.toMatrix3();
 //			this.localTranslation.set(inv.getTranslation());
 			
-			Matrix3 rot = getWorldMatrix().toMatrix3().multiply(Matrix3.createFromEulerAngles(x, y, z));
-			getWorldMatrix().set(rot);
+//			Matrix3 rot = getWorldMatrix().toMatrix3().multiply(Matrix3.createFromEulerAngles(x, y, z));
+//			getWorldMatrix().set(rot);
+			
+			Matrix4 rot = Matrix4.createFromEulerAngles(x, y, z);
+			Matrix4 nWorld = Matrix4.multiply(rot, getWorldMatrix());
+			getWorldMatrix().set(nWorld);
 		}
 		else
 		{
-			Matrix3 rot = Matrix3.createFromEulerAngles(x, y, z).multiply(getWorldMatrix().toMatrix3());
-			getWorldMatrix().set(rot);
+			Matrix3 rot = Matrix3.createFromEulerAngles(x, y, z);
+			Matrix3 w3 = getWorldMatrix().toMatrix3();
+			
+			Matrix3 nWorld = Matrix3.multiply(w3, rot);
+
+			getWorldMatrix().set(nWorld);
 		}
 		
 		this.hasChanged = true;

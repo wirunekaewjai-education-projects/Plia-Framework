@@ -4,6 +4,7 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 import plia.core.GameObject;
 import plia.core.Screen;
@@ -450,6 +451,7 @@ public final class Scene extends GameObject
 			GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex.getTextureBuffer());
 			GLES20.glUniform1i(GLES20.glGetUniformLocation(program, "baseTexture"), 0);
+			GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "lightAbsorbMultiplier"), 1);
 			
 			GLES20.glDrawElements(GLES20.GL_TRIANGLES, 6, GLES20.GL_UNSIGNED_BYTE, Quad.getIndicesBuffer());
 			
@@ -481,6 +483,7 @@ public final class Scene extends GameObject
 			case Geometry.SKINNED_MESH: programIndx = 1 + hasTexture; break;
 			default: break;
 		}
+//		Log.e(model.getName(), programIndx+"");
 		
 		ShaderProgram program = shader.getProgram(programIndx);
 
@@ -632,6 +635,8 @@ public final class Scene extends GameObject
 //			program.setUniformColor(model.getMaterial().getBaseColor());
 		}
 		
+		GLES20.glUniform1f(GLES20.glGetUniformLocation(prg, "lightAbsorbMultiplier"), model.getMaterial().getLightAbsorbMultipler());
+		
 		if(geometryType == Geometry.SKINNED_MESH && hasAnimation)
 		{
 			GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mesh.getBuffer(2));
@@ -732,6 +737,8 @@ public final class Scene extends GameObject
 		tmm.copyTo(tm3);
 		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "worldMatrix"), 1, false, tm3, 0);
 
+		GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "lightAbsorbMultiplier"), 1);
+		
 		Texture2D diffuseMap = terrain.getBaseTexture();
 		
 		if(diffuseMap != null)
@@ -806,6 +813,8 @@ public final class Scene extends GameObject
 		tmm.copyTo(tm3);
 		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "worldMatrix"), 1, false, tm3, 0);
 
+		GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "lightAbsorbMultiplier"), 1);
+		
 		Texture2D diffuseMap = terrain.getBaseTexture();
 		
 		if(diffuseMap != null)
