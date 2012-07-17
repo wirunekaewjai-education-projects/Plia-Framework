@@ -4,8 +4,6 @@ import plia.core.scene.Collider;
 import plia.core.scene.PlaneCollider;
 import plia.core.scene.SphereCollider;
 import plia.math.Vector3;
-import plia.racing.Checkpoint;
-import plia.racing.Vehicle;
 
 public class AIScript
 {

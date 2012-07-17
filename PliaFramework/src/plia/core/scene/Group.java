@@ -22,7 +22,7 @@ public class Group extends Node<Group>
 	
 	protected boolean hasChanged = true;
 	
-	private Collider collider = null;
+	Collider collider = null;
 
 	public Group()
 	{
@@ -47,10 +47,10 @@ public class Group extends Node<Group>
 		group.invParent = this.invParent.clone();
 		group.axisRotation = this.axisRotation.clone();
 		
-		if(this.collider != null)
-		{
-			group.collider = this.collider.instantiate();
-		}
+//		if(this.collider != null)
+//		{
+//			group.collider = this.collider.instantiate();
+//		}
 	}
 	
 	@Override

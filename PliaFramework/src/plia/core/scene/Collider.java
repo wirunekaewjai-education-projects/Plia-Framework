@@ -1,6 +1,8 @@
 package plia.core.scene;
 
 //import plia.framework.debug.Debug;
+import java.util.ArrayList;
+
 import plia.core.debug.Debug;
 import plia.core.scene.shading.Color3;
 import plia.math.Matrix4;
@@ -11,6 +13,8 @@ public class Collider extends Group
 {
 	boolean calTerrainChanged = true;
 	private boolean isFirst = true;
+	
+	protected ArrayList<Collider> colliders = new ArrayList<Collider>();
 	
 	protected Collider()
 	{
@@ -29,12 +33,28 @@ public class Collider extends Group
 			isFirst = false;
 		}
 		super.onUpdateHierarchy(parentHasChanged);
+		
+		for (Collider collider : colliders)
+		{
+			overlapTesting(collider);
+		}
+	}
+	
+	protected void overlapTesting(Collider c)
+	{
+		
 	}
 
 	@Override
 	public Collider instantiate()
 	{
 		Collider bounds = new Collider();
+		
+		if(!isRoot())
+		{
+			parent.collider = bounds;
+		}
+
 		return bounds;
 	}
 	
@@ -353,7 +373,7 @@ public class Collider extends Group
 	private static final Vector3 p0 = new Vector3(), p1 = new Vector3(), p2 = new Vector3(), p3 = new Vector3();
 	private static final Vector3 p5 = new Vector3(), p6 = new Vector3(), p7 = new Vector3(), p8 = new Vector3();
 
-	private static final boolean pointInPlane(Vector3 point, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
+	public static final boolean pointInPlane(Vector3 point, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
 	{
 		Vector3.subtract(p5, p0, point);
 		Vector3.subtract(p6, p1, point);

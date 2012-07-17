@@ -10,6 +10,8 @@ public class Item extends GameObject
 	private float luck = 0;
 	private long time = 0;
 	
+	private OnItemEventListener onItemEventListener;
+	
 	protected Item(String name, float str, float spd, float ctrl, float luck, long time)
 	{
 		super(name);
@@ -18,6 +20,32 @@ public class Item extends GameObject
 		this.control = ctrl;
 		this.luck = luck;
 		this.time = time;
+		this.onItemEventListener = new OnItemEventListener()
+		{
+			
+			public void onEffectStart(Player player)
+			{
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void onEffectEnd(Player player)
+			{
+				// TODO Auto-generated method stub
+				
+			}
+		};
+	}
+	
+	protected Item(String name, float str, float spd, float ctrl, float luck, long time, OnItemEventListener onItemEventListener)
+	{
+		super(name);
+		this.strength = str;
+		this.speed = spd;
+		this.control = ctrl;
+		this.luck = luck;
+		this.time = time;
+		this.onItemEventListener = onItemEventListener;
 	}
 	
 	@Override
@@ -50,5 +78,10 @@ public class Item extends GameObject
 	public long getTime()
 	{
 		return time;
+	}
+	
+	public OnItemEventListener getOnItemEventListener()
+	{
+		return onItemEventListener;
 	}
 }

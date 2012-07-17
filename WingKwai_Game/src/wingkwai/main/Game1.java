@@ -1,5 +1,7 @@
 package wingkwai.main;
 
+import java.util.ArrayList;
+
 import plia.core.Game;
 import plia.core.Screen;
 import plia.core.debug.Debug;
@@ -11,9 +13,6 @@ import plia.core.scene.animation.PlaybackMode;
 import plia.core.scene.shading.Color3;
 import plia.core.scene.shading.Texture2D;
 import plia.math.Vector2;
-import plia.racing.BSplineCollider;
-import plia.racing.Checkpoint;
-import plia.racing.Vehicle;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
@@ -41,12 +40,13 @@ public class Game1 extends Game
 	private Vehicle vehicle;
 	
 	// Race Track
-	BSplineCollider trackOutside, trackInside;
+	private CurveCollider trackOutside, trackInside;
 	
 	// Checkpoint
 	private Checkpoint checkpoint = new Checkpoint();
 	
-	private Texture2D superBuffy;
+	private Texture2D buffyDif;
+	private Texture2D berserkerDif;
 	
 	private int currentCheckpoint = 0;
 	private int checkpointCount = 0;
@@ -55,8 +55,12 @@ public class Game1 extends Game
 	
 	private Sprite endSprite;
 	
+	// Item DB
+	private ArrayList<Item> items = new ArrayList<Item>();
+	
 	public void onInitialize(Bundle arg0)
 	{
+		Log.e("Call", "OnInit");
 		setRequestedOrientation(0);
 		getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -65,6 +69,7 @@ public class Game1 extends Game
 		
 		loadContent();
 		init();
+		initItemDB();
 	}
 	
 	private void loadContent()
@@ -101,8 +106,8 @@ public class Game1 extends Game
 		// Set Scale Buffy
 		buffy.setScale(0.1f, 0.1f, 0.1f);
 		
-		superBuffy = tex2D("model/superBuffy.jpg");
-		buffy.asModel().getMaterial().setBaseTexture(superBuffy);
+		berserkerDif = tex2D("model/superBuffy.jpg");
+		buffyDif = buffy.asModel().getMaterial().getBaseTexture();
 		
 		vehicle = new Vehicle(buffy);
 		
@@ -184,11 +189,11 @@ public class Game1 extends Game
 		inside[18] = new Vector2(-370, 2.7f);
 		inside[19] = new Vector2(-504, -2.7f);
 		
-		trackOutside = new BSplineCollider(0.25f, 190, false, outside);
-		trackOutside.addVehicleCtrl(vehicle);
+		trackOutside = CurveCollider.bSplineCurveCollider(0.25f, 190, false, outside);
+		trackOutside.attachCollider(buffyCollider);
 		
-		trackInside = new BSplineCollider(0.25f, 190, false, inside);
-		trackInside.addVehicleCtrl(vehicle);
+		trackInside = CurveCollider.bSplineCurveCollider(0.25f, 190, false, inside);
+		trackInside.attachCollider(buffyCollider);
 		
 		checkpoint.add(collider(0.99f, 0.01f, 0, 250, 100, 	134, 106, 140));
 		checkpoint.add(collider(0.88f, -0.473f, 0, 250, 100, 	551, 90, 140));
@@ -218,6 +223,25 @@ public class Game1 extends Game
 		
 		scene.addLayer(layer1);
 		scene.addLayer(layer2);
+	}
+	
+	private void initItemDB()
+	{
+		Item berserker = new Item("Berserker", 1.2f, 1.2f, -1, 0, 5, new OnItemEventListener()
+		{
+			
+			public void onEffectStart(Player player)
+			{
+				player.getVehicle().getObject().asModel().getMaterial().setBaseTexture(berserkerDif);
+			}
+			
+			public void onEffectEnd(Player player)
+			{
+				player.getVehicle().getObject().asModel().getMaterial().setBaseTexture(buffyDif);
+			}
+		});
+		
+		items.add(berserker);
 	}
 
 	public void onUpdate()
@@ -278,5 +302,12 @@ public class Game1 extends Game
 			controller.setActive(true);
 			controller.setCenter(x, y);
 		}
+	}
+
+	@Override
+	protected void onDestroy()
+	{
+		super.onDestroy();
+		items.clear();
 	}
 }

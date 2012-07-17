@@ -16,7 +16,6 @@ import plia.core.scene.shading.Shader;
 import plia.core.scene.shading.ShaderProgram;
 import plia.math.Matrix4;
 import plia.math.Vector3;
-import plia.racing.CurveCollider;
 
 public final class Debug
 {
@@ -91,10 +90,10 @@ public final class Debug
 		{
 			drawBoundingSphere((SphereCollider) collider, color);
 		}
-		else if(collider instanceof CurveCollider)
-		{
-			drawCurve((CurveCollider) collider, color);
-		}
+//		else if(collider instanceof CurveCollider)
+//		{
+//			drawCurve((CurveCollider) collider, color);
+//		}
 	}
 	
 //	private void drawBoundingBox(BoundingBox bounds, float[] mvp, float r, float g, float b)
@@ -119,20 +118,20 @@ public final class Debug
 //		GLES20.glDrawElements(GLES20.GL_LINES, debugLineBox.getIndicesBuffer().capacity(), GLES20.GL_UNSIGNED_INT, debugLineBox.getIndicesBuffer());
 //		GLES20.glDisableVertexAttribArray(vh);
 //	}
-	
-	private static void drawCurve(CurveCollider collider, Color3 color)
-	{
-		int length = collider.getPlaneCount();
-		
-		for (int i = 0; i < length; i++)
-		{
-			Vector3[] p = collider.getCorner(i);
-			drawLine(p[0], p[1], color);
-			drawLine(p[1], p[2], color);
-			drawLine(p[2], p[3], color);
-			drawLine(p[3], p[0], color);
-		}
-	}
+//	
+//	private static void drawCurve(CurveCollider collider, Color3 color)
+//	{
+//		int length = collider.getPlaneCount();
+//		
+//		for (int i = 0; i < length; i++)
+//		{
+//			Vector3[] p = collider.getCorner(i);
+//			drawLine(p[0], p[1], color);
+//			drawLine(p[1], p[2], color);
+//			drawLine(p[2], p[3], color);
+//			drawLine(p[3], p[0], color);
+//		}
+//	}
 	
 	private static void drawBoundingPlane(PlaneCollider bounds, Color3 color)
 	{

@@ -1,4 +1,4 @@
-package plia.racing;
+package wingkwai.main;
 
 import plia.core.scene.Group;
 import plia.core.scene.SphereCollider;
@@ -7,8 +7,7 @@ import plia.core.scene.animation.Animation;
 public class Vehicle
 {
 	private Group object;
-	private SphereCollider collider = new SphereCollider(3);
-	
+
 	private String idleClipName = "idle";
 	private String runClipName = "run";
 	
@@ -21,7 +20,19 @@ public class Vehicle
 	public Vehicle(Group object)
 	{
 		this.object = object;
-		this.object.setCollider(collider);
+	}
+	
+	public Vehicle instantiate()
+	{
+		Group clone = object.instantiate();
+		
+		Vehicle vehicle = new Vehicle(clone);
+
+		
+		vehicle.idleClipName = idleClipName;
+		vehicle.runClipName = runClipName;
+		
+		return vehicle;
 	}
 	
 	public Group getObject()
@@ -140,12 +151,11 @@ public class Vehicle
 		if (speed > 0f)
         {
             angle += dir * angularVelocityMultiplier;
-            speed -= 0.008f;
+            speed -= 0.008f * angularVelocityMultiplier;
         }
         else if (speed < 0f)
         {
             angle -= dir * angularVelocityMultiplier;
-            speed += 0.008f;
         }
 	}
 	
