@@ -1,5 +1,7 @@
 package plia.math;
 
+import android.opengl.Matrix;
+
 public final class Matrix4
 {
 	public float  m11 = 1, m12, m13, m14, 
@@ -281,126 +283,132 @@ public final class Matrix4
 	
 	public Matrix4 getInvert()
 	{
-		float a11a22 = m11*m22;
-		float a11a23 = m11*m23;
-		float a11a24 = m11*m24;
+		float[] m16 = new float[16];
+		this.copyTo(m16);
+		float[] inv = new float[16];
+		Matrix.invertM(inv, 0, m16, 0);
+		return new Matrix4(inv);
 		
-		float a12a21 = m12*m21;
-		float a12a23 = m12*m23;
-		float a12a24 = m12*m24;
-		
-		float a13a21 = m13*m21;
-		float a13a22 = m13*m22;
-		float a13a24 = m13*m24;
-		
-		float a14a21 = m14*m21;
-		float a14a22 = m14*m22;
-		float a14a23 = m14*m23;
-
-		float a31a42 = m31*m42;
-		float a31a43 = m31*m43;
-		float a31a44 = m31*m44;
-
-		float a32a41 = m32*m41;
-		float a32a43 = m32*m43;
-		float a32a44 = m32*m44;
-		
-		float a33a41 = m33*m41;
-		float a33a42 = m33*m42;
-		float a33a44 = m33*m44;
-
-		float a34a41 = m34*m41;
-		float a34a42 = m34*m42;
-		float a34a43 = m34*m43;
-
-		float a21a32a43 = m21*a32a43;
-		float a21a32a44 = m21*a32a44;
-		
-		float a21a33a42 = m21*a33a42;
-		float a21a33a44 = m21*a33a44;
-
-		float a21a34a42 = m21*a34a42;
-		float a21a34a43 = m21*a34a43;
-		
-		float a22a31a43 = m22*a31a43;
-		float a22a31a44 = m22*a31a44;
-		
-		float a22a33a41 = m22*a33a41;
-		float a22a33a44 = m22*a33a44;
-		
-		float a22a34a41 = m22*a34a41;
-		float a22a34a43 = m22*a34a43;
-		
-		float a23a31a42 = m23*a31a42;
-		float a23a31a44 = m23*a31a44;
-		
-		float a23a32a41 = m23*a32a41;
-		float a23a32a44 = m23*a32a44;
-		
-		float a23a34a41 = m23*a34a41;
-		float a23a34a42 = m23*a34a42;
-		
-		float a24a31a42 = m24*a31a42;
-		float a24a31a43 = m24*a31a43;
-		
-		float a24a32a43 = m24*a32a43;
-		float a24a32a41 = m24*a32a41;
-		
-		float a24a33a41 = m24*a33a41;
-		float a24a33a42 = m24*a33a42;
-		
-		// Calculate DETERMINANT
-		float det =   (m11 * a22a33a44) + (m11 * a23a34a42) + (m11 * a24a32a43)
-					+ (m12 * a21a34a43) + (m12 * a23a31a44) + (m12 * a24a33a41)
-					+ (m13 * a21a32a44) + (m13 * a22a34a41) + (m13 * a24a31a42)
-					+ (m14 * a21a33a42) + (m14 * a22a31a43) + (m14 * a23a32a41)
-					- (m11 * a22a34a43) - (m11 * a23a32a44) - (m11 * a24a33a42)
-					- (m12 * a21a33a44) - (m12 * a23a34a41) - (m12 * a24a31a43)
-					- (m13 * a21a34a42) - (m13 * a22a31a44) - (m13 * a24a32a41)
-					- (m14 * a21a32a43) - (m14 * a22a33a41) - (m14 * a23a31a42);
-		
-		// Calculate ADJOINT
-		float b11 = (a22a33a44) + (a23a34a42) + (a24a32a43) - (a22a34a43) - (a23a32a44) - (a24a33a42);
-		float b12 = (m12 * a34a43) + (m13 * a32a44) + (m14 * a33a42) - (m12 * a33a44) - (m13 * a34a42) - (m14 * a32a43);
-		float b13 = (a12a23 * m44) + (a13a24 * m42) + (a14a22 * m43) - (a12a24 * m43) - (a13a22 * m44) - (a14a23 * m42);
-		float b14 = (a12a24 * m33) + (a13a22 * m34) + (a14a23 * m32) - (a12a23 * m34) - (a13a24 * m32) - (a14a22 * m33);
-		
-		float b21 = (a21a34a43) + (a23a31a44) + (a24a33a41) - (a21a33a44) - (a23a34a41) - (a24a31a43);
-		float b22 = (m11 * a33a44) + (m13 * a34a41) + (m14 * a31a43) - (m11 * a34a43) - (m13 * a31a44) - (m14 * a33a41);
-		float b23 = (a11a24 * m43) + (a13a21 * m44) + (a14a23 * m41) - (a11a23 * m44) - (a13a24 * m41) - (a14a21 * m43);
-		float b24 = (a11a23 * m34) + (a13a24 * m31) + (a14a21 * m33) - (a11a24 * m33) - (a13a21 * m34) - (a14a23 * m31);
-		
-		float b31 = (a21a32a44) + (a22a34a41) + (a24a31a42) - (a21a34a42) - (a22a31a44) - (a24a32a41);
-		float b32 = (m11 * a34a42) + (m12 * a31a44) + (m14 * a32a41) - (m11 * a32a44) - (m12 * a34a41) - (m14 * a31a42);
-		float b33 = (a11a22 * m44) + (a12a24 * m41) + (a14a21 * m42) - (a11a24 * m42) - (a12a21 * m44) - (a14a22 * m41);
-		float b34 = (a11a24 * m32) + (a12a21 * m34) + (a14a22 * m31) - (a11a22 * m34) - (a12a24 * m31) - (a14a21 * m32);
-		
-		float b41 = (a21a33a42) + (a22a31a44) + (a23a32a41) - (a21a32a43) - (a22a33a41) - (a23a31a42);
-		float b42 = (m11 * a32a43) + (m12 * a33a41) + (m13 * a31a42) - (m11 * a33a42) - (m12 * a31a43) - (m13 * a32a41);
-		float b43 = (a11a23 * m42) + (a12a21 * m43) + (a13a22 * m41) - (a11a22 * m43) - (a12a23 * m41) - (a13a21 * m42);
-		float b44 = (a11a22 * m33) + (a12a23 * m31) + (a13a21 * m32) - (a11a23 * m32) - (a12a21 * m33) - (a13a22 * m31);
-
-		Matrix4 result = new Matrix4();
-		
-		// Calculate Invert Matrix 4x4
-		result.m11 = b11 / det;
-		result.m12 = b12 / det;
-		result.m13 = b13 / det;
-		result.m14 = b14 / det;
-		result.m21 = b21 / det;
-		result.m22 = b22 / det;
-		result.m23 = b23 / det;
-		result.m24 = b24 / det;
-		result.m31 = b31 / det;
-		result.m32 = b32 / det;
-		result.m33 = b33 / det;
-		result.m34 = b34 / det;
-		result.m41 = b41 / det;
-		result.m42 = b42 / det;
-		result.m43 = b43 / det;
-		result.m44 = b44 / det;
-		
-		return result;
+//		float a11a22 = m11*m22;
+//		float a11a23 = m11*m23;
+//		float a11a24 = m11*m24;
+//		
+//		float a12a21 = m12*m21;
+//		float a12a23 = m12*m23;
+//		float a12a24 = m12*m24;
+//		
+//		float a13a21 = m13*m21;
+//		float a13a22 = m13*m22;
+//		float a13a24 = m13*m24;
+//		
+//		float a14a21 = m14*m21;
+//		float a14a22 = m14*m22;
+//		float a14a23 = m14*m23;
+//
+//		float a31a42 = m31*m42;
+//		float a31a43 = m31*m43;
+//		float a31a44 = m31*m44;
+//
+//		float a32a41 = m32*m41;
+//		float a32a43 = m32*m43;
+//		float a32a44 = m32*m44;
+//		
+//		float a33a41 = m33*m41;
+//		float a33a42 = m33*m42;
+//		float a33a44 = m33*m44;
+//
+//		float a34a41 = m34*m41;
+//		float a34a42 = m34*m42;
+//		float a34a43 = m34*m43;
+//
+//		float a21a32a43 = m21*a32a43;
+//		float a21a32a44 = m21*a32a44;
+//		
+//		float a21a33a42 = m21*a33a42;
+//		float a21a33a44 = m21*a33a44;
+//
+//		float a21a34a42 = m21*a34a42;
+//		float a21a34a43 = m21*a34a43;
+//		
+//		float a22a31a43 = m22*a31a43;
+//		float a22a31a44 = m22*a31a44;
+//		
+//		float a22a33a41 = m22*a33a41;
+//		float a22a33a44 = m22*a33a44;
+//		
+//		float a22a34a41 = m22*a34a41;
+//		float a22a34a43 = m22*a34a43;
+//		
+//		float a23a31a42 = m23*a31a42;
+//		float a23a31a44 = m23*a31a44;
+//		
+//		float a23a32a41 = m23*a32a41;
+//		float a23a32a44 = m23*a32a44;
+//		
+//		float a23a34a41 = m23*a34a41;
+//		float a23a34a42 = m23*a34a42;
+//		
+//		float a24a31a42 = m24*a31a42;
+//		float a24a31a43 = m24*a31a43;
+//		
+//		float a24a32a43 = m24*a32a43;
+//		float a24a32a41 = m24*a32a41;
+//		
+//		float a24a33a41 = m24*a33a41;
+//		float a24a33a42 = m24*a33a42;
+//		
+//		// Calculate DETERMINANT
+//		float det =   (m11 * a22a33a44) + (m11 * a23a34a42) + (m11 * a24a32a43)
+//					+ (m12 * a21a34a43) + (m12 * a23a31a44) + (m12 * a24a33a41)
+//					+ (m13 * a21a32a44) + (m13 * a22a34a41) + (m13 * a24a31a42)
+//					+ (m14 * a21a33a42) + (m14 * a22a31a43) + (m14 * a23a32a41)
+//					- (m11 * a22a34a43) - (m11 * a23a32a44) - (m11 * a24a33a42)
+//					- (m12 * a21a33a44) - (m12 * a23a34a41) - (m12 * a24a31a43)
+//					- (m13 * a21a34a42) - (m13 * a22a31a44) - (m13 * a24a32a41)
+//					- (m14 * a21a32a43) - (m14 * a22a33a41) - (m14 * a23a31a42);
+//		
+//		// Calculate ADJOINT
+//		float b11 = (a22a33a44) + (a23a34a42) + (a24a32a43) - (a22a34a43) - (a23a32a44) - (a24a33a42);
+//		float b12 = (m12 * a34a43) + (m13 * a32a44) + (m14 * a33a42) - (m12 * a33a44) - (m13 * a34a42) - (m14 * a32a43);
+//		float b13 = (a12a23 * m44) + (a13a24 * m42) + (a14a22 * m43) - (a12a24 * m43) - (a13a22 * m44) - (a14a23 * m42);
+//		float b14 = (a12a24 * m33) + (a13a22 * m34) + (a14a23 * m32) - (a12a23 * m34) - (a13a24 * m32) - (a14a22 * m33);
+//		
+//		float b21 = (a21a34a43) + (a23a31a44) + (a24a33a41) - (a21a33a44) - (a23a34a41) - (a24a31a43);
+//		float b22 = (m11 * a33a44) + (m13 * a34a41) + (m14 * a31a43) - (m11 * a34a43) - (m13 * a31a44) - (m14 * a33a41);
+//		float b23 = (a11a24 * m43) + (a13a21 * m44) + (a14a23 * m41) - (a11a23 * m44) - (a13a24 * m41) - (a14a21 * m43);
+//		float b24 = (a11a23 * m34) + (a13a24 * m31) + (a14a21 * m33) - (a11a24 * m33) - (a13a21 * m34) - (a14a23 * m31);
+//		
+//		float b31 = (a21a32a44) + (a22a34a41) + (a24a31a42) - (a21a34a42) - (a22a31a44) - (a24a32a41);
+//		float b32 = (m11 * a34a42) + (m12 * a31a44) + (m14 * a32a41) - (m11 * a32a44) - (m12 * a34a41) - (m14 * a31a42);
+//		float b33 = (a11a22 * m44) + (a12a24 * m41) + (a14a21 * m42) - (a11a24 * m42) - (a12a21 * m44) - (a14a22 * m41);
+//		float b34 = (a11a24 * m32) + (a12a21 * m34) + (a14a22 * m31) - (a11a22 * m34) - (a12a24 * m31) - (a14a21 * m32);
+//		
+//		float b41 = (a21a33a42) + (a22a31a44) + (a23a32a41) - (a21a32a43) - (a22a33a41) - (a23a31a42);
+//		float b42 = (m11 * a32a43) + (m12 * a33a41) + (m13 * a31a42) - (m11 * a33a42) - (m12 * a31a43) - (m13 * a32a41);
+//		float b43 = (a11a23 * m42) + (a12a21 * m43) + (a13a22 * m41) - (a11a22 * m43) - (a12a23 * m41) - (a13a21 * m42);
+//		float b44 = (a11a22 * m33) + (a12a23 * m31) + (a13a21 * m32) - (a11a23 * m32) - (a12a21 * m33) - (a13a22 * m31);
+//
+//		Matrix4 result = new Matrix4();
+//		
+//		// Calculate Invert Matrix 4x4
+//		result.m11 = b11 / det;
+//		result.m12 = b12 / det;
+//		result.m13 = b13 / det;
+//		result.m14 = b14 / det;
+//		result.m21 = b21 / det;
+//		result.m22 = b22 / det;
+//		result.m23 = b23 / det;
+//		result.m24 = b24 / det;
+//		result.m31 = b31 / det;
+//		result.m32 = b32 / det;
+//		result.m33 = b33 / det;
+//		result.m34 = b34 / det;
+//		result.m41 = b41 / det;
+//		result.m42 = b42 / det;
+//		result.m43 = b43 / det;
+//		result.m44 = b44 / det;
+//		
+//		return result;
 	}
 	
 	public Matrix4 getTranspose()

@@ -288,7 +288,7 @@ public class Game1 extends Game
 			}
 		}
 		
-		itemBox.rotate(1, 1, 0);
+		itemBox.rotate(0, 1, 0);
 		
 		//
 		debuging();
