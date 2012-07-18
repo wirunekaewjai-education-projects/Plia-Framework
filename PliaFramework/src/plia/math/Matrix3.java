@@ -440,9 +440,9 @@ public final class Matrix3
 			attitude = (float) Math.asin(m12);
 		}
 
-		result.x = bank;
-		result.y = heading;
-		result.z = attitude;
+		result.x = (float) Math.toDegrees(bank);
+		result.y = (float) Math.toDegrees(heading);
+		result.z = (float) Math.toDegrees(attitude);
 		
 		return result;
 	}

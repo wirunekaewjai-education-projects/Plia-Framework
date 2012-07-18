@@ -18,7 +18,7 @@ public class Group extends Node<Group>
 	
 //	private Matrix4 local = new Matrix4();
 	private Matrix4 world = new Matrix4();
-	Matrix4 invParent = new Matrix4();
+	Matrix4 invParent = new Matrix4().getInvert();
 	
 	protected boolean hasChanged = true;
 	

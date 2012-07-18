@@ -29,7 +29,12 @@ class Node<T extends Node> extends GameObject
 		super.copyTo(gameObject);
 		
 		Node node = (Node) gameObject;
-		node.animation = this.animation.clone();
+		
+		if(hasAnimation)
+		{
+			node.animation = this.animation.clone();
+		}
+		
 		node.hasAnimation = this.hasAnimation;
 		node.childCount = this.childCount;
 		node.children = new Node[this.childCount];

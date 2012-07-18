@@ -587,9 +587,9 @@ public final class Matrix4
 			attitude = (float) Math.asin(m12);
 		}
 
-		result.x = bank;
-		result.y = heading;
-		result.z = attitude;
+		result.x = (float) Math.toDegrees(bank);
+		result.y = (float) Math.toDegrees(heading);
+		result.z = (float) Math.toDegrees(attitude);
 		
 		return result;
 	}
@@ -690,7 +690,7 @@ public final class Matrix4
 		this.m22 = forward.y;
 		this.m23 = forward.z;
 		
-		if(forward.x != 0 && forward.y != 0)
+		if(forward.x != 0 || forward.y != 0)
 		{
 			Vector3 right = Vector3.cross(forward, getUp()).getNormalized();
 			Vector3 up = Vector3.cross(right, forward).getNormalized();

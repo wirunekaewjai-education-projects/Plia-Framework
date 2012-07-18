@@ -238,19 +238,60 @@ public class CurveCollider extends Collider
 					
 					// Plane Axis
 					Vector3 n = Vector3.cross(v1, v2).getNormalized();
-//					Vector3 up = new Vector3(0, 0, 1);
-//					Vector3 left = Vector3.cross(up, n).getNormalized();
-//					Vector3 right = Vector3.cross(n, up).getNormalized();
-//					Vector3 back = Vector3.cross(up, left).getNormalized();
+					Vector3 up = new Vector3(0, 0, 1);
+					Vector3 left = Vector3.cross(up, n).getNormalized();
+					Vector3 right = Vector3.cross(n, up).getNormalized();
+					Vector3 back = Vector3.cross(up, left).getNormalized();
 					
-//					Vector3 forward = group.getForward();
+					Group group = (!b.isRoot()) ? b.parent : b;
+					
+					Vector3 forward = group.getForward();
+					float dl = Vector3.dot(forward, left);
+					float dr = Vector3.dot(forward, right);
+					
+					float df = Vector3.dot(forward, n);
+					float db = Vector3.dot(forward, back);
+					
+					Vector3 lerp = forward.clone();
+					
+					float dirr = 1;
+					
+					if(dl > dr)
+					{
+//						lerp = Vector3.lerp(forward, left, 0.05f);
+						
+						if(db > df)
+						{
+							dirr = -1;
+						}
+						else
+						{
+							dirr = 1;
+						}
+					}
+					else
+					{
+//						lerp = Vector3.lerp(forward, right, 0.05f);
+						
+						if(db > df)
+						{
+							dirr = 1;
+						}
+						else
+						{
+							dirr = -1;
+						}
+					}
+					
+					group.rotate(0, 0, dirr);
+					
 //					Vector3 reflect = Vector3.reflect(forward, n);
 					
 //					Log.e("Dist", d+"");
 					
-					Group group = (!b.isRoot()) ? b.parent : b;
+//					group.setForward(lerp);
 					
-					Vector3 dir = new Vector3(n.x * (r-d), n.y * (r-d), 0);
+					Vector3 dir = new Vector3(n.x * (r-d) * 1.25f, n.y * (r-d) * 1.25f, 0);
 					Vector3 pos = Vector3.add(group.getPosition(), dir);
 					
 					group.setPosition(pos);

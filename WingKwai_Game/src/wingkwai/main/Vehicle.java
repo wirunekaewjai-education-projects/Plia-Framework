@@ -1,5 +1,6 @@
 package wingkwai.main;
 
+import android.util.Log;
 import plia.core.scene.Group;
 import plia.core.scene.animation.Animation;
 
@@ -15,6 +16,8 @@ public class Vehicle
 	
 	private float velocityMultiplier = 1;
 	private float angularVelocityMultiplier = 1;
+	
+	private boolean isFirst = true;
 	
 	public Vehicle(Group object)
 	{
@@ -76,39 +79,48 @@ public class Vehicle
 	
 	public void update()
 	{
-		if(speed > 0.02f)
+		if(isFirst)
 		{
-			speed -= 0.01f;
+			angle = object.getEulerAngles().z;
+			Log.e("Angle", angle+"");
+			isFirst = false;
 		}
-		else if(speed < -0.02f)
+		else
 		{
-			speed += 0.01f;
-		}
-		else if (speed > -0.02f && speed < 0.02f)
-        {
-            speed = 0;
-        }
-		
-		if (angle >= 360)
-        {
-            angle = 0;
-        }
-        else if (angle < 0)
-        {
-            angle = 359;
-        }
-
-		object.translate(0, speed, 0);
-		object.setEulerAngles(0, 0, angle);
-		
-		if(object.hasAnimation())
-		{
-			Animation animation = object.getAnimation();
-			animation.setPlaybackSpeed(Math.abs(speed));
-			
-			if(speed == 0 && !animation.isPlaying(idleClipName))
+			if(speed > 0.02f)
 			{
-				animation.play(idleClipName);
+				speed -= 0.01f;
+			}
+			else if(speed < -0.02f)
+			{
+				speed += 0.01f;
+			}
+			else if (speed > -0.02f && speed < 0.02f)
+	        {
+	            speed = 0;
+	        }
+			
+			if (angle >= 360)
+	        {
+	            angle = 0;
+	        }
+	        else if (angle < 0)
+	        {
+	            angle = 359;
+	        }
+
+			object.translate(0, speed, 0);
+//			object.setEulerAngles(0, 0, angle);
+			
+			if(object.hasAnimation())
+			{
+				Animation animation = object.getAnimation();
+				animation.setPlaybackSpeed(Math.abs(speed));
+				
+				if(speed == 0 && !animation.isPlaying(idleClipName))
+				{
+					animation.play(idleClipName);
+				}
 			}
 		}
 	}
@@ -144,12 +156,14 @@ public class Vehicle
 	{
 		if (speed > 0f)
         {
-            angle += dir * angularVelocityMultiplier;
+			object.rotate(0, 0, dir * angularVelocityMultiplier);
+//            angle += dir * angularVelocityMultiplier;
             speed -= 0.008f * angularVelocityMultiplier;
         }
         else if (speed < 0f)
         {
-            angle -= dir * angularVelocityMultiplier;
+        	object.rotate(0, 0, -dir * angularVelocityMultiplier);
+//            angle -= dir * angularVelocityMultiplier;
         }
 	}
 	
