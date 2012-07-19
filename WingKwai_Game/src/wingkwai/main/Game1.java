@@ -83,7 +83,7 @@ public class Game1 extends Game
 	private ArrayList<AIScript> aiScripts = new ArrayList<AIScript>();
 	
 	// Player
-	private Player player;
+	private ArrayList<Player> players = new ArrayList<Player>();
 	
 	//
 	private boolean isStarted = false;
@@ -186,7 +186,6 @@ public class Game1 extends Game
 		buffy.setCollider(buffyCollider);
 		
 		vehicle = new Vehicle(buffy);
-		player = new Player(vehicle);
 
 		terrain.attachCollider(buffyCollider);
 		
@@ -346,9 +345,10 @@ public class Game1 extends Game
 		checkpoint.add(collider(-0.938f, -0.346f, 0, 	100, 300, 	527, -800, 27));
 		checkpoint.add(collider(-1, 0, 0, 				100, 300, 	433, -834, 27));
 		
-//		AIScript aiScript1 = new AIScript(vehicle, checkpoint);
-//		aiScripts.add(aiScript1);
-		
+		players.add(new Player(vehicle));
+		AIScript aiScript1 = new AIScript(vehicle, checkpoint);
+		aiScripts.add(aiScript1);
+
 		for (int i = 1; i < aiCount+1; i++)
 		{
 			Group buffyClone = buffy.instantiate();
@@ -357,6 +357,7 @@ public class Game1 extends Game
 			buffyClone.setPosition(waypoints.get(i));
 			
 			Vehicle vehicleClone = new Vehicle(buffyClone);
+			players.add(new Player(vehicleClone));
 			
 			ShadowPlane shadowPlane = new ShadowPlane(shadowClone, buffyClone, 24);
 			AIScript aiScript = new AIScript(vehicleClone, checkpoint);
@@ -372,7 +373,7 @@ public class Game1 extends Game
 		
 		for (AIScript aiScript : aiScripts)
 		{
-			aiScript.addObjectAvoidance(buffyCollider);
+//			aiScript.addObjectAvoidance(buffyCollider);
 			for (AIScript aiScript2 : aiScripts)
 			{
 				if(aiScript != aiScript2)
@@ -380,6 +381,11 @@ public class Game1 extends Game
 					aiScript.addObjectAvoidance((SphereCollider) aiScript2.getVehicle().getObject().getCollider());
 				}
 			}
+		}
+		
+		for (int i = 0; i < players.size(); i++)
+		{
+			checkpoint.addPlayer(players.get(i));
 		}
 		
 		endSprite = sprite("ui/goal.jpg");
@@ -436,7 +442,7 @@ public class Game1 extends Game
 		
 		items.add(berserker);
 		
-		Game.enabledDebug = true;
+//		Game.enabledDebug = true;
 	}
 
 	public void onUpdate()
@@ -447,7 +453,12 @@ public class Game1 extends Game
 		}
 		else
 		{
-			player.update();
+			checkpoint.update();
+			
+			for (Player player : players)
+			{
+				player.update();
+			}
 			
 			for (int i = 0; i < shadowPlanes.size(); i++)
 			{
@@ -458,32 +469,14 @@ public class Game1 extends Game
 			{
 				for (AIScript aiScript : aiScripts)
 				{
-					aiScript.getVehicle().update();
 					aiScript.update();
 				}
 
-				PlaneCollider chp = checkpoint.get(currentCheckpoint);
-				SphereCollider spr = (SphereCollider) buffy.getCollider();
-				
-				if(Collider.intersect(chp, spr))
+				//checkpoint.isEnd() || 
+				if(players.get(0).isEnd())
 				{
-					currentCheckpoint++;
-					checkpointCount++;
-					
-					if(currentCheckpoint >= checkpoint.size())
-					{
-						currentCheckpoint -= checkpoint.size();
-					}
-					
-					if(checkpointCount > checkpoint.size())
-					{
-						if(!isEnd)
-						{
-							layer2.addChild(endSprite);
-							
-							isEnd = true;
-						}
-					}
+					layer2.addChild(endSprite);
+					isEnd = true;
 				}
 			}
 			
@@ -491,18 +484,25 @@ public class Game1 extends Game
 			{
 				itemb.rotate(0, 0, 1);
 				
-				if(itemb.isActive() && Collider.intersect(itemb.getCollider(), buffy.getCollider()))
+				if(itemb.isActive())
 				{
-					itemb.setActive(false);
-					player.setItem(items.get(0));
-					player.useItem();
+					for (Player player : players)
+					{
+						if(Collider.intersect(itemb.getCollider(), player.getVehicle().getObject().getCollider()))
+						{
+							itemb.setActive(false);
+							player.setItem(items.get(0));
+							player.useItem();
+						}
+					}
+					
 //					Log.e("III", itemb+"");
 				}
 			}
 		}
 		
 		//
-		debuging();
+//		debuging();
 	}
 	
 	private void debuging()

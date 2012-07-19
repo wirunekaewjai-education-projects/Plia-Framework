@@ -35,7 +35,7 @@ public class AIScript
 
 	public void update()
 	{
-		float rand = (float) Math.random() * 0.03f;
+		float rand = (float) Math.max(0.7f, Math.random()) * 0.03f;
 		vehicle.accelerate(rand);
 
 		Group obj = vehicle.getObject();
@@ -106,7 +106,8 @@ public class AIScript
 				nSurface.set(-nSurface.x, -nSurface.y, 0);
 			}
 			
-			forwardDir = Vector3.scale(Vector3.add(nSurface, new Vector3(currentDirection.x, currentDirection.y, 0)), (float) Math.max(0.25f, (Math.random() * 0.5f)));
+			forwardDir = Vector3.lerp(nSurface, new Vector3(currentDirection.x, currentDirection.y, 0), (float) Math.max(0.35f, Math.min(0.8f, Math.random())));
+//			forwardDir = Vector3.scale(Vector3.add(nSurface, new Vector3(currentDirection.x, currentDirection.y, 0)), (float) Math.max(0.35f, (Math.random() * 0.5f)));
 		}
 	}
 	

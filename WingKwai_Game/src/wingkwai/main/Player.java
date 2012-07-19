@@ -9,6 +9,13 @@ public class Player
 	private long startTime = 0;
 	private boolean isUseItem = false;
 	
+	private int rank = 1;
+	
+	private int currentCheckpoint = 0;
+	private int checkpointCount = 0;
+	
+	private boolean isEnd = false;
+	
 	public Player(Vehicle vehicle)
 	{
 		this.vehicle = vehicle;
@@ -40,7 +47,7 @@ public class Player
 				item.getOnItemEventListener().onEffectEnd(this);
 				item = null;
 				isUseItem = false;
-				vehicle.setVelocityMultiplier(1);
+				vehicle.setVelocityMultiplier(1 + ((rank-1) * RANK_SPEED));
 				vehicle.setAngularVelocityMultiplier(1);
 			}
 		}
@@ -49,6 +56,21 @@ public class Player
 	public Vehicle getVehicle()
 	{
 		return vehicle;
+	}
+	
+	public int getRank()
+	{
+		return rank;
+	}
+	
+	public void setRank(int rank)
+	{
+		int oldRank = this.rank;
+		this.rank = rank;
+		
+		int dist = rank - oldRank;
+		float value = dist * RANK_SPEED;
+		vehicle.setVelocityMultiplier(vehicle.getVelocityMultiplier() + value);
 	}
 	
 	public Item getItem()
@@ -79,4 +101,36 @@ public class Player
 			item.getOnItemEventListener().onEffectStart(this);
 		}
 	}
+	
+	public int getCheckpointCount()
+	{
+		return checkpointCount;
+	}
+	
+	public int getCurrentCheckpoint()
+	{
+		return currentCheckpoint;
+	}
+	
+	public void setCurrentCheckpoint(int currentCheckpoint)
+	{
+		this.currentCheckpoint = currentCheckpoint;
+	}
+	
+	public void setCheckpointCount(int checkpointCount)
+	{
+		this.checkpointCount = checkpointCount;
+	}
+	
+	public boolean isEnd()
+	{
+		return isEnd;
+	}
+	
+	public void setEnd(boolean isEnd)
+	{
+		this.isEnd = isEnd;
+	}
+	
+	private static float RANK_SPEED = 0.005f;
 }
