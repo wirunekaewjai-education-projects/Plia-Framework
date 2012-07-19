@@ -31,6 +31,11 @@ public final class PlaneCollider extends Collider
 			b.p[i] = this.p[i].clone();
 			b.corner[i] = this.corner[i].clone();
 		}
+		
+//		if(!isRoot() && parent.collider == this)
+//		{
+//			parent.setCollider(b);
+//		}
 	}
 
 	@Override

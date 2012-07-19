@@ -79,6 +79,16 @@ public class Game1 extends Game
 	// Waypoint
 	private ArrayList<Vector3> waypoints = new ArrayList<Vector3>();
 	
+	// AI
+	private ArrayList<AIScript> aiScripts = new ArrayList<AIScript>();
+	
+	// Player
+	private Player player;
+	
+	//
+	private boolean isStarted = false;
+	private int aiCount = 3;
+	
 	public void onInitialize(Bundle arg0)
 	{
 		Log.e("Call", "OnInit");
@@ -176,9 +186,10 @@ public class Game1 extends Game
 		buffy.setCollider(buffyCollider);
 		
 		vehicle = new Vehicle(buffy);
+		player = new Player(vehicle);
 
 		terrain.attachCollider(buffyCollider);
-
+		
 		float ratio = (float)Screen.getWidth() / Screen.getHeight();
 		float scalef = 0.2f;
 		controller.setScale(scalef, scalef * ratio);
@@ -213,7 +224,7 @@ public class Game1 extends Game
 		Scene.setMainCamera(camera);
 		
 		// Item
-		itemBox.setCollider(collider(5));
+		itemBox.setCollider(collider(7));
 		itemBox.setScale(10, 10, 10);
 //		itemBox.setPosition(0, 15, 144);
 //		itemBox.rotate(10, 10, 0);
@@ -335,6 +346,41 @@ public class Game1 extends Game
 		checkpoint.add(collider(-0.938f, -0.346f, 0, 	100, 300, 	527, -800, 27));
 		checkpoint.add(collider(-1, 0, 0, 				100, 300, 	433, -834, 27));
 		
+//		AIScript aiScript1 = new AIScript(vehicle, checkpoint);
+//		aiScripts.add(aiScript1);
+		
+		for (int i = 1; i < aiCount+1; i++)
+		{
+			Group buffyClone = buffy.instantiate();
+			Group shadowClone = shadowPlaneRef.instantiate();
+			
+			buffyClone.setPosition(waypoints.get(i));
+			
+			Vehicle vehicleClone = new Vehicle(buffyClone);
+			
+			ShadowPlane shadowPlane = new ShadowPlane(shadowClone, buffyClone, 24);
+			AIScript aiScript = new AIScript(vehicleClone, checkpoint);
+			
+			shadowPlanes.add(shadowPlane);
+			aiScripts.add(aiScript);
+			
+			layer1.addChild(buffyClone);
+			
+			trackInside.attachCollider(buffyClone.getCollider());
+			trackOutside.attachCollider(buffyClone.getCollider());
+		}
+		
+		for (AIScript aiScript : aiScripts)
+		{
+			aiScript.addObjectAvoidance(buffyCollider);
+			for (AIScript aiScript2 : aiScripts)
+			{
+				if(aiScript != aiScript2)
+				{
+					aiScript.addObjectAvoidance((SphereCollider) aiScript2.getVehicle().getObject().getCollider());
+				}
+			}
+		}
 		
 		endSprite = sprite("ui/goal.jpg");
 		endSprite.setScale(0.25f, 0.25f);
@@ -389,54 +435,79 @@ public class Game1 extends Game
 		});
 		
 		items.add(berserker);
+		
+		Game.enabledDebug = true;
 	}
 
 	public void onUpdate()
 	{
-		vehicle.update();
-		
-		for (int i = 0; i < shadowPlanes.size(); i++)
+		if(!isStarted)
 		{
-			shadowPlanes.get(i).update();
+			isStarted = true;
 		}
-
-		PlaneCollider chp = checkpoint.get(currentCheckpoint);
-		SphereCollider spr = (SphereCollider) buffy.getCollider();
-		
-
-		if(Collider.intersect(chp, spr))
+		else
 		{
-			currentCheckpoint++;
-			checkpointCount++;
+			player.update();
 			
-			if(currentCheckpoint >= checkpoint.size())
+			for (int i = 0; i < shadowPlanes.size(); i++)
 			{
-				currentCheckpoint -= checkpoint.size();
+				shadowPlanes.get(i).update();
 			}
 			
-			if(checkpointCount > checkpoint.size())
+			if(!isEnd)
 			{
-				if(!isEnd)
+				for (AIScript aiScript : aiScripts)
 				{
-					layer2.addChild(endSprite);
+					aiScript.getVehicle().update();
+					aiScript.update();
+				}
+
+				PlaneCollider chp = checkpoint.get(currentCheckpoint);
+				SphereCollider spr = (SphereCollider) buffy.getCollider();
+				
+				if(Collider.intersect(chp, spr))
+				{
+					currentCheckpoint++;
+					checkpointCount++;
 					
-					isEnd = true;
+					if(currentCheckpoint >= checkpoint.size())
+					{
+						currentCheckpoint -= checkpoint.size();
+					}
+					
+					if(checkpointCount > checkpoint.size())
+					{
+						if(!isEnd)
+						{
+							layer2.addChild(endSprite);
+							
+							isEnd = true;
+						}
+					}
+				}
+			}
+			
+			for (Group itemb : itemBoxes)
+			{
+				itemb.rotate(0, 0, 1);
+				
+				if(itemb.isActive() && Collider.intersect(itemb.getCollider(), buffy.getCollider()))
+				{
+					itemb.setActive(false);
+					player.setItem(items.get(0));
+					player.useItem();
+//					Log.e("III", itemb+"");
 				}
 			}
 		}
 		
-		for (Group itemb : itemBoxes)
-		{
-			itemb.rotate(0, 0, 1);
-		}
-		
 		//
-//		debuging();
+		debuging();
 	}
 	
 	private void debuging()
 	{
-		Log.println(Log.ASSERT, buffy.getCollider().getForward().toString(), buffy.getCollider().getPosition().toString());
+//		Log.println(Log.ASSERT, buffy.getCollider().getForward().toString(), buffy.getCollider().getPosition().toString());
 		
 //		for (int i = 0; i < terrain1.getChildCount(); i++)
 //		{
@@ -453,6 +524,12 @@ public class Game1 extends Game
 		
 //		Debug.drawBounds(buffy.getCollider(), color3);
 //		Debug.drawBounds(itemBox.getCollider(), color3);
+		
+//		for (Group itemb : itemBoxes)
+//		{
+//			Log.e("Pos", itemb.getPosition().toString()+"");
+//			Debug.drawBounds(itemb.getCollider(), color3);
+//		}
 	}
 	
 	private Color3 color3 = new Color3(0.5f, 1, 0.5f);

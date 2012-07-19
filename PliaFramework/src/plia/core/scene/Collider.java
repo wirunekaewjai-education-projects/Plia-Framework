@@ -44,19 +44,6 @@ public class Collider extends Group
 	{
 		
 	}
-
-	@Override
-	public Collider instantiate()
-	{
-		Collider bounds = new Collider();
-		
-		if(!isRoot())
-		{
-			parent.collider = bounds;
-		}
-
-		return bounds;
-	}
 	
 	public static final boolean intersect(Collider a, Collider b)
 	{

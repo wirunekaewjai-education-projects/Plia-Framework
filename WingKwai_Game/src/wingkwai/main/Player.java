@@ -9,7 +9,7 @@ public class Player
 	private long startTime = 0;
 	private boolean isUseItem = false;
 	
-	private Player(Vehicle vehicle)
+	public Player(Vehicle vehicle)
 	{
 		this.vehicle = vehicle;
 	}
@@ -29,11 +29,13 @@ public class Player
 	
 	public void update()
 	{
+		vehicle.update();
+		
 		if(isUseItem)
 		{
 			long currentMillis = System.currentTimeMillis() - startTime;
 			
-			if(currentMillis >= item.getTime())
+			if(currentMillis >= item.getTime() * 1000)
 			{
 				item.getOnItemEventListener().onEffectEnd(this);
 				item = null;
@@ -47,6 +49,16 @@ public class Player
 	public Vehicle getVehicle()
 	{
 		return vehicle;
+	}
+	
+	public Item getItem()
+	{
+		return item;
+	}
+	
+	public void setItem(Item item)
+	{
+		this.item = item;
 	}
 	
 	public boolean hasItem()

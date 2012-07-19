@@ -47,10 +47,10 @@ public class Group extends Node<Group>
 		group.invParent = this.invParent.clone();
 		group.axisRotation = this.axisRotation.clone();
 		
-//		if(this.collider != null)
-//		{
-//			group.collider = this.collider.instantiate();
-//		}
+		if(this.collider != null)
+		{
+			group.setCollider((Collider) this.collider.instantiate());
+		}
 	}
 	
 	@Override

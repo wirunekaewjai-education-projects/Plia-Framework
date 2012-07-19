@@ -13,6 +13,17 @@ public class Material
 
 	}
 	
+	public Material clone()
+	{
+		Material material = new Material();
+		material.shader = shader;
+		material.baseColor = new Color3(baseColor.r, baseColor.g, baseColor.b);
+		material.baseTexture = baseTexture;
+		material.lightAbsorbMultipler = lightAbsorbMultipler;
+		
+		return material;
+	}
+	
 	public Shader getShader()
 	{
 		return shader;

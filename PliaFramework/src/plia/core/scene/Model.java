@@ -27,7 +27,7 @@ public class Model extends Group
 
 		Model b = (Model) gameObject;
 		b.geometry = this.geometry;
-		b.material = this.material;
+		b.material = this.material.clone();
 	}
 
 	@Override

@@ -23,6 +23,11 @@ public final class SphereCollider extends Collider
 		
 		SphereCollider b = (SphereCollider) gameObject;
 		b.radius = this.radius;
+		
+//		if(!isRoot() && parent.collider == this)
+//		{
+//			parent.setCollider(b);
+//		}
 	}
 
 	@Override

@@ -106,6 +106,11 @@ public final class Vector2
 	}
 
 	// Classifier Method
+	public static float dot(Vector2 vec1, Vector2 vec2)
+	{
+		return ((vec1.x * vec2.x) + (vec1.y * vec2.y));
+	}
+	
 	public static Vector2 add(Vector2 vec1, Vector2 vec2)
 	{
 		return new Vector2(vec1.x + vec2.x, vec1.y + vec2.y);
