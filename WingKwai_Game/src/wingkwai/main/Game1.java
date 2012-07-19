@@ -150,7 +150,7 @@ public class Game1 extends Game
 		
 		Material bsm = new Material();
 		bsm.setBaseColor(1, 1, 1);
-		bsm.setLightAbsorbMultipler(25);
+		bsm.setLightAbsorbMultipler(30);
 		bsm.setShader(Shader.DIFFUSE);
 		
 		buffy_statue.asModel().setMaterial(bsm);
@@ -342,11 +342,11 @@ public class Game1 extends Game
 			itemBoxes.add(box);
 		}
 
-		itemBoxes.get(0).setPosition(68, -510, 144);
-		itemBoxes.get(1).setPosition(68, -540, 144);
-		itemBoxes.get(2).setPosition(68, -570, 144);
-		itemBoxes.get(3).setPosition(68, -600, 144);
-		itemBoxes.get(4).setPosition(68, -630, 144);
+		itemBoxes.get(0).setPosition(-322, -740, 26.5f);
+		itemBoxes.get(1).setPosition(-322, -780, 26.5f);
+		itemBoxes.get(2).setPosition(-322, -820, 26.5f);
+		itemBoxes.get(3).setPosition(-322, -860, 26.5f);
+		itemBoxes.get(4).setPosition(-322, -900, 26.5f);
 		
 		
 		// Init Item DB
@@ -369,14 +369,12 @@ public class Game1 extends Game
 
 	public void onUpdate()
 	{
-//		buffy.setForward(-1, 0, 0);
 		vehicle.update();
 
 		PlaneCollider chp = checkpoint.get(currentCheckpoint);
 		SphereCollider spr = (SphereCollider) buffy.getCollider();
 		
-		
-		
+
 		if(Collider.intersect(chp, spr))
 		{
 			currentCheckpoint++;
