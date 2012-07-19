@@ -12,6 +12,8 @@ public class Texture2D extends GameObject
 	
 	protected int[] pixels;
 	
+	private boolean enabledAlpha = false;
+	
 	public Texture2D(String name, int texBuffer, int[] pixels, int width, int height)
 	{
 		super(name);
@@ -52,6 +54,16 @@ public class Texture2D extends GameObject
 		float a = Color.alpha(pixels[i]) / 255f;
 
 		return new Color4(r, g, b, a);
+	}
+	
+	public void setEnabledAlpha(boolean enabledAlpha)
+	{
+		this.enabledAlpha = enabledAlpha;
+	}
+	
+	public boolean isEnabledAlpha()
+	{
+		return enabledAlpha;
 	}
 }
 

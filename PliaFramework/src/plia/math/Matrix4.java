@@ -644,7 +644,7 @@ public final class Matrix4
 		this.m12 = right.y;
 		this.m13 = right.z;
 		
-		if(right.x != 0 && right.z != 0)
+		if(right.x != 0 || right.z != 0)
 		{
 			Vector3 up = Vector3.cross(right, getForward()).getNormalized();
 			Vector3 forward = Vector3.cross(up, right).getNormalized();
@@ -736,7 +736,7 @@ public final class Matrix4
 		this.m32 = up.y;
 		this.m33 = up.z;
 		
-		if(up.x != 0 && up.z != 0)
+		if(up.x != 0 || up.z != 0)
 		{
 			Vector3 right = Vector3.cross(getForward(), up).getNormalized();
 			Vector3 forward = Vector3.cross(up, right).getNormalized();

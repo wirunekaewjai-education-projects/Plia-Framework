@@ -2,6 +2,7 @@ package plia.core.scene;
 
 import java.util.ArrayList;
 
+import plia.core.Game;
 import plia.core.debug.Debug;
 import plia.core.scene.shading.Color3;
 import plia.math.Curve;
@@ -96,10 +97,13 @@ public class CurveCollider extends Collider
 			Vector3 c1 = Vector3.add(Vector3.add(plane[0], plane[1]), Vector3.add(plane[2], plane[3]));
 			Vector3 center = new Vector3(c1.x / 4f, c1.y / 4f, c1.z / 4f);
 			
-			Debug.drawLine(plane[0], plane[1], color);
-			Debug.drawLine(plane[1], plane[2], color);
-			Debug.drawLine(plane[2], plane[3], color);
-			Debug.drawLine(plane[3], plane[0], color);
+			if(Game.enabledDebug)
+			{
+				Debug.drawLine(plane[0], plane[1], color);
+				Debug.drawLine(plane[1], plane[2], color);
+				Debug.drawLine(plane[2], plane[3], color);
+				Debug.drawLine(plane[3], plane[0], color);
+			}
 			
 //			boolean isOverlap = Collider.intersect(b, center, plane[0], plane[3], plane[2], plane[1]);
 			
@@ -153,17 +157,20 @@ public class CurveCollider extends Collider
 
 				if(ccip)
 				{
-					Vector3 start = Vector3.add(center, circleCenter);
-					Vector3 e0 = Vector3.add(p0, center);
-					Vector3 e1 = Vector3.add(p1, center);
-					Vector3 e2 = Vector3.add(p2, center);
-					Vector3 e3 = Vector3.add(p3, center);
+					if(Game.enabledDebug)
+					{
+						Vector3 start = Vector3.add(center, circleCenter);
+						Vector3 e0 = Vector3.add(p0, center);
+						Vector3 e1 = Vector3.add(p1, center);
+						Vector3 e2 = Vector3.add(p2, center);
+						Vector3 e3 = Vector3.add(p3, center);
 
-					color = new Color3(1, 0, 0);
-					Debug.drawLine(start, e0, color);
-					Debug.drawLine(start, e1, color);
-					Debug.drawLine(start, e2, color);
-					Debug.drawLine(start, e3, color);
+						color = new Color3(1, 0, 0);
+						Debug.drawLine(start, e0, color);
+						Debug.drawLine(start, e1, color);
+						Debug.drawLine(start, e2, color);
+						Debug.drawLine(start, e3, color);
+					}
 
 					isOverlap = true;
 				}
@@ -208,17 +215,20 @@ public class CurveCollider extends Collider
 						
 						if(Collider.pointInPlane(point, p0, p1, p2, p3))
 						{
-							Vector3 s1 = Vector3.add(center, point);
-							Vector3 e0 = Vector3.add(p0, center);
-							Vector3 e1 = Vector3.add(p1, center);
-							Vector3 e2 = Vector3.add(p2, center);
-							Vector3 e3 = Vector3.add(p3, center);
-							
-							color = new Color3(1, 1, 0);
-							Debug.drawLine(s1, e0, color);
-							Debug.drawLine(s1, e1, color);
-							Debug.drawLine(s1, e2, color);
-							Debug.drawLine(s1, e3, color);
+							if(Game.enabledDebug)
+							{
+								Vector3 s1 = Vector3.add(center, point);
+								Vector3 e0 = Vector3.add(p0, center);
+								Vector3 e1 = Vector3.add(p1, center);
+								Vector3 e2 = Vector3.add(p2, center);
+								Vector3 e3 = Vector3.add(p3, center);
+								
+								color = new Color3(1, 1, 0);
+								Debug.drawLine(s1, e0, color);
+								Debug.drawLine(s1, e1, color);
+								Debug.drawLine(s1, e2, color);
+								Debug.drawLine(s1, e3, color);
+							}
 							
 							isOverlap = true;
 							break;
@@ -252,7 +262,7 @@ public class CurveCollider extends Collider
 					float df = Vector3.dot(forward, n);
 					float db = Vector3.dot(forward, back);
 					
-					Vector3 lerp = forward.clone();
+//					Vector3 lerp = forward.clone();
 					
 					float dirr = 1;
 					

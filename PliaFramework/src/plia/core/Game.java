@@ -47,7 +47,7 @@ public abstract class Game extends Activity implements IFramework
 	private boolean isResumed = false;
 	private boolean isStarted = false;
 	
-	public static boolean enabledDebug = true;
+	public static boolean enabledDebug = false;
 
 	@Override
 	protected final void onCreate(Bundle savedInstanceState)

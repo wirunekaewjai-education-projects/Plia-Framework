@@ -7,6 +7,7 @@ import java.nio.FloatBuffer;
 import android.opengl.GLES20;
 
 //import plia.framework.math.Matrix3;
+import plia.core.Game;
 import plia.core.scene.Collider;
 import plia.core.scene.CurveCollider;
 import plia.core.scene.PlaneCollider;
@@ -41,39 +42,42 @@ public final class Debug
 	
 	public static void drawLine(Vector3 start, Vector3 end, Color3 color)
 	{
-		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-		
-		ShaderProgram sprogram = Shader.AMBIENT.getProgram(0);
-		int program = sprogram.getProgramID();
+		if(Game.enabledDebug)
+		{
+			GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+			
+			ShaderProgram sprogram = Shader.AMBIENT.getProgram(0);
+			int program = sprogram.getProgramID();
 
-		debugLineVerticesTemp[0] = start.x;
-		debugLineVerticesTemp[1] = start.y;
-		debugLineVerticesTemp[2] = start.z;
-		
-		debugLineVerticesTemp[3] = end.x;
-		debugLineVerticesTemp[4] = end.y;
-		debugLineVerticesTemp[5] = end.z;
-		
-		instance.debugLine.clear();
-		instance.debugLine.put(debugLineVerticesTemp).position(0);
-		
-		GLES20.glUseProgram(program);
-		
-		int vh = GLES20.glGetAttribLocation(program, "vertex");
-		
-		GLES20.glEnableVertexAttribArray(vh);
-		GLES20.glVertexAttribPointer(vh, 3, GLES20.GL_FLOAT, false, 0, instance.debugLine);
-		
-		GLES20.glUniform4f(GLES20.glGetUniformLocation(program, "color"), color.r, color.g, color.b, 1);
-		
-		float[] mvp = new float[16];
-		Scene.getModelViewProjectionMatrix().copyTo(mvp);
-		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "modelViewProjectionMatrix"), 1, false, mvp, 0);
-		
-		GLES20.glLineWidth(1);
-		GLES20.glDrawArrays(GLES20.GL_LINES, 0, 2);
-		
-		GLES20.glDisableVertexAttribArray(vh);
+			debugLineVerticesTemp[0] = start.x;
+			debugLineVerticesTemp[1] = start.y;
+			debugLineVerticesTemp[2] = start.z;
+			
+			debugLineVerticesTemp[3] = end.x;
+			debugLineVerticesTemp[4] = end.y;
+			debugLineVerticesTemp[5] = end.z;
+			
+			instance.debugLine.clear();
+			instance.debugLine.put(debugLineVerticesTemp).position(0);
+			
+			GLES20.glUseProgram(program);
+			
+			int vh = GLES20.glGetAttribLocation(program, "vertex");
+			
+			GLES20.glEnableVertexAttribArray(vh);
+			GLES20.glVertexAttribPointer(vh, 3, GLES20.GL_FLOAT, false, 0, instance.debugLine);
+			
+			GLES20.glUniform4f(GLES20.glGetUniformLocation(program, "color"), color.r, color.g, color.b, 1);
+			
+			float[] mvp = new float[16];
+			Scene.getModelViewProjectionMatrix().copyTo(mvp);
+			GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "modelViewProjectionMatrix"), 1, false, mvp, 0);
+			
+			GLES20.glLineWidth(1);
+			GLES20.glDrawArrays(GLES20.GL_LINES, 0, 2);
+			
+			GLES20.glDisableVertexAttribArray(vh);
+		}
 	}
 
 	public static void drawBounds(Collider collider, Color3 color)
@@ -83,17 +87,20 @@ public final class Debug
 //			instance.drawBoundingBox((BoundingBox) bounds, mvp, r, g, b);
 //		}
 		
-		if(collider instanceof PlaneCollider)
+		if(Game.enabledDebug)
 		{
-			drawBoundingPlane((PlaneCollider) collider, color);
-		}
-		else if(collider instanceof SphereCollider)
-		{
-			drawBoundingSphere((SphereCollider) collider, color);
-		}
-		else if(collider instanceof CurveCollider)
-		{
-			drawCurve((CurveCollider) collider, color);
+			if(collider instanceof PlaneCollider)
+			{
+				drawBoundingPlane((PlaneCollider) collider, color);
+			}
+			else if(collider instanceof SphereCollider)
+			{
+				drawBoundingSphere((SphereCollider) collider, color);
+			}
+			else if(collider instanceof CurveCollider)
+			{
+				drawCurve((CurveCollider) collider, color);
+			}
 		}
 	}
 	

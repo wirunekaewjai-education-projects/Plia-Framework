@@ -4,7 +4,6 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import android.opengl.GLES20;
-import android.util.Log;
 
 import plia.core.GameObject;
 import plia.core.Screen;
@@ -15,6 +14,7 @@ import plia.core.scene.geometry.Mesh;
 import plia.core.scene.geometry.Plane;
 import plia.core.scene.geometry.Quad;
 import plia.core.scene.shading.Color3;
+import plia.core.scene.shading.Material;
 import plia.core.scene.shading.Shader;
 import plia.core.scene.shading.ShaderProgram;
 import plia.core.scene.shading.Texture2D;
@@ -242,11 +242,16 @@ public final class Scene extends GameObject
 		GLES20.glCullFace(GLES20.GL_FRONT);
 		drawTerrains();
 
+
+		
 		GLES20.glCullFace(GLES20.GL_BACK);
 		for (int i = 0; i < models.size(); i++)
 		{
 			drawModel(models.get(i));
+			GLES20.glDisable(GLES20.GL_BLEND);
 		}
+		
+		
 		
 //		GLES20.glEnable(GLES20.GL_BLEND);
 //		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
@@ -464,15 +469,23 @@ public final class Scene extends GameObject
 		boolean hasAnimation = model.hasAnimation();
 		int geometryType = model.getGeometry().getType();
 		
-		Shader shader = model.getMaterial().getShader();
+		Material material = model.getMaterial();
+		
+		Shader shader = material.getShader();
 		
 		int hasTexture = 0;
 		
-		Texture2D texture = model.getMaterial().getBaseTexture();
+		Texture2D texture = material.getBaseTexture();
 		
 		if(texture != null)
 		{
 			hasTexture = 2;
+			
+			if(texture.isEnabledAlpha())
+			{
+				GLES20.glEnable(GLES20.GL_BLEND);
+				GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+			}
 		}
 		
 		int programIndx = 0;
@@ -572,6 +585,10 @@ public final class Scene extends GameObject
 			float[] tm2 = new float[9];
 			nm.copyTo(tm2);
 			GLES20.glUniformMatrix3fv(GLES20.glGetUniformLocation(prg, "normalMatrix"), 1, false, tm2, 0);
+			
+			float[] tm3 = new float[16];
+			tmm.copyTo(tm3);
+			GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "worldMatrix"), 1, false, tm3, 0);
 		}
 		else
 		{
@@ -580,14 +597,15 @@ public final class Scene extends GameObject
 //			mvp.copyTo(tm);
 //			GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "modelViewProjectionMatrix"), 1, false, tm, 0);
 			
+			
+			Matrix4 wmvp = Matrix4.multiply(modelViewProjectionMatrix, tmm);
+			
 			float[] tm1 = new float[16];
-			modelViewProjectionMatrix.copyTo(tm1);
+			wmvp.copyTo(tm1);
 			GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "modelViewProjectionMatrix"), 1, false, tm1, 0);
 		}
 		
-		float[] tm3 = new float[16];
-		tmm.copyTo(tm3);
-		GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(prg, "worldMatrix"), 1, false, tm3, 0);
+		
 
 		
 //		program.setUniform(ShaderProgram.PROJECTION_MATRIX, projectionMatrix);

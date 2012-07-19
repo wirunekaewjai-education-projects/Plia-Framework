@@ -32,6 +32,10 @@ public class Game1 extends Game
 	private Light light2 = directionalLight(0.707f, 0.707f, 0, 0.5f);
 	private Light light3 = directionalLight(0, -0.707f, 0.707f, 0.5f);
 	
+	// Shadow
+	private Group shadowPlaneRef;
+	private ArrayList<ShadowPlane> shadowPlanes = new ArrayList<ShadowPlane>();
+	
 	// Viewport
 	private Camera camera = new Camera("Main Camera");
 	
@@ -98,6 +102,8 @@ public class Game1 extends Game
 		itemBox = model("model/item/itembox.FBX");
 		itemBox.asModel().getMaterial().setLightAbsorbMultipler(12);
 		
+		shadowPlaneRef = model("model/shadow/shadow_plane.FBX");
+		
 		controller = button("ui/controller.png");
 	}
 
@@ -117,10 +123,10 @@ public class Game1 extends Game
 //		terrain1.rotate(0, 0, 180);
 		
 		// Waypoint
-		waypoints.add(vec3(260, -790, 23.899f));
-		waypoints.add(vec3(260, -832, 23.899f));
-		waypoints.add(vec3(260, -874, 23.899f));
-		waypoints.add(vec3(260, -916, 23.899f));
+		waypoints.add(vec3(270, -790, 23.899f));
+		waypoints.add(vec3(270, -832, 23.899f));
+		waypoints.add(vec3(270, -874, 23.899f));
+		waypoints.add(vec3(270, -916, 23.899f));
 		//
 
 		// Set Buffy's Animation Clip
@@ -140,6 +146,13 @@ public class Game1 extends Game
 		
 		// Set Scale Buffy
 		float radius = 3;
+		
+		Texture2D shadowTex = tex2D("model/shadow/shadow_tex.png");
+		shadowTex.setEnabledAlpha(true);
+		shadowPlaneRef.asModel().getMaterial().setShader(Shader.AMBIENT);
+		shadowPlaneRef.asModel().getMaterial().setBaseTexture(shadowTex);
+		shadowPlaneRef.setScale(4, 4, 4);
+		shadowPlanes.add(new ShadowPlane(shadowPlaneRef.instantiate(), buffy, 24));
 		
 		buffy.setScale(0.1f, 0.1f, 0.1f);
 		buffy.setPosition(waypoints.get(0));
@@ -302,20 +315,26 @@ public class Game1 extends Game
 		trackInside = CurveCollider.bSplineCurveCollider(0.25f, 100, false, inside);
 		trackInside.attachCollider(buffyCollider);
 		
-		checkpoint.add(collider(0.99f, 0.01f, 0, 250, 100, 	134, 106, 140));
-		checkpoint.add(collider(0.88f, -0.473f, 0, 250, 100, 	551, 90, 140));
-
-		checkpoint.add(collider(0.23f, -0.973f, 0, 250, 100, 	683, -55, 140));
-		checkpoint.add(collider(-0.836f, -0.548f, 0, 250, 100, 591, -327, 140));
+		checkpoint.add(collider(-1, 0, 0, 				100, 300, 	250, -834, 27));
+		checkpoint.add(collider(-1, 0, 0, 				100, 300, 	185, -834, 27));
+		checkpoint.add(collider(-1, 0, 0, 				100, 300, 	-322, -840, 27));
+		checkpoint.add(collider(-0.815f, 0.579f, 0, 	100, 300, 	-600, -765, 27));
+		checkpoint.add(collider(-0.124f, 0.992f, 0, 	100, 300, 	-700, -340, 27));
+		checkpoint.add(collider(-0.191f, 0.982f, 0, 	100, 300, 	-735, 100, 27));
+		checkpoint.add(collider(0.187f, 0.982f, 0, 		100, 300, 	-800, 528, 27));
+		checkpoint.add(collider(0.985f, 0.175f, 0, 		100, 300, 	-560, 716, 27));
+		checkpoint.add(collider(0.974f, -0.225f, 0, 	100, 300, 	-80, 750, 27));
+		checkpoint.add(collider(0.162f, -0.987f, 0, 	100, 300, 	90, 600, 27));
+		checkpoint.add(collider(0.582f, -0.813f, 0, 	100, 300, 	140, 440, 27));
 		
-		checkpoint.add(collider(-0.956f, -0.293f, 0, 250, 100, 68, -574, 140));
-		checkpoint.add(collider(-0.852f, 0.524f, 0, 250, 100, 	-277, -521, 140));
+		checkpoint.add(collider(0.928f, -0.373f, 0, 	100, 300, 	385, 290, 27));
+		checkpoint.add(collider(0.644f, -0.765f, 0, 	100, 300, 	617, 128, 27));
+		checkpoint.add(collider(0.159f, -0.987f, 0, 	100, 300, 	850, -438, 27));
+		checkpoint.add(collider(-0.532f, -0.847f, 0, 	100, 300, 	787, -668, 27));
 		
-		checkpoint.add(collider(-0.319f, 0.948f, 0, 250, 100, 	-657, -236, 140));
-		checkpoint.add(collider(0.82f, 0.572f, 0, 250, 100, 	-652, 8, 140));
+		checkpoint.add(collider(-0.938f, -0.346f, 0, 	100, 300, 	527, -800, 27));
+		checkpoint.add(collider(-1, 0, 0, 				100, 300, 	433, -834, 27));
 		
-		checkpoint.add(collider(0.99f, 0.948f, 0, 250, 100, 	-404, 95, 140));
-		checkpoint.add(collider(0.951f, 0.31f, 0, 250, 100, 	-71, 96, 140));
 		
 		endSprite = sprite("ui/goal.jpg");
 		endSprite.setScale(0.25f, 0.25f);
@@ -326,6 +345,11 @@ public class Game1 extends Game
 		for (int i = 0; i < checkpoint.size(); i++)
 		{
 			layer1.addChild(checkpoint.get(i));
+		}
+		
+		for (int i = 0; i < shadowPlanes.size(); i++)
+		{
+			layer1.addChild(shadowPlanes.get(i).getPlane());
 		}
 		
 		scene.addLayer(layer1);
@@ -370,6 +394,11 @@ public class Game1 extends Game
 	public void onUpdate()
 	{
 		vehicle.update();
+		
+		for (int i = 0; i < shadowPlanes.size(); i++)
+		{
+			shadowPlanes.get(i).update();
+		}
 
 		PlaneCollider chp = checkpoint.get(currentCheckpoint);
 		SphereCollider spr = (SphereCollider) buffy.getCollider();
@@ -402,7 +431,7 @@ public class Game1 extends Game
 		}
 		
 		//
-		debuging();
+//		debuging();
 	}
 	
 	private void debuging()
@@ -419,7 +448,7 @@ public class Game1 extends Game
 		
 		for (int i = 0; i < checkpoint.size(); i++)
 		{
-//			Debug.drawBounds(checkpoint.get(i), color3);
+			Debug.drawBounds(checkpoint.get(i), color3);
 		}
 		
 //		Debug.drawBounds(buffy.getCollider(), color3);
