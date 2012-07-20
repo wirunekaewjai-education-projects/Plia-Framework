@@ -4,8 +4,10 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 import plia.core.GameObject;
+import plia.core.GameObjectManager;
 import plia.core.Screen;
 import plia.core.scene.animation.Animation;
 import plia.core.scene.geometry.Dome;
@@ -14,6 +16,7 @@ import plia.core.scene.geometry.Mesh;
 import plia.core.scene.geometry.Plane;
 import plia.core.scene.geometry.Quad;
 import plia.core.scene.shading.Color3;
+import plia.core.scene.shading.Color4;
 import plia.core.scene.shading.Material;
 import plia.core.scene.shading.Shader;
 import plia.core.scene.shading.ShaderProgram;
@@ -25,27 +28,61 @@ import plia.math.Vector3;
 import plia.math.Vector4;
 
 @SuppressWarnings({"rawtypes"})
-public final class Scene extends GameObject
+public class Scene extends GameObject
 {
 	private Layer[] children = new Layer[32];
 	private int childCount = 0;
+	
+	private boolean isInited = false;
 
 	public Scene()
 	{
 		setName("Scene");
 	}
+	
+	public final void initialize()
+	{
+		if(!isInited)
+		{
+			onInitialize();
+			isInited = true;
+		}
+	}
 
+	protected void onInitialize()
+	{
+		
+	}
 	
 	@Override
-	public void update()
+	public final void update()
 	{
-		if(isActive())
+		if(isInited)
 		{
-			for (int i = 0; i < childCount; i++)
+			if(isActive())
 			{
-				children[i].update();
+				for (int i = 0; i < childCount; i++)
+				{
+					children[i].update();
+				}
+				onUpdate();
 			}
 		}
+	}
+	
+	protected void onUpdate()
+	{
+		
+	}
+	
+	public void onDestroy()
+	{
+		
+	}
+	
+	public void onTouchEvent(int action, float x, float y)
+	{
+		
 	}
 	
 	private final int indexOf(Layer layer)
@@ -191,82 +228,85 @@ public final class Scene extends GameObject
 	// Draw State
 	public void drawScene()
 	{
-		if(hasChangedProjection)
+		if(isInited)
 		{
-			if(mainCamera.getProjectionType() == Camera.PERSPECTIVE)
+			if(hasChangedProjection)
 			{
-				Matrix4.createFrustum(projectionMatrix, -ratio, ratio, -1, 1, 1, mainCamera.getRange());
+				if(mainCamera.getProjectionType() == Camera.PERSPECTIVE)
+				{
+					Matrix4.createFrustum(projectionMatrix, -ratio, ratio, -1, 1, 1, mainCamera.getRange());
+				}
+				else
+				{
+					Matrix4.createOrtho(projectionMatrix, -ratio, ratio, -1, 1, 1, mainCamera.getRange());
+				}
+
+				hasChangedProjection = false;
 			}
-			else
+			if(hasChangedModelView)
 			{
-				Matrix4.createOrtho(projectionMatrix, -ratio, ratio, -1, 1, 1, mainCamera.getRange());
+				Matrix4 world = mainCamera.getWorldMatrix();
+				Vector3 eye = world.getTranslation();
+				Vector3 forward = world.getForward();
+				
+				target.x = eye.x + (forward.x * 10);
+				target.y = eye.y + (forward.y * 10);
+				target.z = eye.z + (forward.z * 10);
+				
+				Vector3 up = world.getUp();
+				
+				Matrix4.createLookAt(modelViewMatrix, eye, target, up);
+				
+				hasChangedModelView = false;
+			}
+			
+			Matrix4.multiply(modelViewProjectionMatrix, projectionMatrix, modelViewMatrix);
+			
+			for (int i = 0; i < getLayerCount(); i++)
+			{
+				recursiveLayer(getLayer(i));
+			}
+			
+			GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+			GLES20.glEnable(GLES20.GL_CULL_FACE);
+			GLES20.glCullFace(GLES20.GL_BACK);
+			if(mainCamera.getSky() != null)
+			{
+				drawSky(mainCamera.getSky());
+			}
+			
+			
+//			GLES20.glDisable(GLES20.GL_CULL_FACE);
+
+			GLES20.glCullFace(GLES20.GL_FRONT);
+			drawTerrains();
+
+
+			
+			GLES20.glCullFace(GLES20.GL_BACK);
+			for (int i = 0; i < models.size(); i++)
+			{
+				drawModel(models.get(i));
+				GLES20.glDisable(GLES20.GL_BLEND);
 			}
 
-			hasChangedProjection = false;
-		}
-		if(hasChangedModelView)
-		{
-			Matrix4 world = mainCamera.getWorldMatrix();
-			Vector3 eye = world.getTranslation();
-			Vector3 forward = world.getForward();
-			
-			target.x = eye.x + (forward.x * 10);
-			target.y = eye.y + (forward.y * 10);
-			target.z = eye.z + (forward.z * 10);
-			
-			Vector3 up = world.getUp();
-			
-			Matrix4.createLookAt(modelViewMatrix, eye, target, up);
-			
-			hasChangedModelView = false;
-		}
-		
-		Matrix4.multiply(modelViewProjectionMatrix, projectionMatrix, modelViewMatrix);
-		
-		for (int i = 0; i < getLayerCount(); i++)
-		{
-			recursiveLayer(getLayer(i));
-		}
-		
-		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-		GLES20.glEnable(GLES20.GL_CULL_FACE);
-		GLES20.glCullFace(GLES20.GL_BACK);
-		if(mainCamera.getSky() != null)
-		{
-			drawSky(mainCamera.getSky());
-		}
-		
-		
-//		GLES20.glDisable(GLES20.GL_CULL_FACE);
+			GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+			GLES20.glEnable(GLES20.GL_BLEND);
+			GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
-		GLES20.glCullFace(GLES20.GL_FRONT);
-		drawTerrains();
-
-
-		
-		GLES20.glCullFace(GLES20.GL_BACK);
-		for (int i = 0; i < models.size(); i++)
-		{
-			drawModel(models.get(i));
+			for (int i = 0; i < sprites.size(); i++)
+			{
+				drawSprites(sprites.get(i));
+			}
+			
 			GLES20.glDisable(GLES20.GL_BLEND);
-		}
-		
-		
-		
-//		GLES20.glEnable(GLES20.GL_BLEND);
-//		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+			GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 
-		for (int i = 0; i < sprites.size(); i++)
-		{
-			drawSprites(sprites.get(i));
+			sprites.clear();
+			models.clear();
+			terrains.clear();
+			lights.clear();
 		}
-		
-//		GLES20.glDisable(GLES20.GL_BLEND);
-
-		sprites.clear();
-		models.clear();
-		terrains.clear();
-		lights.clear();
 	}
 	
 	private void drawSky(Sky sky)
@@ -390,6 +430,9 @@ public final class Scene extends GameObject
 	
 	private void drawSprites(Sprite view)
 	{
+//		GLES20.glEnable(GLES20.GL_BLEND);
+//		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		
 		Texture2D tex = view.getImageSrc();
 		
 		if(tex != null && view.isActive())
@@ -462,6 +505,8 @@ public final class Scene extends GameObject
 			
 			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 		}
+		
+		
 	}
 	
 	private void drawModel(Model model)
@@ -944,6 +989,8 @@ public final class Scene extends GameObject
 			{
 				recursiveView(view.getChild(i));
 			}
+			
+			
 		}
 	}
 	
@@ -972,4 +1019,332 @@ public final class Scene extends GameObject
 		}
 	}
 
+	//
+	///
+	public static final Group model(String fbx_path)
+	{
+		return GameObjectManager.loadModel(fbx_path);
+	}
+	
+	public static final Terrain terrain(String heightmapSrc, int maxHeight, int scale)
+	{
+		return GameObjectManager.createTerrain(heightmapSrc, maxHeight, scale);
+	}
+	
+	public static final Terrain terrain(String heightmapSrc, String diffusemapSrc, int maxHeight, int scale)
+	{
+		Terrain t = GameObjectManager.createTerrain(heightmapSrc, maxHeight, scale);
+		t.setBaseTexture(GameObjectManager.loadTexture2D(diffusemapSrc));
+		
+		return t;
+	}
+	
+	public static final Terrain terrain(String heightmapSrc, String diffusemapSrc, int maxHeight, int scale, int segment)
+	{
+		Terrain t = GameObjectManager.createStaticTerrain(heightmapSrc, maxHeight, scale, segment);
+		t.setBaseTexture(GameObjectManager.loadTexture2D(diffusemapSrc));
+		
+		return t;
+	}
+//	
+//	public static final MeshTerrain terrain(String fbx_path, String heightmapSrc, String normalmapSrc)
+//	{
+//		Group mdl = model(fbx_path);
+//		
+//		Texture2D heightMap = tex2D(heightmapSrc);
+//		Texture2D normalMap = tex2D(normalmapSrc);
+//		
+//		Geometry geo = mdl.asModel().getGeometry();
+//		
+//		float maxHeight = geo.getMax().z;
+//
+//		Vector3 min = geo.getMin();
+//		Vector3 max = geo.getMax();
+//		
+//		Vector3 size = Vector3.subtract(max, min);
+//		
+//		MeshTerrain terr = new MeshTerrain(mdl, heightMap, normalMap, (int)maxHeight, (int)size.y);
+////		terr.getTerrainModel().asModel().getMaterial().setBaseTexture(normalMap);
+//		return terr;
+//	}
+	
+	public static final Light directionalLight(float intensity)
+	{
+		Light light = new Light();
+		light.setIntensity(intensity);
+		return light;
+	}
+	
+	public static final Light directionalLight(float forwardX, float forwardY, float forwardZ)
+	{
+		Light light = new Light();
+		light.setForward(forwardX, forwardY, forwardZ);
+
+		return light;
+	}
+	
+	public static final Light directionalLight(float forwardX, float forwardY, float forwardZ, float intensity)
+	{
+		Light light = new Light();
+		light.setForward(forwardX, forwardY, forwardZ);
+		light.setIntensity(intensity);
+		
+		return light;
+	}
+	
+	public static final Light directionalLight(float forwardX, float forwardY, float forwardZ, float red, float green, float blue)
+	{
+		Light light = new Light();
+		light.setForward(forwardX, forwardY, forwardZ);
+		light.setColor(red, green, blue);
+
+		return light;
+	}
+	
+	public static final Light directionalLight(float forwardX, float forwardY, float forwardZ, float intensity, float red, float green, float blue)
+	{
+		Light light = new Light();
+		light.setForward(forwardX, forwardY, forwardZ);
+		light.setColor(red, green, blue);
+		light.setIntensity(intensity);
+		
+		return light;
+	}
+	
+	public static final Light pointLight(float posX, float posY, float posZ, float range)
+	{
+		Light light = new Light();
+		light.setLightType(Light.POINT_LIGHT);
+		light.setRange(range);
+		light.setPosition(posX, posY, posZ);
+
+		return light;
+	}
+	
+	public static final Light pointLight(float posX, float posY, float posZ, float range, float intensity)
+	{
+		Light light = new Light();
+		light.setLightType(Light.POINT_LIGHT);
+		light.setRange(range);
+		light.setPosition(posX, posY, posZ);
+		light.setIntensity(intensity);
+		
+		return light;
+	}
+	
+	public static final Light pointLight(float posX, float posY, float posZ, float range, float red, float green, float blue)
+	{
+		Light light = new Light();
+		light.setLightType(Light.POINT_LIGHT);
+		light.setRange(range);
+		light.setPosition(posX, posY, posZ);
+		light.setColor(red, green, blue);
+
+		return light;
+	}
+	
+	public static final Light pointLight(float posX, float posY, float posZ, float range, float intensity, float red, float green, float blue)
+	{
+		Light light = new Light();
+		light.setLightType(Light.POINT_LIGHT);
+		light.setRange(range);
+		light.setPosition(posX, posY, posZ);
+		light.setColor(red, green, blue);
+		light.setIntensity(intensity);
+		
+		return light;
+	}
+	
+	public static final Camera camera(int projectionType)
+	{
+		Camera camera = new Camera();
+		camera.setProjectionType(projectionType);
+		
+		return camera;
+	}
+	
+	public static final Camera camera(int projectionType, float range)
+	{
+		Camera camera = new Camera();
+		camera.setProjectionType(projectionType);
+		camera.setRange(range);
+		
+		return camera;
+	}
+	
+	public static final Camera camera(int projectionType, float posX, float posY, float posZ, float range)
+	{
+		Camera camera = new Camera();
+		camera.setProjectionType(projectionType);
+		camera.setPosition(posX, posY, posZ);
+		camera.setRange(range);
+		
+		return camera;
+	}
+	
+	public static final Camera camera(int projectionType, float posX, float posY, float posZ, float targetX, float targetY, float targetZ, float range)
+	{
+		Camera camera = new Camera();
+		camera.setProjectionType(projectionType);
+		camera.setPosition(posX, posY, posZ);
+		camera.setLookAt(new Vector3(targetX, targetY, targetZ));
+		camera.setRange(range);
+		
+		return camera;
+	}
+	
+	public static final SkyDome skydome(String textureSrc)
+	{
+		SkyDome dome = new SkyDome();
+		dome.setTexture(tex2D(textureSrc));
+		
+		return dome;
+	}
+	
+	public static final SkyBox skybox(String src)
+	{
+		int indexOfDot = src.lastIndexOf(".");
+		
+		String s1 = src.substring(0, indexOfDot);
+		String s2 = src.substring(indexOfDot, src.length());
+		
+		String frontSrc  = s1+"_front"+s2;
+		String backSrc 	 = s1+"_back"+s2;
+		String leftSrc 	 = s1+"_left"+s2;
+		String rightSrc  = s1+"_right"+s2;
+		String topSrc 	 = s1+"_top"+s2;
+		String bottomSrc = s1+"_bottom"+s2;
+		
+		Log.e("", frontSrc+", "+backSrc+", "+leftSrc+", "+rightSrc+", "+topSrc+", "+bottomSrc);
+		
+		
+		return new SkyBox(tex2D(frontSrc), tex2D(backSrc), tex2D(leftSrc), tex2D(rightSrc), tex2D(topSrc), tex2D(bottomSrc));
+	}
+	
+	public static final SkyBox skyBox(String frontSrc, String backSrc, String leftSrc, String rightSrc, String topSrc, String bottomSrc)
+	{
+		return new SkyBox(tex2D(frontSrc), tex2D(backSrc), tex2D(leftSrc), tex2D(rightSrc), tex2D(topSrc), tex2D(bottomSrc));
+	}
+	
+	public static final Sprite sprite(String imgSrc)
+	{
+		return GameObjectManager.createSprite(imgSrc);
+	}
+	
+	public static final Sprite sprite(String imgSrc, int frame)
+	{
+		Sprite sprite = new Sprite();
+		sprite.setImageSrc(GameObjectManager.loadTexture2D(imgSrc), frame);
+		
+		return sprite;
+	}
+	
+	public static final Button button()
+	{
+		return new Button();
+	}
+	
+	public static final Button button(String imgSrc)
+	{
+		return GameObjectManager.createButton(imgSrc);
+	}
+	
+	public static final Button button(String imgSrc, int frame)
+	{
+		Button sprite = new Button();
+		sprite.setImageSrc(GameObjectManager.loadTexture2D(imgSrc), frame);
+		
+		return sprite;
+	}
+	
+	public static final Texture2D tex2D(String path)
+	{
+		return GameObjectManager.loadTexture2D(path);
+	}
+	
+	public static final PlaneCollider collider(float upX, float upY, float upZ, float scaleX, float scaleY, float posX, float posY, float posZ)
+	{
+		PlaneCollider boundingPlane = new PlaneCollider();
+		boundingPlane.setScale(scaleX, scaleY, 0);
+		boundingPlane.setUp(upX, upY, upZ);
+		boundingPlane.setPosition(posX, posY, posZ);
+		return boundingPlane;
+	}
+	
+	public static final PlaneCollider collider(float upX, float upY, float upZ, float scaleX, float scaleY)
+	{
+		PlaneCollider boundingPlane = new PlaneCollider();
+		boundingPlane.setScale(scaleX, scaleY, 0);
+		boundingPlane.setUp(upX, upY, upZ);
+		return boundingPlane;
+	}
+	
+	public static final PlaneCollider collider(Vector3 up, Vector2 scale)
+	{
+		PlaneCollider boundingPlane = new PlaneCollider();
+		boundingPlane.setScale(scale.x, scale.y, 0);
+		boundingPlane.setUp(up);
+		return boundingPlane;
+	}
+	
+	public static final SphereCollider collider(float radius)
+	{
+		return new SphereCollider(radius);
+	}
+	
+	//
+	public static final Vector2 vec2()
+	{
+		return new Vector2();
+	}
+	
+	public static final Vector2 vec2(float value)
+	{
+		return new Vector2(value, value);
+	}
+	
+	public static final Vector2 vec2(float x, float y)
+	{
+		return new Vector2(x, y);
+	}
+	
+	public static final Vector3 vec3()
+	{
+		return new Vector3();
+	}
+	
+	public static final Vector3 vec3(float value)
+	{
+		return new Vector3(value, value, value);
+	}
+	
+	public static final Vector3 vec3(float x, float y, float z)
+	{
+		return new Vector3(x, y, z);
+	}
+	
+	public static final Vector4 vec4()
+	{
+		return new Vector4();
+	}
+	
+	public static final Vector4 vec4(float value)
+	{
+		return new Vector4(value, value, value, value);
+	}
+	
+	public static final Vector4 vec4(float x, float y, float z, float w)
+	{
+		return new Vector4(x, y, z, w);
+	}
+	
+	public static final Color3 color(float r, float g, float b)
+	{
+		return new Color3(r, g, b);
+	}
+	
+	public static final Color4 color(float r, float g, float b, float a)
+	{
+		return new Color4(r, g, b, a);
+	}
 }

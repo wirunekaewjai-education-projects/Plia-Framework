@@ -47,6 +47,8 @@ public abstract class Game extends Activity implements IFramework
 	private boolean isResumed = false;
 	private boolean isStarted = false;
 	
+	private boolean isFirst = true;
+	
 	public static boolean enabledDebug = false;
 
 	@Override
@@ -55,6 +57,8 @@ public abstract class Game extends Activity implements IFramework
 		super.onCreate(savedInstanceState);
 		
 		instance = this;
+		
+		Scene.setMainCamera(new Camera("Main Camera"));
 		
 		Screen.w = getWindowManager().getDefaultDisplay().getWidth();
 		Screen.h = getWindowManager().getDefaultDisplay().getHeight();
@@ -71,7 +75,7 @@ public abstract class Game extends Activity implements IFramework
 		
 //		this.debug = Debug.getInstance();
 
-		Scene.setMainCamera(new Camera("Main Camera"));
+		
 		
 		this.onInitialize(savedInstanceState);
 		this.glSurfaceView = new GLSurfaceView(this);
@@ -94,6 +98,10 @@ public abstract class Game extends Activity implements IFramework
 	{
 		if(isResumed)
 		{
+			if(currentScene != null)
+			{
+				currentScene.initialize();
+			}
 			gameObjectManager.resume();
 			isResumed = false;
 		}
@@ -103,14 +111,14 @@ public abstract class Game extends Activity implements IFramework
 	{
 		touchEventManager.update();
 		animationPlayer.update();
-		
-		onUpdate();
+		gameTime.update();
 		
 		if(currentScene != null)
 		{
-			gameTime.update();
 			currentScene.update();
 		}
+		
+		onUpdate();
 	}
 	
 	private void draw()
@@ -154,6 +162,10 @@ public abstract class Game extends Activity implements IFramework
 	protected void onDestroy()
 	{
 		super.onDestroy();
+		if(currentScene != null)
+		{
+			currentScene.onDestroy();
+		}
 		this.gameObjectManager.destroy();
 		this.touchEventManager.removeAll();
 	}
@@ -174,6 +186,12 @@ public abstract class Game extends Activity implements IFramework
 		float y = event.getY() / Screen.getHeight();
 		
 		onTouchEvent(action, x, y);
+		
+		if(currentScene != null)
+		{
+			currentScene.onTouchEvent(action, x, y);
+		}
+		
 		touchEventManager.onTouchEvent(action, x, y);
 
 		return true;
@@ -237,7 +255,11 @@ public abstract class Game extends Activity implements IFramework
 
 	public void setScene(Scene scene)
 	{
-		currentScene = scene;
+		if(currentScene != scene)
+		{
+			currentScene = scene;
+			isResumed = true;
+		}
 	}
 	
 	public Scene getScene()
@@ -259,6 +281,11 @@ public abstract class Game extends Activity implements IFramework
 	public void print(Object value)
 	{
 		Log.println(Log.ASSERT, "", value + "");
+	}
+	
+	public static final void exit()
+	{
+		instance.finish();
 	}
 	
 	///

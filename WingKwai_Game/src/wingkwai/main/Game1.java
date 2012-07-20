@@ -65,12 +65,6 @@ public class Game1 extends Game
 	// Checkpoint
 	private Checkpoint checkpoint = new Checkpoint();
 
-	private int currentCheckpoint = 0;
-	private int checkpointCount = 0;
-	
-	private boolean isEnd = false;
-	
-	private Sprite endSprite;
 	
 	// Item DB
 	private ArrayList<Item> items = new ArrayList<Item>();
@@ -87,6 +81,10 @@ public class Game1 extends Game
 	
 	//
 	private boolean isStarted = false;
+	private boolean isEnd = false;
+	
+	private Sprite endSprite;
+	
 	private int aiCount = 3;
 	
 	public void onInitialize(Bundle arg0)

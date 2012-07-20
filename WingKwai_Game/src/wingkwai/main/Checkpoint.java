@@ -10,9 +10,7 @@ public class Checkpoint
 {
 	private ArrayList<PlaneCollider> colliders = new ArrayList<PlaneCollider>();
 	private ArrayList<Player> players = new ArrayList<Player>();
-	
-	private ArrayList<Integer> removed = new ArrayList<Integer>();
-	
+
 	public void update()
 	{
 		

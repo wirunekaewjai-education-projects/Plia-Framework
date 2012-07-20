@@ -520,7 +520,7 @@ final class AmbientShader extends Shader
 				"	gl_Position = modelViewProjectionMatrix * vertex;" +
 				"}";
 
-		return new String[] { vs, fsWithTexture2 };
+		return new String[] { vs, fsWithTexture };
 	}
 	
 	private static String[] getAmbientSrc13()
