@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="wingkwai.game.Match"
+            android:name="wingkwai.game.Stage1"
             android:label="Race Scene" >
         </activity>
     </application>

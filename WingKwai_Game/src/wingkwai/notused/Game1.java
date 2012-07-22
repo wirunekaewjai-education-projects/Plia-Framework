@@ -1,28 +1,16 @@
-package wingkwai.game;
+package wingkwai.notused;
 
 import java.util.ArrayList;
 
-import android.os.Bundle;
-import android.view.Window;
-import android.view.WindowManager;
 import plia.core.Game;
 import plia.core.Screen;
+import plia.core.debug.Debug;
 import plia.core.event.OnTouchListener;
 import plia.core.event.TouchEvent;
-import plia.core.scene.Button;
-import plia.core.scene.Camera;
-import plia.core.scene.Collider;
-import plia.core.scene.CurveCollider;
-import plia.core.scene.Group;
-import plia.core.scene.Layer;
-import plia.core.scene.Light;
-import plia.core.scene.Scene;
-import plia.core.scene.SphereCollider;
-import plia.core.scene.Sprite;
-import plia.core.scene.Terrain;
-import plia.core.scene.View;
+import plia.core.scene.*;
 import plia.core.scene.animation.Animation;
 import plia.core.scene.animation.PlaybackMode;
+import plia.core.scene.shading.Color3;
 import plia.core.scene.shading.Material;
 import plia.core.scene.shading.Shader;
 import plia.core.scene.shading.Texture2D;
@@ -35,24 +23,28 @@ import wingkwai.core.OnItemEventListener;
 import wingkwai.core.Player;
 import wingkwai.core.ShadowPlane;
 import wingkwai.core.Vehicle;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 
-public class Match extends Game
+public class Game1 extends Game
 {
-	private Scene scene;
-	private Layer<Group> layer1;
-	private Layer<View> layer2;
+	private Scene scene = new Scene();
+	private Layer<Group> layer1 = new Layer<Group>();
+	private Layer<View> layer2 = new Layer<View>();
 	
 	// Light
-	private Light light1;
-	private Light light2;
-	private Light light3;
+	private Light light1 = directionalLight(0, 0, -1, 1);
+	private Light light2 = directionalLight(0.707f, 0.707f, 0, 0.5f);
+	private Light light3 = directionalLight(0, -0.707f, 0.707f, 0.5f);
 	
 	// Shadow
 	private Group shadowPlaneRef;
-	private ArrayList<ShadowPlane> shadowPlanes;
+	private ArrayList<ShadowPlane> shadowPlanes = new ArrayList<ShadowPlane>();
 	
 	// Viewport
-	private Camera camera;
+	private Camera camera = new Camera("Main Camera");
 	
 	// Character
 	private Group buffy_statue;
@@ -78,21 +70,21 @@ public class Match extends Game
 	private CurveCollider trackOutside, trackInside;
 	
 	// Checkpoint
-	private Checkpoint checkpoint;
+	private Checkpoint checkpoint = new Checkpoint();
 
 	
 	// Item DB
-	private ArrayList<Item> items;
-	private ArrayList<Group> itemBoxes;
+	private ArrayList<Item> items = new ArrayList<Item>();
+	private ArrayList<Group> itemBoxes = new ArrayList<Group>();
 	
 	// Waypoint
-	private ArrayList<Vector3> waypoints;
+	private ArrayList<Vector3> waypoints = new ArrayList<Vector3>();
 	
 	// AI
-	private ArrayList<AIScript> aiScripts;
+	private ArrayList<AIScript> aiScripts = new ArrayList<AIScript>();
 	
 	// Player
-	private ArrayList<Player> players;
+	private ArrayList<Player> players = new ArrayList<Player>();
 	
 	//
 	private boolean isStarted = false;
@@ -101,39 +93,21 @@ public class Match extends Game
 	private Sprite endSprite;
 	
 	private int aiCount = 3;
-
+	
 	public void onInitialize(Bundle arg0)
 	{
+		Log.e("Call", "OnInit");
 		setRequestedOrientation(0);
 		getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
-		scene = new Scene();
-		
-		layer1 = new Layer<Group>();
-		layer2 = new Layer<View>();
-		
-		light1 = directionalLight(0, 0, -1, 1);
-		light2 = directionalLight(0.707f, 0.707f, 0, 0.5f);
-		light3 = directionalLight(0, -0.707f, 0.707f, 0.5f);
-		
-		shadowPlanes = new ArrayList<ShadowPlane>();
-		camera = new Camera("Main Camera");
-		
-		checkpoint = new Checkpoint();
-		
-		items = new ArrayList<Item>();
-		itemBoxes = new ArrayList<Group>();
-
-		waypoints = new ArrayList<Vector3>();
-		aiScripts = new ArrayList<AIScript>();
-		players = new ArrayList<Player>();
+		setScene(scene);
 		
 		loadContent();
 		init();
 		initItem();
 	}
-
+	
 	private void loadContent()
 	{
 		terrain = terrain("terrain/heightmap.bmp", "terrain/diffusemap.jpg", 400, 2000);
@@ -437,8 +411,6 @@ public class Match extends Game
 		
 		scene.addLayer(layer1);
 		scene.addLayer(layer2);
-		
-		setScene(scene);
 	}
 	
 	private void initItem()
@@ -477,7 +449,7 @@ public class Match extends Game
 		
 //		Game.enabledDebug = true;
 	}
-	
+
 	public void onUpdate()
 	{
 		if(!isStarted)
@@ -533,8 +505,40 @@ public class Match extends Game
 				}
 			}
 		}
+		
+		//
+//		debuging();
 	}
 	
+	private void debuging()
+	{
+//		Log.println(Log.ASSERT, buffy.getCollider().getForward().toString(), buffy.getCollider().getPosition().toString());
+		
+//		for (int i = 0; i < terrain1.getChildCount(); i++)
+//		{
+//			Log.e("Name : "+i, terrain1.getChild(i).getName());
+//		}
+//		
+//		Debug.drawBounds(trackOutside, color3);
+//		Debug.drawBounds(trackInside, color3);
+		
+		for (int i = 0; i < checkpoint.size(); i++)
+		{
+			Debug.drawBounds(checkpoint.get(i), color3);
+		}
+		
+//		Debug.drawBounds(buffy.getCollider(), color3);
+//		Debug.drawBounds(itemBox.getCollider(), color3);
+		
+//		for (Group itemb : itemBoxes)
+//		{
+//			Log.e("Pos", itemb.getPosition().toString()+"");
+//			Debug.drawBounds(itemb.getCollider(), color3);
+//		}
+	}
+	
+	private Color3 color3 = new Color3(0.5f, 1, 0.5f);
+
 	@Override
 	public void onTouchEvent(int action, float x, float y)
 	{
@@ -548,10 +552,9 @@ public class Match extends Game
 			controller.setCenter(x, y);
 		}
 	}
-	
 
 	@Override
-	public void onDestroy()
+	protected void onDestroy()
 	{
 		super.onDestroy();
 		items.clear();

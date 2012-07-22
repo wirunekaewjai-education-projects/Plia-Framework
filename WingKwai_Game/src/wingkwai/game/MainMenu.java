@@ -184,7 +184,7 @@ public class MainMenu extends Game implements OnTouchListener
 			{
 				if(btn == createRaceStart_btn)
 				{
-					Intent intent = new Intent(this, Match.class);
+					Intent intent = new Intent(this, Stage1.class);
 					startActivity(intent);
 //					RaceScene raceScene = new RaceScene();
 //					if(raceScene != getScene())
