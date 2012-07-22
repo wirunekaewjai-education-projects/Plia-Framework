@@ -1,4 +1,4 @@
-package wingkwai.main;
+package wingkwai.core;
 
 public interface OnItemEventListener
 {

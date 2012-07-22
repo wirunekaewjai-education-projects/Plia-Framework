@@ -1,4 +1,4 @@
-package wingkwai.main;
+package wingkwai.core;
 
 import android.util.Log;
 import plia.core.scene.Group;
@@ -82,7 +82,7 @@ public class Vehicle
 		if(isFirst)
 		{
 			angle = object.getEulerAngles().z;
-			Log.e("Angle", angle+"");
+//			Log.e("Angle", angle+"");
 			isFirst = false;
 		}
 		else

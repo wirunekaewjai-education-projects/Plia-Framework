@@ -47,7 +47,9 @@ public abstract class Game extends Activity implements IFramework
 	private boolean isResumed = false;
 	private boolean isStarted = false;
 	
-	private boolean isFirst = true;
+//	private boolean isFirst = true;
+	
+	private static Game mainGame = null;
 	
 	public static boolean enabledDebug = false;
 
@@ -58,25 +60,28 @@ public abstract class Game extends Activity implements IFramework
 		
 		instance = this;
 		
-		Scene.setMainCamera(new Camera("Main Camera"));
-		
-		Screen.w = getWindowManager().getDefaultDisplay().getWidth();
-		Screen.h = getWindowManager().getDefaultDisplay().getHeight();
-		
 		this.gameObjectManager = GameObjectManager.getInstance();
-		this.gameObjectManager.setContext(this);
-		this.gameObjectManager.initialize();
-		
 		this.animationPlayer = AnimationPlayer.getInstance();
 		
 		this.touchEventManager = TouchEventManager.getInstance();
 
 		this.gameTime = GameTime.getInstance();
 		
-//		this.debug = Debug.getInstance();
+		if(mainGame == null)
+		{
+			Scene.setMainCamera(new Camera("Main Camera"));
+			
+			Screen.w = getWindowManager().getDefaultDisplay().getWidth();
+			Screen.h = getWindowManager().getDefaultDisplay().getHeight();
+			
+			
+			this.gameObjectManager.setContext(this);
+			this.gameObjectManager.initialize();
 
-		
-		
+			mainGame = this;
+//			this.debug = Debug.getInstance();
+		}
+
 		this.onInitialize(savedInstanceState);
 		this.glSurfaceView = new GLSurfaceView(this);
 		this.glSurfaceView.setEGLContextClientVersion(2);
@@ -88,6 +93,7 @@ public abstract class Game extends Activity implements IFramework
 	{
 		if(isStarted)
 		{
+			Log.e("Game", "On Start");
 			Shader.warmUpAllShader();
 			gameObjectManager.start();
 			isStarted = false;
@@ -98,6 +104,7 @@ public abstract class Game extends Activity implements IFramework
 	{
 		if(isResumed)
 		{
+			Log.e("Game", "On Resume");
 			if(currentScene != null)
 			{
 				currentScene.initialize();
@@ -166,8 +173,13 @@ public abstract class Game extends Activity implements IFramework
 		{
 			currentScene.onDestroy();
 		}
-		this.gameObjectManager.destroy();
-		this.touchEventManager.removeAll();
+		
+		if(mainGame == this)
+		{
+			mainGame = null;
+			this.gameObjectManager.destroy();
+			this.touchEventManager.removeAll();
+		}
 	}
 	
 	@Override
@@ -219,13 +231,23 @@ public abstract class Game extends Activity implements IFramework
 //			checkInit();
 			checkResume();
 
-			GLES20.glViewport(0, 0, Screen.getWidth(), Screen.getHeight());
-			GLES20.glClearColor(0.3f, 0.6f, 0.9f, 1);
-			GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-			
-			update();
-			
-			draw();
+			if(!isResumed)
+			{
+				if(!isExited)
+				{
+					GLES20.glViewport(0, 0, Screen.getWidth(), Screen.getHeight());
+					GLES20.glClearColor(0.3f, 0.6f, 0.9f, 1);
+					GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+					
+					update();
+					
+					draw();
+				}
+				else
+				{
+					onBackPressed();
+				}
+			}
 		}
 
 		public void onSurfaceChanged(GL10 gl, int width, int height)
@@ -259,6 +281,14 @@ public abstract class Game extends Activity implements IFramework
 		{
 			currentScene = scene;
 			isResumed = true;
+			isStarted = true;
+			
+//			this.glSurfaceView = new GLSurfaceView(this);
+//			this.glSurfaceView.setEGLContextClientVersion(2);
+//			this.glSurfaceView.setRenderer(new GLRenderer());
+//			this.setContentView(glSurfaceView);
+//			
+//			
 		}
 	}
 	
@@ -283,9 +313,11 @@ public abstract class Game extends Activity implements IFramework
 		Log.println(Log.ASSERT, "", value + "");
 	}
 	
+	private static boolean isExited = false;
+	
 	public static final void exit()
 	{
-		instance.finish();
+		isExited = true;
 	}
 	
 	///

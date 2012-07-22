@@ -1,4 +1,4 @@
-package wingkwai.main;
+package wingkwai.core;
 
 import plia.core.scene.Group;
 import plia.math.Vector3;

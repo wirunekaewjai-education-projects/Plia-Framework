@@ -66,6 +66,7 @@ public class GameObjectManager
 	{
 		if(!isInitialized)
 		{
+			Log.e("OM", "On Initialize");
 			this.loadAllFilesInAssets("");
 			isInitialized = true;
 		}
@@ -73,7 +74,7 @@ public class GameObjectManager
 	
 	public void resume()
 	{
-		Log.e("State", "Resume");
+		Log.e("OM", "On Resume");
 		
 		for (ScenePrefab prefab : scenePrefabs.values())
 		{
@@ -122,14 +123,16 @@ public class GameObjectManager
 			
 			if(texturesList.containsKey(key))
 			{
-				texturesList.get(key).setTextureBuffer(tex[0]);
+				Texture2D texture2d = texturesList.get(key);
+				texture2d.setTextureBuffer(tex[0]);
+				Log.e("Tex2D : "+texture2d.hashCode(), "On Resume");
 			}
 		}
 	}
 	
 	public void destroy()
 	{
-		Log.e("State", "Destroy");
+		Log.e("OM", "On Destroy");
 		assetFileNames.clear();
 		texturesList.clear();
 		scenePrefabs.clear();

@@ -12,6 +12,8 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import android.util.Log;
+
 public class Mesh extends Geometry
 {
 	private float[][] matrixPalette;
@@ -92,6 +94,7 @@ public class Mesh extends Geometry
 	
 	public void resume()
 	{
+		Log.e("Mesh : "+hashCode(), "On Resume");
 		if(normals != null && uv != null)
 		{
 			int capacity = (vertices.length + normals.length + uv.length) * 4;

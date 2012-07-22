@@ -1,4 +1,4 @@
-package wingkwai.main;
+package wingkwai.core;
 
 import java.util.ArrayList;
 

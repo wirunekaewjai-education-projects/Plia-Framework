@@ -1,4 +1,4 @@
-package wingkwai.main;
+package wingkwai.core;
 
 import plia.core.GameObject;
 
@@ -12,7 +12,7 @@ public class Item extends GameObject
 	
 	private OnItemEventListener onItemEventListener;
 	
-	protected Item(String name, float str, float spd, float ctrl, float luck, long time)
+	public Item(String name, float str, float spd, float ctrl, float luck, long time)
 	{
 		super(name);
 		this.strength = str;
@@ -37,7 +37,7 @@ public class Item extends GameObject
 		};
 	}
 	
-	protected Item(String name, float str, float spd, float ctrl, float luck, long time, OnItemEventListener onItemEventListener)
+	public Item(String name, float str, float spd, float ctrl, float luck, long time, OnItemEventListener onItemEventListener)
 	{
 		super(name);
 		this.strength = str;

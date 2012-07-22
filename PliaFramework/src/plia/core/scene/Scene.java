@@ -37,6 +37,7 @@ public class Scene extends GameObject
 
 	public Scene()
 	{
+		Log.e("Scene", "On Create");
 		setName("Scene");
 	}
 	
@@ -44,6 +45,7 @@ public class Scene extends GameObject
 	{
 		if(!isInited)
 		{
+			Log.e("Scene", "On Initialize");
 			onInitialize();
 			isInited = true;
 		}
@@ -230,6 +232,8 @@ public class Scene extends GameObject
 	{
 		if(isInited)
 		{
+//			Log.e("Camera", mainCamera.getRange()+"");
+			
 			if(hasChangedProjection)
 			{
 				if(mainCamera.getProjectionType() == Camera.PERSPECTIVE)
@@ -241,6 +245,7 @@ public class Scene extends GameObject
 					Matrix4.createOrtho(projectionMatrix, -ratio, ratio, -1, 1, 1, mainCamera.getRange());
 				}
 
+//				Log.e("Camera", "Create Projection");
 				hasChangedProjection = false;
 			}
 			if(hasChangedModelView)
@@ -257,6 +262,7 @@ public class Scene extends GameObject
 				
 				Matrix4.createLookAt(modelViewMatrix, eye, target, up);
 				
+//				Log.e("Camera", "Create ModelView");
 				hasChangedModelView = false;
 			}
 			
