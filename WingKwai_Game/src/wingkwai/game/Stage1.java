@@ -19,7 +19,6 @@ import plia.core.scene.Light;
 import plia.core.scene.Scene;
 import plia.core.scene.SphereCollider;
 import plia.core.scene.Sprite;
-import plia.core.scene.Terrain;
 import plia.core.scene.View;
 import plia.core.scene.animation.Animation;
 import plia.core.scene.animation.PlaybackMode;
@@ -60,9 +59,6 @@ public class Stage1 extends Game
 	private Group buffy;
 	private Texture2D buffyDif;
 	private Texture2D berserkerDif;
-	
-	// Terrain
-	private Terrain terrain;
 	
 	// UI
 	private Button controller;
@@ -136,7 +132,6 @@ public class Stage1 extends Game
 
 	private void loadContent()
 	{
-		terrain = terrain("terrain/heightmap.bmp", "terrain/diffusemap.jpg", 400, 2000);
 		buffy = model("model/player/buffylow.FBX");
 		terrain1 = model("model/terrain/terrain.FBX");
 		
@@ -146,28 +141,23 @@ public class Stage1 extends Game
 		shadowPlaneRef = model("model/shadow/shadow_plane.FBX");
 		
 		controller = button("ui/controller.png");
+		
+		buffy.setName("Buffy");
+		itemBox.setName("ItemBox");
 	}
 
 	private void init()
 	{
-		terrain.setName("Terrain");
-		buffy.setName("Buffy");
-		itemBox.setName("ItemBox");
-		
 		buffy_statue = buffy.instantiate();
 		buffy_statue.setScale(30, 30, 30);
 		buffy_statue.setPosition(0, -200, 0);
+		buffy_statue.getAnimation().stop();
 
-		// Translate Terrain Center to (0, 0)
-		terrain.setPosition(-1000, -1000, 0);
-
-//		terrain1.rotate(0, 0, 180);
-		
 		// Waypoint
-		waypoints.add(vec3(270, -790, 23.899f));
-		waypoints.add(vec3(270, -832, 23.899f));
-		waypoints.add(vec3(270, -874, 23.899f));
-		waypoints.add(vec3(270, -916, 23.899f));
+		for (int i = 0; i < 4; i++)
+		{
+			waypoints.add(vec3(270, -790 - (42*i), 23.899f));
+		}
 		//
 
 		// Set Buffy's Animation Clip
@@ -181,6 +171,7 @@ public class Stage1 extends Game
 		camera.rotate(-10, 0, 0);
 		camera.setRange(2500);
 		camera.setSky(skydome("sky/sky_sphere01.jpg"));
+		Scene.setMainCamera(camera);
 		
 		// Camera Follow Buffy
 		buffy.addChild(camera);
@@ -218,8 +209,6 @@ public class Stage1 extends Game
 		
 		vehicle = new Vehicle(buffy);
 
-		terrain.attachCollider(buffyCollider);
-		
 		float ratio = (float)Screen.getWidth() / Screen.getHeight();
 		float scalef = 0.2f;
 		controller.setScale(scalef, scalef * ratio);
@@ -250,16 +239,81 @@ public class Stage1 extends Game
 				}
 			}
 		});
-		
-		Scene.setMainCamera(camera);
-		
+
 		// Item
 		itemBox.setCollider(collider(7));
 		itemBox.setScale(10, 10, 10);
-//		itemBox.setPosition(0, 15, 144);
-//		itemBox.rotate(10, 10, 0);
 		//
 
+		initMapCollider();
+		initCheckpoint();
+		
+		players.add(new Player(vehicle));
+		AIScript aiScript1 = new AIScript(vehicle, checkpoint);
+		aiScripts.add(aiScript1);
+
+		for (int i = 1; i < aiCount+1; i++)
+		{
+			Group buffyClone = buffy.instantiate();
+			Group shadowClone = shadowPlaneRef.instantiate();
+			
+			buffyClone.setPosition(waypoints.get(i));
+			
+			Vehicle vehicleClone = new Vehicle(buffyClone);
+			players.add(new Player(vehicleClone));
+			
+			ShadowPlane shadowPlane = new ShadowPlane(shadowClone, buffyClone, 24);
+			AIScript aiScript = new AIScript(vehicleClone, checkpoint);
+			
+			shadowPlanes.add(shadowPlane);
+			aiScripts.add(aiScript);
+			
+			layer1.addChild(buffyClone);
+			
+			trackInside.attachCollider(buffyClone.getCollider());
+			trackOutside.attachCollider(buffyClone.getCollider());
+		}
+		
+		for (AIScript aiScript : aiScripts)
+		{
+			for (AIScript aiScript2 : aiScripts)
+			{
+				if(aiScript != aiScript2)
+				{
+					aiScript.addObjectAvoidance((SphereCollider) aiScript2.getVehicle().getObject().getCollider());
+				}
+			}
+		}
+		
+		for (int i = 0; i < players.size(); i++)
+		{
+			checkpoint.addPlayer(players.get(i));
+		}
+		
+		endSprite = sprite("ui/goal.jpg");
+		endSprite.setScale(0.25f, 0.25f);
+		
+		layer1.addChild(light1, light2, light3, buffy_statue, terrain1, buffy, trackOutside, trackInside);
+		layer2.addChild(controller);
+		
+		for (int i = 0; i < checkpoint.size(); i++)
+		{
+			layer1.addChild(checkpoint.get(i));
+		}
+		
+		for (int i = 0; i < shadowPlanes.size(); i++)
+		{
+			layer1.addChild(shadowPlanes.get(i).getPlane());
+		}
+		
+		scene.addLayer(layer1);
+		scene.addLayer(layer2);
+		
+		setScene(scene);
+	}
+	
+	private void initMapCollider()
+	{
 		Vector2[] outside = new Vector2[31];
 		outside[0] = new Vector2(171, -961);
 		outside[1] = new Vector2(-300, -954);
@@ -351,11 +405,14 @@ public class Stage1 extends Game
 
 		
 		trackOutside = CurveCollider.bSplineCurveCollider(0.25f, 100, false, outside);
-		trackOutside.attachCollider(buffyCollider);
+		trackOutside.attachCollider(buffy.getCollider());
 		
 		trackInside = CurveCollider.bSplineCurveCollider(0.25f, 100, false, inside);
-		trackInside.attachCollider(buffyCollider);
-		
+		trackInside.attachCollider(buffy.getCollider());
+	}
+	
+	private void initCheckpoint()
+	{
 		checkpoint.add(collider(-1, 0, 0, 				100, 300, 	250, -834, 27));
 		checkpoint.add(collider(-1, 0, 0, 				100, 300, 	185, -834, 27));
 		checkpoint.add(collider(-1, 0, 0, 				100, 300, 	-322, -840, 27));
@@ -375,70 +432,6 @@ public class Stage1 extends Game
 		
 		checkpoint.add(collider(-0.938f, -0.346f, 0, 	100, 300, 	527, -800, 27));
 		checkpoint.add(collider(-1, 0, 0, 				100, 300, 	433, -834, 27));
-		
-		players.add(new Player(vehicle));
-		AIScript aiScript1 = new AIScript(vehicle, checkpoint);
-		aiScripts.add(aiScript1);
-
-		for (int i = 1; i < aiCount+1; i++)
-		{
-			Group buffyClone = buffy.instantiate();
-			Group shadowClone = shadowPlaneRef.instantiate();
-			
-			buffyClone.setPosition(waypoints.get(i));
-			
-			Vehicle vehicleClone = new Vehicle(buffyClone);
-			players.add(new Player(vehicleClone));
-			
-			ShadowPlane shadowPlane = new ShadowPlane(shadowClone, buffyClone, 24);
-			AIScript aiScript = new AIScript(vehicleClone, checkpoint);
-			
-			shadowPlanes.add(shadowPlane);
-			aiScripts.add(aiScript);
-			
-			layer1.addChild(buffyClone);
-			
-			trackInside.attachCollider(buffyClone.getCollider());
-			trackOutside.attachCollider(buffyClone.getCollider());
-		}
-		
-		for (AIScript aiScript : aiScripts)
-		{
-//			aiScript.addObjectAvoidance(buffyCollider);
-			for (AIScript aiScript2 : aiScripts)
-			{
-				if(aiScript != aiScript2)
-				{
-					aiScript.addObjectAvoidance((SphereCollider) aiScript2.getVehicle().getObject().getCollider());
-				}
-			}
-		}
-		
-		for (int i = 0; i < players.size(); i++)
-		{
-			checkpoint.addPlayer(players.get(i));
-		}
-		
-		endSprite = sprite("ui/goal.jpg");
-		endSprite.setScale(0.25f, 0.25f);
-		
-		layer1.addChild(light1, light2, light3, buffy_statue, terrain1, buffy, trackOutside, trackInside);
-		layer2.addChild(controller);
-		
-		for (int i = 0; i < checkpoint.size(); i++)
-		{
-			layer1.addChild(checkpoint.get(i));
-		}
-		
-		for (int i = 0; i < shadowPlanes.size(); i++)
-		{
-			layer1.addChild(shadowPlanes.get(i).getPlane());
-		}
-		
-		scene.addLayer(layer1);
-		scene.addLayer(layer2);
-		
-		setScene(scene);
 	}
 	
 	private void initItem()
@@ -447,21 +440,14 @@ public class Stage1 extends Game
 		for (int i = 0; i < 5; i++)
 		{
 			Group box = itemBox.instantiate();
+			box.setPosition(-322, -740 - (40*i), 26.5f);
 			layer1.addChild(box);
 			itemBoxes.add(box);
 		}
 
-		itemBoxes.get(0).setPosition(-322, -740, 26.5f);
-		itemBoxes.get(1).setPosition(-322, -780, 26.5f);
-		itemBoxes.get(2).setPosition(-322, -820, 26.5f);
-		itemBoxes.get(3).setPosition(-322, -860, 26.5f);
-		itemBoxes.get(4).setPosition(-322, -900, 26.5f);
-		
-		
 		// Init Item DB
 		Item berserker = new Item("Berserker", 1.2f, 1.2f, -1, 0, 5, new OnItemEventListener()
 		{
-			
 			public void onEffectStart(Player player)
 			{
 				player.getVehicle().getObject().asModel().getMaterial().setBaseTexture(berserkerDif);
@@ -474,8 +460,6 @@ public class Stage1 extends Game
 		});
 		
 		items.add(berserker);
-		
-//		Game.enabledDebug = true;
 	}
 	
 	public void onUpdate()
@@ -528,8 +512,6 @@ public class Stage1 extends Game
 							player.useItem();
 						}
 					}
-					
-//					Log.e("III", itemb+"");
 				}
 			}
 		}
