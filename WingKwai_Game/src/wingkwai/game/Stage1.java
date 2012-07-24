@@ -56,7 +56,7 @@ public class Stage1 extends Game
 	// Character
 	private Group buffy_statue;
 	private Group terrain1;
-	private Group buffy;
+	private Group baseBuffy;
 	private Texture2D buffyDif;
 	private Texture2D berserkerDif;
 	
@@ -104,6 +104,8 @@ public class Stage1 extends Game
 		getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
+		aiCount = getIntent().getIntExtra("AI Count", 1);
+		
 		scene = new Scene();
 		
 		layer1 = new Layer<Group>();
@@ -132,7 +134,7 @@ public class Stage1 extends Game
 
 	private void loadContent()
 	{
-		buffy = model("model/player/buffylow.FBX");
+		baseBuffy = model("model/player/buffylow.FBX");
 		terrain1 = model("model/terrain/terrain.FBX");
 		
 		itemBox = model("model/item/itembox.FBX");
@@ -142,16 +144,22 @@ public class Stage1 extends Game
 		
 		controller = button("ui/controller.png");
 		
-		buffy.setName("Buffy");
+		baseBuffy.setName("Buffy");
 		itemBox.setName("ItemBox");
 	}
 
 	private void init()
 	{
-		buffy_statue = buffy.instantiate();
+		// Set Buffy's Animation Clip
+		Animation buffyAnimation = baseBuffy.getAnimation();
+		buffyAnimation.getAnimationClip("idle").set(0, 30, PlaybackMode.LOOP);
+		buffyAnimation.addAnimationClip("run", 35, 50, PlaybackMode.LOOP);
+		buffyAnimation.play("idle");
+		
+		buffy_statue = baseBuffy.instantiate();
 		buffy_statue.setScale(30, 30, 30);
 		buffy_statue.setPosition(0, -200, 0);
-		buffy_statue.getAnimation().stop();
+		buffy_statue.getAnimation().play("idle");
 
 		// Waypoint
 		for (int i = 0; i < 4; i++)
@@ -160,18 +168,14 @@ public class Stage1 extends Game
 		}
 		//
 
-		// Set Buffy's Animation Clip
-		Animation buffyAnimation = buffy.getAnimation();
-		buffyAnimation.getAnimationClip("idle").set(0, 30, PlaybackMode.LOOP);
-		buffyAnimation.addAnimationClip("run", 35, 50, PlaybackMode.LOOP);
-		buffyAnimation.play("idle");
-		
 		// Setup Camera Position and Set Sky Dome
 		camera.setPosition(0, -10, 9);
 		camera.rotate(-10, 0, 0);
 		camera.setRange(2500);
 		camera.setSky(skydome("sky/sky_sphere01.jpg"));
 		Scene.setMainCamera(camera);
+		
+		Group buffy = baseBuffy.instantiate();
 		
 		// Camera Follow Buffy
 		buffy.addChild(camera);
@@ -273,6 +277,9 @@ public class Stage1 extends Game
 			trackInside.attachCollider(buffyClone.getCollider());
 			trackOutside.attachCollider(buffyClone.getCollider());
 		}
+		
+		trackInside.attachCollider(buffy.getCollider());
+		trackOutside.attachCollider(buffy.getCollider());
 		
 		for (AIScript aiScript : aiScripts)
 		{
@@ -405,10 +412,7 @@ public class Stage1 extends Game
 
 		
 		trackOutside = CurveCollider.bSplineCurveCollider(0.25f, 100, false, outside);
-		trackOutside.attachCollider(buffy.getCollider());
-		
 		trackInside = CurveCollider.bSplineCurveCollider(0.25f, 100, false, inside);
-		trackInside.attachCollider(buffy.getCollider());
 	}
 	
 	private void initCheckpoint()
@@ -536,6 +540,12 @@ public class Stage1 extends Game
 	public void onDestroy()
 	{
 		super.onDestroy();
+		
+		for (Player player : players)
+		{
+			player.getVehicle().getObject().asModel().getMaterial().setBaseTexture(buffyDif);
+		}
+		
 		items.clear();
 	}
 }

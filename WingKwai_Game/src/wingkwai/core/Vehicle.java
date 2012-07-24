@@ -1,6 +1,5 @@
 package wingkwai.core;
 
-import android.util.Log;
 import plia.core.scene.Group;
 import plia.core.scene.animation.Animation;
 

@@ -30,12 +30,13 @@ class Node<T extends Node> extends GameObject
 		
 		Node node = (Node) gameObject;
 		
+		node.hasAnimation = this.hasAnimation;
+		
 		if(hasAnimation)
 		{
 			node.animation = this.animation.clone();
 		}
 		
-		node.hasAnimation = this.hasAnimation;
 		node.childCount = this.childCount;
 		node.children = new Node[this.childCount];
 		

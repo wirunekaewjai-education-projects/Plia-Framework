@@ -177,6 +177,7 @@ public abstract class Game extends Activity implements IFramework
 		if(mainGame == this)
 		{
 			mainGame = null;
+			isExited = false;
 			this.gameObjectManager.destroy();
 			this.touchEventManager.removeAll();
 		}

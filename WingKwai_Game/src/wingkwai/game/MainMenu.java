@@ -184,8 +184,40 @@ public class MainMenu extends Game implements OnTouchListener
 			{
 				if(btn == createRaceStart_btn)
 				{
+					int aiCount = 0;
+					
+					for (int i = 0; i < aiRadioBtns.length; i++)
+					{
+						if(i == 1)
+						{
+							if(aiRadioBtns[i].isActive())
+							{
+								aiCount = 1;
+								break;
+							}
+						}
+						else if(i == 3)
+						{
+							if(aiRadioBtns[i].isActive())
+							{
+								aiCount = 2;
+								break;
+							}
+						}
+						else if(i == 5)
+						{
+							if(aiRadioBtns[i].isActive())
+							{
+								aiCount = 3;
+								break;
+							}
+						}
+					}
+					
 					Intent intent = new Intent(this, Stage1.class);
+					intent.putExtra("AI Count", aiCount);
 					startActivity(intent);
+					
 //					RaceScene raceScene = new RaceScene();
 //					if(raceScene != getScene())
 //					{
