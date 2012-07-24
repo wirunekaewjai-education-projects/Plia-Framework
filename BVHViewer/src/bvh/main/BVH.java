@@ -13,6 +13,7 @@ import plia.util.Convert;
 public class BVH
 {
 	private static int index = 0;
+	private static int stack = 0;
 	
 	public static Group parse(InputStream inputStream)
 	{
@@ -33,22 +34,37 @@ public class BVH
 
 		String line = "";
 		index = 0;
+		stack = 0;
 		
 		String[] rotationOrder = new String[3];
 		
 		Joint root = null;
 		
+		ArrayList<String> alist = new ArrayList<String>();
+		
+		for (int i = 0; i < list.length; i++)
+		{
+			String tmp = list[i].trim();
+			if(!tmp.isEmpty())
+			{
+				alist.add(tmp);
+			}
+		}
+		
+		list = new String[alist.size()];
+		alist.toArray(list);
+		
 		if(list != null && list.length > 0)
 		{
-			while(!line.startsWith("}") && index < list.length)
+			while(index < list.length)
 			{
 				line = list[index++];
-				Log.e((index-1)+"", line);
+//				Log.e((index-1)+"", line);
 				
 				if(line.startsWith("ROOT"))
 				{
 					root = new Joint(list[index++]);
-					Log.e((index-1)+"", list[index-1]);
+//					Log.e((index-1)+"", list[index-1]);
 				}
 				else if(line.startsWith("OFFSET"))
 				{
@@ -88,43 +104,47 @@ public class BVH
 	private static Joint loadJoint(String[] list)
 	{
 		Joint joint = new Joint(list[index++]);
-		boolean isEnd = false;
+		boolean isSetOffset = false;
+		int currentStack = 0;
+
+		String line = "";
 		
-		String line = list[index++];
-		
-		while(!line.startsWith("}") && index < list.length)
+		while(index < list.length)
 		{
 			line = list[index++];
-			Log.e((index-1)+"", line);
-			
-			if(line.startsWith("OFFSET") && !isEnd)
-			{
-				float x = Convert.toFloat(list[index++]);
-				float y = Convert.toFloat(list[index++]);
-				float z = Convert.toFloat(list[index++]);
-				
-				joint.setPosition(x, y, z);
-			}
-			else if(line.startsWith("JOINT"))
+
+			if(line.startsWith("JOINT"))
 			{
 				joint.addChild(loadJoint(list));
 			}
-			else if(line.startsWith("End"))
+			else if(line.startsWith("{"))
 			{
-				isEnd = true;
+				stack++;
+				currentStack = stack;
 			}
-//			else if(line.startsWith("End"))
-//			{
-//				line = list[index++];
-//				if(line.startsWith("Site"))
-//				{
-//					String ll = "";
-//					while(!ll.startsWith("\\}") && index < list.length)
-//					{
-//						ll = list[index++];
-//					}
-//				}
-//			}
+			else if(line.startsWith("OFFSET") && !isSetOffset)
+			{
+				String sx = list[index++].trim();
+				String sy = list[index++].trim();
+				String sz = list[index++].trim();
+				
+				float x = Convert.toFloat(sx);
+				float y = Convert.toFloat(sy);
+				float z = Convert.toFloat(sz);
+				
+//				Log.e(joint.getName(), x+", "+y+", "+z);
+				joint.setPosition(x, y, z);
+				isSetOffset = true;
+			}
+			else if(line.startsWith("}"))
+			{
+				if(currentStack == stack--)
+				{
+					
+					break;
+				}
+				
+			}
 		}
 		
 		return joint;

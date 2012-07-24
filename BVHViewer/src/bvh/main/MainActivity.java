@@ -7,6 +7,7 @@ import plia.core.scene.Camera;
 import plia.core.scene.Group;
 import plia.core.scene.Layer;
 import plia.core.scene.Scene;
+import plia.math.Matrix4;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
@@ -30,12 +31,12 @@ public class MainActivity extends Game
 		scene = new Scene();
 		layer = new Layer<Group>();
 		
-		camera = camera(Camera.PERSPECTIVE, 40, 50, 0, 0, 0, 0, 100);
+		camera = camera(Camera.PERSPECTIVE, 150, 150, 100, 0, 100, 0, 1000);
 		Scene.setMainCamera(camera);
 		
 		try
 		{
-			j1 = (Joint) BVH.parse(getAssets().open("example1.bvh"));
+			j1 = (Joint) BVH.parse(getAssets().open("walk_turn_180.bvh"));
 		} catch (IOException e)
 		{
 			// TODO Auto-generated catch block
@@ -49,6 +50,7 @@ public class MainActivity extends Game
 		
 		Game.enabledDebug = true;
 
+		j1.rotate(90, 0, 0);
 		printName(j1, "");
 	}
 	
@@ -65,6 +67,8 @@ public class MainActivity extends Game
 	@Override
 	public void onUpdate()
 	{
+		j1.rotate(0, 1, 0);
+//		printName(j1, "");
 		j1.draw();
 	}
 }
