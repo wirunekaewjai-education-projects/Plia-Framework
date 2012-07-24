@@ -1,13 +1,23 @@
 package bvh.main;
 
-import android.app.Activity;
+import plia.core.Game;
 import android.os.Bundle;
 
-public class MainActivity extends Activity {
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-    }
+public class MainActivity extends Game 
+{
+
+	@Override
+	public void onInitialize(Bundle arg0)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onUpdate()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }
