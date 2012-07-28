@@ -9,6 +9,7 @@ public class Player
 	private long startTime = 0;
 	private boolean isUseItem = false;
 	
+	private int lab = 1;
 	private int rank = 1;
 	
 	private int currentCheckpoint = 0;
@@ -71,6 +72,16 @@ public class Player
 		int dist = rank - oldRank;
 		float value = dist * RANK_SPEED;
 		vehicle.setVelocityMultiplier(vehicle.getVelocityMultiplier() + value);
+	}
+	
+	public int getLab()
+	{
+		return lab;
+	}
+	
+	public void setLab(int lab)
+	{
+		this.lab = lab;
 	}
 	
 	public Item getItem()

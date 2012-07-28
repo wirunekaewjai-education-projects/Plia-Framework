@@ -10,6 +10,7 @@ public class Checkpoint
 {
 	private ArrayList<PlaneCollider> colliders = new ArrayList<PlaneCollider>();
 	private ArrayList<Player> players = new ArrayList<Player>();
+	private int lab = 1;
 
 	public void update()
 	{
@@ -45,9 +46,10 @@ public class Checkpoint
 				if(currentCheckpoint >= size())
 				{
 					currentCheckpoint -= size();
+					player.setLab(player.getLab()+1);
 				}
 				
-				if(checkpointCount > size())
+				if(checkpointCount > size() * lab)
 				{
 //					removed.add(players.indexOf(player));
 					player.setEnd(true);
@@ -99,5 +101,15 @@ public class Checkpoint
 	public PlaneCollider get(int index)
 	{
 		return colliders.get(index);
+	}
+	
+	public void setLab(int lab)
+	{
+		this.lab = lab;
+	}
+	
+	public int getLab()
+	{
+		return lab;
 	}
 }

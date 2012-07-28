@@ -119,6 +119,7 @@ public class Stage1 extends Game
 		camera = new Camera("Main Camera");
 		
 		checkpoint = new Checkpoint();
+		checkpoint.setLab(getIntent().getIntExtra("LAB Count", 1));
 		
 		items = new ArrayList<Item>();
 		itemBoxes = new ArrayList<Group>();

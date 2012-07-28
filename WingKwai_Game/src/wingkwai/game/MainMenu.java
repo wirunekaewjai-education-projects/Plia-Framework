@@ -30,9 +30,17 @@ public class MainMenu extends Game implements OnTouchListener
 	private Button createRaceStart_btn;
 	private Button createRaceBack_btn;
 	
+	private Button labRadioBtnHierarchy;
+	private Button[] labRadioBtns;
+	
 	private Button aiRadioBtnHierarchy;
 	private Button[] aiRadioBtns;
+	
 	private Button aiNum;
+	private Button labNum;
+	
+	private boolean isChangedScene = false;
+	private boolean isExited = false;
 
 	public void onInitialize(Bundle arg0)
 	{
@@ -50,7 +58,20 @@ public class MainMenu extends Game implements OnTouchListener
 		credit_btn = button();//"ui/credit_btn.jpg");
 		exit_btn = button();//"ui/exit_btn.jpg");
 		
+		labRadioBtnHierarchy = button();
 		aiRadioBtnHierarchy = button();
+		
+		labNum = button("ui/radios/lab_num.png");
+		labNum.setScale(0.09f, 0.15f);
+		labNum.setCenter(0.19f, 0.5f);
+		
+		labRadioBtns = new Button[6];
+		labRadioBtns[0] = button("ui/radios/num1.png");
+		labRadioBtns[1] = button("ui/radios/num1_chk.png");
+		labRadioBtns[2] = button("ui/radios/num2.png");
+		labRadioBtns[3] = button("ui/radios/num2_chk.png");
+		labRadioBtns[4] = button("ui/radios/num3.png");
+		labRadioBtns[5] = button("ui/radios/num3_chk.png");
 		
 		aiNum = button("ui/radios/ai_num.png");
 		aiNum.setScale(0.09f, 0.15f);
@@ -66,9 +87,20 @@ public class MainMenu extends Game implements OnTouchListener
 		
 		for (int i = 0; i < aiRadioBtns.length; i++)
 		{
-			aiRadioBtns[i].setScale(0.06f, 0.1f);
+			labRadioBtns[i].setScale(0.06f, 0.1f);
 			
 			float pad = ((int)(i / 2f)) * 0.1f;
+			labRadioBtns[i].setCenter(0.28f + pad, 0.51f);
+			labRadioBtns[i].setOnTouchListener(this);
+			
+			if(i == 1 || i == 3 || i == 5)
+			{
+				labRadioBtns[i].setActive(false);
+			}
+			
+			//
+			
+			aiRadioBtns[i].setScale(0.06f, 0.1f);
 			aiRadioBtns[i].setCenter(0.28f + pad, 0.6f);
 			aiRadioBtns[i].setOnTouchListener(this);
 			
@@ -77,6 +109,9 @@ public class MainMenu extends Game implements OnTouchListener
 				aiRadioBtns[i].setActive(false);
 			}
 		}
+		
+		labRadioBtnHierarchy.addChild(labNum);
+		labRadioBtnHierarchy.addChild(labRadioBtns);
 		
 		aiRadioBtnHierarchy.addChild(aiNum);
 		aiRadioBtnHierarchy.addChild(aiRadioBtns);
@@ -94,6 +129,7 @@ public class MainMenu extends Game implements OnTouchListener
 		createRaceLayout.setCenter(0.5f, 0.5f);
 		
 		createRaceLayout.addChild(createRaceStart_btn, createRaceBack_btn);
+		createRaceLayout.addChild(labRadioBtnHierarchy);
 		createRaceLayout.addChild(aiRadioBtnHierarchy);
 		createRaceLayout.setActive(false);
 		
@@ -127,142 +163,152 @@ public class MainMenu extends Game implements OnTouchListener
 		
 		setScene(scene);
 	}
+	
+	@Override
+	protected void onStart()
+	{
+		// TODO Auto-generated method stub
+		super.onStart();
+		isChangedScene = false;
+		isExited = false;
+	}
 
 	public void onUpdate()
 	{
 		
 	}
 
-	private void chooseAiNumber(int index)
+	private void chooseRadioButtonNumber(Button[] btn, int index)
 	{
-		for (int i = 1; i < aiRadioBtns.length; i+=2)
+		for (int i = 1; i < btn.length; i+=2)
 		{
-			aiRadioBtns[i].setActive(false);
+			btn[i].setActive(false);
 		}
 		
-		aiRadioBtns[index].setActive(true);
+		btn[index].setActive(true);
 	}
-
-	private void resetAiNumber()
+	
+	private int getRadioButtonPoint(Button[] btn)
 	{
-		for (int i = 0; i < aiRadioBtns.length; i++)
+		for (int i = 0; i < btn.length; i++)
 		{
-			if(i == 1 || i == 3 || i == 5)
+			if(i == 1)
 			{
-				aiRadioBtns[i].setActive(false);
+				if(btn[i].isActive())
+				{
+					return 1;
+				}
 			}
-			else
+			else if(i == 3)
 			{
-				aiRadioBtns[i].setActive(true);
+				if(btn[i].isActive())
+				{
+					return 2;
+				}
+			}
+			else if(i == 5)
+			{
+				if(btn[i].isActive())
+				{
+					return 3;
+				}
 			}
 		}
+		
+		return 0;
 	}
 	
 	public void onTouch(Button btn, int action, float x, float y)
 	{
-		if(action == TouchEvent.ACTION_UP)
+		if(!isChangedScene)
 		{
-			if(bgBtnGroup.isActive())
+			if(action == TouchEvent.ACTION_UP)
 			{
-				if(btn == create_btn)
+				if(bgBtnGroup.isActive())
 				{
-					if(!uiLayer.contains(createRaceLayout))
+					if(btn == create_btn)
 					{
-						uiLayer.addChild(createRaceLayout);
-						createRaceLayout.setActive(true);
-						bgBtnGroup.setActive(false);
+						if(!uiLayer.contains(createRaceLayout))
+						{
+							uiLayer.addChild(createRaceLayout);
+							createRaceLayout.setActive(true);
+							bgBtnGroup.setActive(false);
+							
+							chooseRadioButtonNumber(aiRadioBtns, 1);
+							chooseRadioButtonNumber(labRadioBtns, 1);
+						}
+					}
+					else if(btn == exit_btn)
+					{
+						isExited = true;
+						Game.exit();
+					}
+				}
+				else
+				{
+					if(btn == createRaceStart_btn)
+					{
+						isChangedScene = true;
+						int aiCount = getRadioButtonPoint(aiRadioBtns);
+						int labCount = getRadioButtonPoint(labRadioBtns);
 						
-						resetAiNumber();
+						Intent intent = new Intent(this, Stage1.class);
+						intent.putExtra("AI Count", aiCount);
+						intent.putExtra("LAB Count", labCount);
+						startActivity(intent);
+						
+//						RaceScene raceScene = new RaceScene();
+//						if(raceScene != getScene())
+//						{
+//							log("Set Scene");
+//							setScene(raceScene);
+//							
+//						}
 					}
-				}
-				else if(btn == exit_btn)
-				{
-					Game.exit();
+					else if(btn == createRaceBack_btn)
+					{
+						if(uiLayer.contains(createRaceLayout))
+						{
+							uiLayer.removeChild(createRaceLayout);
+							createRaceLayout.setActive(false);
+							bgBtnGroup.setActive(true);
+						}
+					}
+					else if(btn == aiRadioBtns[0])
+					{
+						chooseRadioButtonNumber(aiRadioBtns, 1);
+					}
+					else if(btn == aiRadioBtns[2])
+					{
+						chooseRadioButtonNumber(aiRadioBtns, 3);
+					}
+					else if(btn == aiRadioBtns[4])
+					{
+						chooseRadioButtonNumber(aiRadioBtns, 5);
+					}
+					else if(btn == labRadioBtns[0])
+					{
+						chooseRadioButtonNumber(labRadioBtns, 1);
+					}
+					else if(btn == labRadioBtns[2])
+					{
+						chooseRadioButtonNumber(labRadioBtns, 3);
+					}
+					else if(btn == labRadioBtns[4])
+					{
+						chooseRadioButtonNumber(labRadioBtns, 5);
+					}
 				}
 			}
-			else
-			{
-				if(btn == createRaceStart_btn)
-				{
-					int aiCount = 0;
-					
-					for (int i = 0; i < aiRadioBtns.length; i++)
-					{
-						if(i == 1)
-						{
-							if(aiRadioBtns[i].isActive())
-							{
-								aiCount = 1;
-								break;
-							}
-						}
-						else if(i == 3)
-						{
-							if(aiRadioBtns[i].isActive())
-							{
-								aiCount = 2;
-								break;
-							}
-						}
-						else if(i == 5)
-						{
-							if(aiRadioBtns[i].isActive())
-							{
-								aiCount = 3;
-								break;
-							}
-						}
-					}
-					
-					Intent intent = new Intent(this, Stage1.class);
-					intent.putExtra("AI Count", aiCount);
-					startActivity(intent);
-					
-//					RaceScene raceScene = new RaceScene();
-//					if(raceScene != getScene())
-//					{
-//						log("Set Scene");
-//						setScene(raceScene);
-//						
-//					}
-				}
-				else if(btn == createRaceBack_btn)
-				{
-					if(uiLayer.contains(createRaceLayout))
-					{
-						uiLayer.removeChild(createRaceLayout);
-						createRaceLayout.setActive(false);
-						bgBtnGroup.setActive(true);
-					}
-				}
-				else if(btn == aiRadioBtns[0])
-				{
-					chooseAiNumber(1);
-				}
-				else if(btn == aiRadioBtns[2])
-				{
-					chooseAiNumber(3);
-				}
-				else if(btn == aiRadioBtns[4])
-				{
-					chooseAiNumber(5);
-				}
-//				else if(btn == aiRadioBtns[1])
-//				{
-//					resetAiNumber();
-//					aiRadioBtns[0].setActive(true);
-//				}
-//				else if(btn == aiRadioBtns[3])
-//				{
-//					resetAiNumber();
-//					aiRadioBtns[2].setActive(true);
-//				}
-//				else if(btn == aiRadioBtns[5])
-//				{
-//					resetAiNumber();
-//					aiRadioBtns[4].setActive(true);
-//				}
-			}
+		}
+	}
+	
+	@Override
+	public void onBackPressed()
+	{
+		if(isExited)
+		{
+			super.onBackPressed();
 		}
 	}
 }
