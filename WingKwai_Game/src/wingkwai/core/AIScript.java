@@ -11,6 +11,7 @@ import plia.math.Vector3;
 
 public class AIScript
 {
+	private Player player;
 	private Vehicle vehicle;
 	private Checkpoint checkpoint;
 	private int currentCheckPoint = 0;
@@ -20,9 +21,10 @@ public class AIScript
 	
 	private ArrayList<SphereCollider> avoidances = new ArrayList<SphereCollider>();
 
-	public AIScript(Vehicle vehicle, Checkpoint checkpoint)
+	public AIScript(Player player, Checkpoint checkpoint)
 	{
-		this.vehicle = vehicle;
+		this.player = player;
+		this.vehicle = player.getVehicle();
 		this.checkpoint = checkpoint;
 
 		Vector2 chkpp = new Vector2(checkpoint.get(currentCheckPoint).getPosition());
@@ -35,6 +37,11 @@ public class AIScript
 
 	public void update()
 	{
+		if(player.hasItem() && player.getRank() > 1)
+		{
+			player.useItem();
+		}
+		
 		float rand = (float) Math.max(0.7f, Math.random()) * 0.03f;
 		vehicle.accelerate(rand);
 

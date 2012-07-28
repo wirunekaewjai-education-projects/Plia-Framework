@@ -5,16 +5,21 @@ import java.util.ArrayList;
 import plia.core.scene.Collider;
 import plia.core.scene.PlaneCollider;
 import plia.core.scene.SphereCollider;
+//import plia.math.Vector3;
 
 public class Checkpoint
 {
 	private ArrayList<PlaneCollider> colliders = new ArrayList<PlaneCollider>();
 	private ArrayList<Player> players = new ArrayList<Player>();
 	private int lab = 1;
+	
+//	private ArrayList<Float> distances = new ArrayList<Float>();
+//	
+//	private ArrayList<Float> distancesTmp = new ArrayList<Float>();
+//	private ArrayList<Integer> ranks = new ArrayList<Integer>();
 
 	public void update()
 	{
-		
 		for (Player player : players)
 		{
 			int currentCheckpoint = player.getCurrentCheckpoint();
@@ -22,6 +27,24 @@ public class Checkpoint
 			
 			PlaneCollider chp = colliders.get(currentCheckpoint);
 			SphereCollider spr = (SphereCollider) player.getVehicle().getObject().getCollider();
+
+//			float dist = Vector3.distance(chp.getPosition(), spr.getPosition());
+//			
+//			if(distancesTmp.isEmpty())
+//			{
+//				distancesTmp.add(dist);
+//				ranks.add(0);
+//			}
+//			else if(dist < distancesTmp.get(0))
+//			{
+//				distancesTmp.add(0, dist);
+//				ranks.add(0, players.indexOf(player));
+//			}
+//			else if(dist >= distancesTmp.get(0))
+//			{
+//				distancesTmp.add(dist);
+//				ranks.add(players.indexOf(player));
+//			}
 			
 			if(Collider.intersect(chp, spr))
 			{
@@ -46,6 +69,10 @@ public class Checkpoint
 				if(currentCheckpoint >= size())
 				{
 					currentCheckpoint -= size();
+				}
+				
+				if(checkpointCount == (size() * player.getLab())+1)
+				{
 					player.setLab(player.getLab()+1);
 				}
 				
@@ -53,12 +80,26 @@ public class Checkpoint
 				{
 //					removed.add(players.indexOf(player));
 					player.setEnd(true);
+					
+					int plab = player.getLab();
+					if(plab > lab)
+					{
+						player.setLab(lab);
+					}
 				}
 				
 				player.setCheckpointCount(checkpointCount);
 				player.setCurrentCheckpoint(currentCheckpoint);
 			}
 		}
+
+//		for (Player player : players)
+//		{
+//			player.setRank(ranks.remove(0)+1);
+//		}
+//		
+//		distancesTmp.clear();
+		
 		
 //		for (int indx : removed)
 //		{

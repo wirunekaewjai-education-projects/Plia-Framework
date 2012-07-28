@@ -4,7 +4,7 @@ package wingkwai.core;
 public class Player
 {
 	private Vehicle vehicle;
-	private Item item;
+	private Item item, usedItem;
 	
 	private long startTime = 0;
 	private boolean isUseItem = false;
@@ -43,17 +43,22 @@ public class Player
 		{
 			long currentMillis = System.currentTimeMillis() - startTime;
 			
-			if(currentMillis >= item.getTime() * 1000)
+			if(currentMillis >= usedItem.getTime() * 1000)
 			{
-				item.getOnItemEventListener().onEffectEnd(this);
-				item = null;
-				isUseItem = false;
-				vehicle.setVelocityMultiplier(1 + ((rank-1) * RANK_SPEED));
-				vehicle.setAngularVelocityMultiplier(1);
+				disposeUsedItem();
 			}
 		}
 	}
 	
+	private void disposeUsedItem()
+	{
+		usedItem.getOnItemEventListener().onEffectEnd(this);
+		usedItem = null;
+		isUseItem = false;
+		vehicle.setVelocityMultiplier(1 + ((rank-1) * RANK_SPEED));
+		vehicle.setAngularVelocityMultiplier(1);
+	}
+
 	public Vehicle getVehicle()
 	{
 		return vehicle;
@@ -103,13 +108,21 @@ public class Player
 	{
 		if(hasItem())
 		{
+			if(isUseItem)
+			{
+				disposeUsedItem();
+			}
+			
 			isUseItem = true;
 			startTime = System.currentTimeMillis();
 			
 			vehicle.setVelocityMultiplier(item.getSpeed());
 			vehicle.setAngularVelocityMultiplier(item.getControl());
 			
-			item.getOnItemEventListener().onEffectStart(this);
+			usedItem = item;
+			usedItem.getOnItemEventListener().onEffectStart(this);
+			
+			item = null;
 		}
 	}
 	

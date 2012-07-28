@@ -93,10 +93,21 @@ public class Stage1 extends Game
 	//
 	private boolean isStarted = false;
 	private boolean isEnd = false;
+	private boolean isShowRankResult = false;
 	
 	private Sprite endSprite;
 	
 	private int aiCount = 3;
+	
+	// Result
+	private Sprite rankLayout;
+	private Sprite[] rankName;
+	private Sprite[] rankNameRes;
+	
+	// HUD
+	private Sprite[] rankNumHud, labNumHud;
+	private Sprite rankHud, labHud;
+	private int currentRank = 1, currentLab = 1, tempRank = 1, tempLab = 1;
 
 	public void onInitialize(Bundle arg0)
 	{
@@ -128,6 +139,12 @@ public class Stage1 extends Game
 		aiScripts = new ArrayList<AIScript>();
 		players = new ArrayList<Player>();
 		
+		rankName = new Sprite[4];
+		rankNameRes = new Sprite[4];
+		
+		rankNumHud = new Sprite[4];
+		labNumHud = new Sprite[4];
+		
 		loadContent();
 		init();
 		initItem();
@@ -147,6 +164,18 @@ public class Stage1 extends Game
 		
 		baseBuffy.setName("Buffy");
 		itemBox.setName("ItemBox");
+		
+		rankLayout = sprite("ui/rank_layout.png");
+		
+		for (int i = 0; i < 4; i++)
+		{
+			rankNameRes[i] = sprite("ui/rankname/p"+(i+1)+".png");
+			rankNumHud[i] = sprite("ui/player_hud/num"+(i+1)+".png");
+			labNumHud[i] = sprite("ui/player_hud/num"+(i+1)+".png");
+		}
+		
+		rankHud = sprite("ui/player_hud/rank.png");
+		labHud = sprite("ui/player_hud/lab.png");
 	}
 
 	private void init()
@@ -254,7 +283,7 @@ public class Stage1 extends Game
 		initCheckpoint();
 		
 		players.add(new Player(vehicle));
-		AIScript aiScript1 = new AIScript(vehicle, checkpoint);
+		AIScript aiScript1 = new AIScript(players.get(0), checkpoint);
 		aiScripts.add(aiScript1);
 
 		for (int i = 1; i < aiCount+1; i++)
@@ -265,10 +294,11 @@ public class Stage1 extends Game
 			buffyClone.setPosition(waypoints.get(i));
 			
 			Vehicle vehicleClone = new Vehicle(buffyClone);
-			players.add(new Player(vehicleClone));
+			Player pclone = new Player(vehicleClone);
+			players.add(pclone);
 			
 			ShadowPlane shadowPlane = new ShadowPlane(shadowClone, buffyClone, 24);
-			AIScript aiScript = new AIScript(vehicleClone, checkpoint);
+			AIScript aiScript = new AIScript(pclone, checkpoint);
 			
 			shadowPlanes.add(shadowPlane);
 			aiScripts.add(aiScript);
@@ -298,11 +328,38 @@ public class Stage1 extends Game
 			checkpoint.addPlayer(players.get(i));
 		}
 		
-		endSprite = sprite("ui/goal.jpg");
-		endSprite.setScale(0.25f, 0.25f);
+		endSprite = sprite("ui/goal.png");
+		endSprite.setScale(0.4f, 0.4f);
+		endSprite.setCenter(0.5f, 0.5f);
+		
+		rankLayout.setScale(0.8f, 1);
+		rankLayout.setCenter(0.5f, 0.5f);
+		rankLayout.setActive(false);
+		
+		for (int i = 0; i < rankNameRes.length; i++)
+		{
+			rankNameRes[i].setScale(0.5f, 0.5f);
+		}
+		
+		rankHud.setScale(0.125f, 0.075f);
+		rankHud.setPosition(0.01f, 0.01f);
+		
+		labHud.setScale(0.115f, 0.075f);
+		labHud.setPosition(0.02f, 0.115f);
+		
+		for (int i = 0; i < rankNumHud.length; i++)
+		{
+			rankNumHud[i].setScale(0.075f, 0.075f);
+			labNumHud[i].setScale(0.075f, 0.075f);
+			
+			rankNumHud[i].setPosition(0.14f, 0.01f);
+			labNumHud[i].setPosition(0.14f, 0.115f);
+		}
 		
 		layer1.addChild(light1, light2, light3, buffy_statue, terrain1, buffy, trackOutside, trackInside);
-		layer2.addChild(controller);
+		layer2.addChild(controller, rankHud, labHud, rankNumHud[0], labNumHud[0]);
+//		layer2.addChild(rankNumHud);
+//		layer2.addChild(labNumHud);
 		
 		for (int i = 0; i < checkpoint.size(); i++)
 		{
@@ -475,6 +532,22 @@ public class Stage1 extends Game
 		}
 		else
 		{
+			currentRank = players.get(0).getRank();
+			if(tempRank != currentRank)
+			{
+				layer2.removeChild(rankNumHud[tempRank-1]);
+				layer2.addChild(rankNumHud[currentRank-1]);
+				tempRank = currentRank;
+			}
+			
+			currentLab = players.get(0).getLab();
+			if(tempLab != currentLab)
+			{
+				layer2.removeChild(labNumHud[tempLab-1]);
+				layer2.addChild(labNumHud[currentLab-1]);
+				tempLab = currentLab;
+			}
+			
 			checkpoint.update();
 			
 			for (Player player : players)
@@ -514,9 +587,46 @@ public class Stage1 extends Game
 						{
 							itemb.setActive(false);
 							player.setItem(items.get(0));
-							player.useItem();
+//							player.useItem();
 						}
 					}
+				}
+			}
+		}
+		
+		if(isEnd)
+		{
+			if(isShowRankResult)
+			{
+				if(endSprite.isActive())
+				{
+					endSprite.setActive(false);
+					rankLayout.setActive(true);
+					layer2.addChild(rankLayout);
+					
+					for (int i = 0; i < players.size(); i++)
+					{
+						int rank = players.get(i).getRank()-1;
+						rankName[rank] = rankNameRes[i].instantiate();
+					}
+					
+					for (int i = 0; i < rankName.length; i++)
+					{
+						float y = 0.3f + (0.15f * i);
+						
+						rankName[i].setPosition(0.275f, y);
+						rankName[i].setScale(0.5f, 0.1f);
+					}
+					
+					layer2.addChild(rankName);
+				}
+			}
+			else
+			{
+				float vel = players.get(0).getVehicle().getVelocity();
+				if(vel > -0.1f && vel < 0.1f)
+				{
+					isShowRankResult = true;
 				}
 			}
 		}

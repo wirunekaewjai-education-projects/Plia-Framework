@@ -167,7 +167,6 @@ public class MainMenu extends Game implements OnTouchListener
 	@Override
 	protected void onStart()
 	{
-		// TODO Auto-generated method stub
 		super.onStart();
 		isChangedScene = false;
 		isExited = false;
