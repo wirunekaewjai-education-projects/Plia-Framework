@@ -7,6 +7,7 @@ import plia.core.scene.Camera;
 import plia.core.scene.Group;
 import plia.core.scene.Layer;
 import plia.core.scene.Scene;
+import plia.core.scene.animation.PlaybackMode;
 import plia.math.Matrix4;
 import android.os.Bundle;
 import android.util.Log;
@@ -50,8 +51,12 @@ public class MainActivity extends Game
 		
 		Game.enabledDebug = true;
 
-		j1.rotate(90, 0, 0);
-		printName(j1, "");
+		Matrix4 axis = new Matrix4();
+		axis.setForward(0, 0, 1);
+		j1.setAxisRotation(axis);
+		j1.getAnimation().getAnimationClip("idle").setPlaybackMode(PlaybackMode.LOOP);
+		j1.getAnimation().play("idle");
+//		printName(j1, "");
 	}
 	
 	private void printName(Group joint, String space)
@@ -67,7 +72,7 @@ public class MainActivity extends Game
 	@Override
 	public void onUpdate()
 	{
-		j1.rotate(0, 1, 0);
+//		j1.rotate(0, 1, 0);
 //		printName(j1, "");
 		j1.draw();
 	}
