@@ -29,8 +29,6 @@ import android.util.Log;
 
 public class FbxDroid
 {
-	
-	
 	public static ScenePrefab importScene(String fbx, Context context)
 	{
 		ScenePrefab scenePrefab = new ScenePrefab();

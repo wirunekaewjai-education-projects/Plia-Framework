@@ -31,9 +31,20 @@ public final class AnimationPlayer
 		queues.clear();
 	}
 	
-	private static AnimationPlayer instance = new AnimationPlayer();
+	public void destroy()
+	{
+		queues.clear();
+		instance = null;
+	}
+	
+	private static AnimationPlayer instance;
 	public static AnimationPlayer getInstance()
 	{
+		if(instance == null)
+		{
+			instance = new AnimationPlayer();
+		}
+		
 		return instance;
 	}
 }

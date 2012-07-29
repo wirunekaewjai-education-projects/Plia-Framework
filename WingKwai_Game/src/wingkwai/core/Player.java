@@ -1,5 +1,7 @@
 package wingkwai.core;
 
+import wingkwai.game.MainMenu;
+
 
 public class Player
 {
@@ -89,6 +91,11 @@ public class Player
 		if(isAI)
 		{
 			value += ((rank-1) * AI_HACKINGSPEED);
+			
+			if(MainMenu.database[0] > 0)
+			{
+				value += (((float)MainMenu.database[1]/MainMenu.database[0]) * 0.05f);
+			}
 		}
 		vehicle.setVelocityMultiplier(vehicle.getVelocityMultiplier() + value);
 	}
@@ -180,6 +187,6 @@ public class Player
 		return isAI;
 	}
 	
-	private static float RANK_SPEED = 0.01f;
-	private static float AI_HACKINGSPEED = 0.004f;
+	private static float RANK_SPEED = 0.0175f;
+	private static float AI_HACKINGSPEED = 0.00475f;
 }

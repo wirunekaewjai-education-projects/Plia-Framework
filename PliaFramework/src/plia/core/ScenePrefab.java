@@ -84,4 +84,22 @@ public class ScenePrefab
 			nodePrefabs[i].resume();
 		}
 	}
+	
+	public void destroy()
+	{
+		rootName = null;
+		axisRotation = null;
+
+		animation = null;
+		
+		for (NodePrefab nodePrefab : nodePrefabs)
+		{
+			nodePrefab.destroy();
+		}
+		
+		nodePrefabs = null;
+		materials = null;
+		
+		defaultMaterial = null;
+	}
 }

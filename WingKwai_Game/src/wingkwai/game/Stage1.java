@@ -2,7 +2,13 @@ package wingkwai.game;
 
 import java.util.ArrayList;
 
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import plia.core.Game;
@@ -14,7 +20,7 @@ import plia.core.scene.shading.*;
 import plia.math.*;
 import wingkwai.core.*;
 
-public class Stage1 extends Game
+public class Stage1 extends Game implements SensorEventListener
 {
 	private Scene scene;
 	private Layer<Group> layer1;
@@ -41,6 +47,7 @@ public class Stage1 extends Game
 	
 	// UI
 	private Button controller;
+	private Sprite gamepad;
 	
 	// //
 	private Group itemBox;
@@ -89,13 +96,18 @@ public class Stage1 extends Game
 	private int currentRank = 1, currentLab = 1, tempRank = 1, tempLab = 1;
 	
 	private Button itemShortcutShadow;
+	private boolean pushBack = false;
+	
+	private SensorManager mSensorManager;
+	private Sensor mAccelerometer;
+	private float ax,ay,az;   // these are the acceleration in x,y and z axis
 
 	public void onInitialize(Bundle arg0)
 	{
 		setRequestedOrientation(0);
 		getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		
+
 		aiCount = getIntent().getIntExtra("AI Count", 1);
 		
 		scene = new Scene();
@@ -130,6 +142,23 @@ public class Stage1 extends Game
 		init();
 		initItem();
 	}
+	
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+	}
+	
+	@Override
+	protected void onPause()
+	{
+		super.onPause();
+		mSensorManager.unregisterListener(this);
+
+	}
 
 	private void loadContent()
 	{
@@ -142,6 +171,7 @@ public class Stage1 extends Game
 		shadowPlaneRef = model("model/shadow/shadow_plane.FBX");
 		
 		controller = button("ui/controller.png");
+		gamepad = sprite("ui/gamepad.png");
 		
 		baseBuffy.setName("Buffy");
 		itemBox.setName("ItemBox");
@@ -163,6 +193,8 @@ public class Stage1 extends Game
 
 	private void init()
 	{
+//		gamepad.setScale(x, y)
+		
 		// Set Buffy's Animation Clip
 		Animation buffyAnimation = baseBuffy.getAnimation();
 		buffyAnimation.getAnimationClip("idle").set(0, 30, PlaybackMode.LOOP);
@@ -230,32 +262,33 @@ public class Stage1 extends Game
 		float scalef = 0.2f;
 		controller.setScale(scalef, scalef * ratio);
 		controller.setActive(false);
-		controller.setOnTouchListener(new OnTouchListener()
-		{
-			
-			public void onTouch(Button button, int action, float x, float y)
-			{
-				if(!isEnd)
-				{
-					Vector2 center = button.getCenter();
-					
-					float dx = center.x - x;
-					float dy = center.y - y;
-					
-					Vector2 dir = vec2(dx, dy).getNormalized();
-
-					if(dir.y < 0.0f && !Float.isNaN(dir.y))
-					{
-						vehicle.accelerate(0.03f * dir.y);
-					}
-
-					if(dir.x != 0.0f && !Float.isNaN(dir.x))
-					{
-						vehicle.turn(dir.x);
-					}
-				}
-			}
-		});
+//		controller.setOnTouchListener(new OnTouchListener()
+//		{
+//			
+//			public void onTouch(Button button, int action, float x, float y)
+//			{
+//				if(!isEnd)
+//				{
+//					Vector2 center = button.getCenter();
+//					
+//					float dx = center.x - x;
+//					float dy = center.y - y;
+//					
+//					Vector2 dir = vec2(dx, dy).getNormalized();
+//
+//					if(dir.y < -0.5f && !Float.isNaN(dir.y))
+//					{
+//						vehicle.accelerate(0.03f * dir.y);
+//						pushBack = true;
+//					}
+//
+//					if(dir.x != 0.0f && !Float.isNaN(dir.x))
+//					{
+//						vehicle.turn(dir.x);
+//					}
+//				}
+//			}
+//		});
 
 		// Item
 		itemBox.setCollider(collider(7));
@@ -483,17 +516,48 @@ public class Stage1 extends Game
 		checkpoint.add(collider(-1, 0, 0, 				100, 300, 	433, -834, 27));
 	}
 	
+	private void addItemBox(float x, float y)
+	{
+		Group box = itemBox.instantiate();
+		box.setPosition(x, y, 26.5f);
+		layer1.addChild(box);
+		itemBoxes.add(box);
+	}
+	
 	private void initItem()
 	{
 		// Init Default ItemBox Location
-		for (int i = 0; i < 5; i++)
-		{
-			Group box = itemBox.instantiate();
-			box.setPosition(-322, -740 - (40*i), 26.5f);
-			layer1.addChild(box);
-			itemBoxes.add(box);
-		}
+//		for (int i = 0; i < 5; i++)
+//		{
+//			Group box = itemBox.instantiate();
+//			box.setPosition(-322, -740 - (40*i), 26.5f);
+//			layer1.addChild(box);
+//			itemBoxes.add(box);
+//		}
+		
+		addItemBox(-798, -422);
+		addItemBox(-763, -422);
+		addItemBox(-735, -422);
+		
+		addItemBox(-670, -341);
+		addItemBox(-644, -341);
+		addItemBox(-613, -341);
 
+//		addItemBox(-7, 623);
+//		addItemBox(45, 655);
+//		addItemBox(86, 683);
+//		addItemBox(125, 710);
+//		addItemBox(164, 742);
+//		addItemBox(196, 762);
+		
+//		addItemBox(370, 321);
+		
+		addItemBox(660, 102);
+		addItemBox(717, 78);
+		addItemBox(654, 33);
+		addItemBox(634, -7);
+		addItemBox(798, 56);
+		
 		// Init Item DB
 		Sprite berserkerSpr = sprite("ui/item_shortcut/superbuffy_sht.png");
 		berserkerSpr.setScale(0.2f, 0.2f);
@@ -552,9 +616,16 @@ public class Stage1 extends Game
 			if(!isEnd)
 			{
 				checkpoint.update();
+
+				if(!pushBack)
+				{
+					float rand = (float) Math.max(0.7f, Math.random()) * 0.055f;
+					players.get(0).getVehicle().accelerate(rand);
+				}
 				
-				float rand = (float) Math.max(0.7f, Math.random()) * 0.055f;
-				players.get(0).getVehicle().accelerate(rand);
+				players.get(0).getVehicle().turn(turnDir);
+				
+				pushBack = false;
 				
 				for (AIScript aiScript : aiScripts)
 				{
@@ -577,7 +648,7 @@ public class Stage1 extends Game
 				{
 					for (Player player : players)
 					{
-						if(Collider.intersect(itemb.getCollider(), player.getVehicle().getObject().getCollider()))
+						if(!player.hasItem() && Collider.intersect(itemb.getCollider(), player.getVehicle().getObject().getCollider()))
 						{
 							itemb.setActive(false);
 							Item item = items.get(0);
@@ -601,6 +672,18 @@ public class Stage1 extends Game
 			{
 				if(endSprite.isActive())
 				{
+					MainMenu.database[0]++;
+					
+					int pr = players.get(0).getRank();
+					if(pr == 1)
+					{
+						MainMenu.database[1]++;
+					}
+					else
+					{
+						MainMenu.database[2]++;
+					}
+					
 					endSprite.setActive(false);
 					rankLayout.setActive(true);
 					layer2.addChild(rankLayout);
@@ -613,13 +696,17 @@ public class Stage1 extends Game
 					
 					for (int i = 0; i < rankName.length; i++)
 					{
-						float y = 0.3f + (0.15f * i);
-						
-						rankName[i].setPosition(0.275f, y);
-						rankName[i].setScale(0.5f, 0.1f);
+						if(rankName[i] != null)
+						{
+							float y = 0.3f + (0.15f * i);
+							
+							rankName[i].setPosition(0.275f, y);
+							rankName[i].setScale(0.5f, 0.1f);
+							layer2.addChild(rankName[i]);
+						}
 					}
 					
-					layer2.addChild(rankName);
+					
 				}
 			}
 			else
@@ -638,7 +725,7 @@ public class Stage1 extends Game
 	{
 		if(action == TouchEvent.ACTION_UP || action == TouchEvent.ACTION_NONE)
 		{
-			controller.setActive(false);
+//			controller.setActive(false);
 		}
 		else if(action == TouchEvent.ACTION_DOWN)
 		{
@@ -653,11 +740,11 @@ public class Stage1 extends Game
 					player.useItem();
 				}
 			}
-			else
-			{
-				controller.setActive(true);
-				controller.setCenter(x, y);
-			}
+//			else
+//			{
+//				controller.setActive(true);
+//				controller.setCenter(x, y);
+//			}
 		}
 	}
 	
@@ -673,5 +760,65 @@ public class Stage1 extends Game
 		}
 		
 		items.clear();
+		
+		scene = null;
+		layer1 = null;
+		layer2 = null;
+		
+		light1 = null;
+		light2 = null;
+		light3 = null;
+
+		shadowPlaneRef = null;
+		shadowPlanes = null;
+		camera = null;
+		buffy_statue = null;
+		terrain1 = null;
+		baseBuffy = null;
+		buffyDif = null;
+		berserkerDif = null;
+		
+		controller = null;
+		gamepad = null;
+		itemBox = null;
+		vehicle = null;
+
+		trackOutside = null;
+		trackInside = null;
+		checkpoint = null;
+
+		itemBoxes.clear();
+		
+		waypoints.clear();
+		aiScripts.clear();
+		players.clear();
+
+		endSprite = null;
+		rankLayout = null;
+		rankName = null;
+		rankNameRes = null;
+		rankNumHud = null;
+		labNumHud = null;
+		rankHud = null;
+		labHud = null;
+		itemShortcutShadow = null;
+
+	}
+
+	public void onAccuracyChanged(Sensor arg0, int arg1)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	float turnDir = 0;
+	boolean isInitA = false;
+	public void onSensorChanged(SensorEvent event)
+	{
+		turnDir = -event.values[1] / 3f;
+		if(Float.isNaN(turnDir))
+		{
+			turnDir = 0;
+		}
 	}
 }

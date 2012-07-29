@@ -54,4 +54,12 @@ public class NodePrefab
 	{
 		mesh.resume();
 	}
+	
+	public void destroy()
+	{
+		name = null;
+		mesh.destroy();
+		mesh = null;
+		material = null;
+	}
 }

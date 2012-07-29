@@ -46,6 +46,9 @@ public class FbxImporter
 			isr.read(buffer);
 
 			list = new String(buffer).split("\n");
+			
+			isr.close();
+			isr = null;
 		} 
 		catch (IOException e)
 		{

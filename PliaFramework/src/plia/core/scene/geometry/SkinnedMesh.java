@@ -54,4 +54,21 @@ public class SkinnedMesh extends Mesh
 		setBuffer(2, buffers[0]);
 		setBuffer(3, buffers[1]);
 	}
+	
+	@Override
+	public void destroy()
+	{
+		// TODO Auto-generated method stub
+		super.destroy();
+		
+		bib.clear();
+		bib = null;
+		
+		bwb.clear();
+		bwb = null;
+		
+		boneIndices = null;
+		boneWeights = null;
+		buffers = null;
+	}
 }

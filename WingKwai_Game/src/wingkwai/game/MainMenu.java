@@ -78,8 +78,7 @@ public class MainMenu extends Game implements OnTouchListener
 		profileLayout = sprite("ui/profile_layout.png");
 		profileLayout.setScale(0.8f, 1);
 		profileLayout.setCenter(0.5f, 0.5f);
-		profileLayout.setActive(false);
-		
+
 		loadProfile = button();
 		loadProfile.setPosition(0.75f, 0.75f);
 		loadProfile.setScale(0.15f, 0.1f);
@@ -101,6 +100,7 @@ public class MainMenu extends Game implements OnTouchListener
 		
 		profileLayout.addChild(loadProfile, createNewProfile, backToMain);
 		profileLayout.addChild(txt);
+		profileLayout.setActive(false);
 		
 		labRadioBtnHierarchy = button();
 		aiRadioBtnHierarchy = button();
@@ -224,8 +224,6 @@ public class MainMenu extends Game implements OnTouchListener
 		scene.addLayer(uiLayer);
 
 		setScene(scene);
-		
-		
 	}
 	
 	@Override
@@ -455,6 +453,46 @@ public class MainMenu extends Game implements OnTouchListener
 				}
 			}
 		}
+	}
+	
+	@Override
+	protected void onDestroy()
+	{
+		scene = null;
+		
+		bgLayer = null;
+		uiLayer = null;
+		bgBtnGroup = null;
+		create_btn = null;
+		load_btn = null;
+		credit_btn = null;
+		exit_btn = null;
+		bg = null;
+		
+		profileLayout = null;
+		loadProfile = null;
+		createNewProfile = null;
+		backToMain = null;
+		
+		createRaceLayout = null;
+		createRaceStart_btn = null;
+		createRaceBack_btn = null;
+		
+		labRadioBtnHierarchy = null;
+		labRadioBtns = null;
+		
+		aiRadioBtnHierarchy = null;
+		aiRadioBtns = null;
+		
+		aiNum = null;
+		labNum = null;
+		
+		creditLayout = null;
+		deURL = null;
+
+		txt = null;
+
+		super.onDestroy();
 	}
 	
 	@Override

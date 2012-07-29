@@ -134,11 +134,33 @@ public class GameObjectManager
 	{
 		Log.e("OM", "On Destroy");
 		assetFileNames.clear();
+		
+		for (Texture2D texture2d : texturesList.values())
+		{
+			texture2d.destroy();
+		}
 		texturesList.clear();
-		scenePrefabs.clear();
+		
 		terrains.clear();
 		
+		getNormalQueue.clear();
+		
+		for (ScenePrefab scenePrefab : scenePrefabs.values())
+		{
+			scenePrefab.destroy();
+		}
+		
+		scenePrefabs.clear();
+
+//		for (Bitmap bitmap : bitmapList.values())
+//		{
+//			bitmap.
+//		}
+		
+		bitmapList.clear();
+		
 		isInitialized = false;
+		instance = null;
 	}
 	
 	private void loadAllFilesInAssets(String foldername)
@@ -196,9 +218,13 @@ public class GameObjectManager
 	
 	
 	
-	private static GameObjectManager instance = new GameObjectManager();
+	private static GameObjectManager instance;
 	static GameObjectManager getInstance()
 	{
+		if(instance == null)
+		{
+			instance = new GameObjectManager();
+		}
 		return instance;
 	}
 	

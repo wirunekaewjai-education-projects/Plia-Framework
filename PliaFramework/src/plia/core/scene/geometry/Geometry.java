@@ -15,6 +15,11 @@ public class Geometry
 		this.type = type;
 	}
 	
+	public void destroy()
+	{
+		
+	}
+	
 	public int getType()
 	{
 		return type;

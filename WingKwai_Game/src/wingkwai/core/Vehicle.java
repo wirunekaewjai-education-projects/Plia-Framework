@@ -186,7 +186,7 @@ public class Vehicle
 		this.velocityMultiplier = velocityMultiplier;
 	}
 	
-	public static float MAX_FORWARD_VELOCITY = 1.7f;
-	public static float MAX_BACKWARD_VELOCITY = -0.3f;
-	public static float MAX_ANGULAR_VELOCITY = 1;
+	public static float MAX_FORWARD_VELOCITY = 1.6f;
+	public static float MAX_BACKWARD_VELOCITY = -0.6f;
+	public static float MAX_ANGULAR_VELOCITY = 1.f;
 }

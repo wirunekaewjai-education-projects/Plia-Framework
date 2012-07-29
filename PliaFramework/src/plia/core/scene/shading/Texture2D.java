@@ -23,6 +23,11 @@ public class Texture2D extends GameObject
 		this.pixels = pixels;
 	}
 	
+	public void destroy()
+	{
+		pixels = null;
+	}
+	
 	public int getTextureBuffer()
 	{
 		return textureBuffer;

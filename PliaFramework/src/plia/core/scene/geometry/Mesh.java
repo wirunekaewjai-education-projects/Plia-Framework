@@ -143,6 +143,23 @@ public class Mesh extends Geometry
 		setBuffer(1, buffers[1]);
 	}
 	
+	@Override
+	public void destroy()
+	{
+		matrixPalette = null;
+		fb.clear();
+		fb = null;
+		
+		ib.clear();
+		ib = null;
+		
+		buffers = null;
+		indices = null;
+		normals = null;
+		uv = null;
+		vertices = null;
+	}
+	
 	public void setMatrixPalette(float[][] matrixPalette)
 	{
 		this.matrixPalette = matrixPalette;

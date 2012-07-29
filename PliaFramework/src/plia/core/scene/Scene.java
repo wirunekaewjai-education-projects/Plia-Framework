@@ -79,7 +79,15 @@ public class Scene extends GameObject
 	
 	public void onDestroy()
 	{
+		sprites.clear();
+		models.clear();
+		terrains.clear();
+		lights.clear();
 		
+		sprites = null;
+		models = null;
+		terrains = null;
+		lights = null;
 	}
 	
 	public void onTouchEvent(int action, float x, float y)
@@ -200,6 +208,11 @@ public class Scene extends GameObject
 	private ArrayList<Model> models = new ArrayList<Model>();
 	private ArrayList<Terrain> terrains = new ArrayList<Terrain>();
 	private ArrayList<Light> lights = new ArrayList<Light>();
+	
+	public static void allocate()
+	{
+		
+	}
 	
 	public static void onSurfaceChanged()
 	{

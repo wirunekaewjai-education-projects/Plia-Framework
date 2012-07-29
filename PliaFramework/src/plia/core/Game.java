@@ -87,6 +87,8 @@ public abstract class Game extends Activity implements IFramework
 			mainGame = this;
 //			this.debug = Debug.getInstance();
 		}
+		
+		System.gc();
 
 		this.onInitialize(savedInstanceState);
 		this.glSurfaceView = new GLSurfaceView(this);
@@ -186,7 +188,17 @@ public abstract class Game extends Activity implements IFramework
 			isExited = false;
 			this.gameObjectManager.destroy();
 			this.touchEventManager.removeAll();
+			
+			this.touchEventManager.destroy();
+			this.animationPlayer.destroy();
+			
+			this.animationPlayer = null;
+			this.gameObjectManager = null;
+			this.touchEventManager = null;
 		}
+		
+		instance = null;
+		System.gc();
 	}
 	
 	@Override

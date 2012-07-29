@@ -122,9 +122,20 @@ public class TouchEventManager
 		}
 	}
 	
-	private static TouchEventManager instance = new TouchEventManager();
+	public void destroy()
+	{
+		buttons.clear();
+		instance = null;
+	}
+	
+	private static TouchEventManager instance;
 	public static TouchEventManager getInstance()
 	{
+		if(instance == null)
+		{
+			instance = new TouchEventManager();
+		}
+		
 		return instance;
 	}
 }
