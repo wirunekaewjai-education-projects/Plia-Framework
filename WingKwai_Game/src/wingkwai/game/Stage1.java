@@ -8,7 +8,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import plia.core.Game;
@@ -46,8 +45,8 @@ public class Stage1 extends Game implements SensorEventListener
 	private Texture2D berserkerDif;
 	
 	// UI
-	private Button controller;
-	private Sprite gamepad;
+	private Button breakButton;
+	private boolean pushBack = false;
 	
 	// //
 	private Group itemBox;
@@ -96,11 +95,9 @@ public class Stage1 extends Game implements SensorEventListener
 	private int currentRank = 1, currentLab = 1, tempRank = 1, tempLab = 1;
 	
 	private Button itemShortcutShadow;
-	private boolean pushBack = false;
 	
 	private SensorManager mSensorManager;
 	private Sensor mAccelerometer;
-	private float ax,ay,az;   // these are the acceleration in x,y and z axis
 
 	public void onInitialize(Bundle arg0)
 	{
@@ -170,9 +167,8 @@ public class Stage1 extends Game implements SensorEventListener
 		
 		shadowPlaneRef = model("model/shadow/shadow_plane.FBX");
 		
-		controller = button("ui/controller.png");
-		gamepad = sprite("ui/gamepad.png");
-		
+		breakButton = button("ui/break_btn.png");
+
 		baseBuffy.setName("Buffy");
 		itemBox.setName("ItemBox");
 		
@@ -260,35 +256,8 @@ public class Stage1 extends Game implements SensorEventListener
 
 		float ratio = (float)Screen.getWidth() / Screen.getHeight();
 		float scalef = 0.2f;
-		controller.setScale(scalef, scalef * ratio);
-		controller.setActive(false);
-//		controller.setOnTouchListener(new OnTouchListener()
-//		{
-//			
-//			public void onTouch(Button button, int action, float x, float y)
-//			{
-//				if(!isEnd)
-//				{
-//					Vector2 center = button.getCenter();
-//					
-//					float dx = center.x - x;
-//					float dy = center.y - y;
-//					
-//					Vector2 dir = vec2(dx, dy).getNormalized();
-//
-//					if(dir.y < -0.5f && !Float.isNaN(dir.y))
-//					{
-//						vehicle.accelerate(0.03f * dir.y);
-//						pushBack = true;
-//					}
-//
-//					if(dir.x != 0.0f && !Float.isNaN(dir.x))
-//					{
-//						vehicle.turn(dir.x);
-//					}
-//				}
-//			}
-//		});
+		breakButton.setScale(scalef, scalef * ratio);
+		breakButton.setActive(false);
 
 		// Item
 		itemBox.setCollider(collider(7));
@@ -377,7 +346,7 @@ public class Stage1 extends Game implements SensorEventListener
 		itemShortcutShadow.setActive(false);
 		
 		layer1.addChild(light1, light2, light3, buffy_statue, terrain1, buffy, trackOutside, trackInside);
-		layer2.addChild(controller, rankHud, labHud, itemShortcutShadow, rankNumHud[0], labNumHud[0]);
+		layer2.addChild(breakButton, rankHud, labHud, itemShortcutShadow, rankNumHud[0], labNumHud[0]);
 //		layer2.addChild(rankNumHud);
 //		layer2.addChild(labNumHud);
 		
@@ -617,15 +586,13 @@ public class Stage1 extends Game implements SensorEventListener
 			{
 				checkpoint.update();
 
-				if(!pushBack)
-				{
-					float rand = (float) Math.max(0.7f, Math.random()) * 0.055f;
-					players.get(0).getVehicle().accelerate(rand);
-				}
+				float accDir = (pushBack) ? -1 : 1;
+				float rand = (float) Math.max(0.7f, Math.random()) * 0.055f * accDir;
+				players.get(0).getVehicle().accelerate(rand);
 				
 				players.get(0).getVehicle().turn(turnDir);
 				
-				pushBack = false;
+//				pushBack = false;
 				
 				for (AIScript aiScript : aiScripts)
 				{
@@ -672,16 +639,16 @@ public class Stage1 extends Game implements SensorEventListener
 			{
 				if(endSprite.isActive())
 				{
-					MainMenu.database[0]++;
+					MainMenu.profile.setMatch(MainMenu.profile.getMatch()+1);
 					
 					int pr = players.get(0).getRank();
 					if(pr == 1)
 					{
-						MainMenu.database[1]++;
+						MainMenu.profile.setWin(MainMenu.profile.getWin()+1);
 					}
 					else
 					{
-						MainMenu.database[2]++;
+						MainMenu.profile.setLose(MainMenu.profile.getLose()+1);
 					}
 					
 					endSprite.setActive(false);
@@ -725,7 +692,8 @@ public class Stage1 extends Game implements SensorEventListener
 	{
 		if(action == TouchEvent.ACTION_UP || action == TouchEvent.ACTION_NONE)
 		{
-//			controller.setActive(false);
+			breakButton.setActive(false);
+			pushBack = false;
 		}
 		else if(action == TouchEvent.ACTION_DOWN)
 		{
@@ -740,11 +708,13 @@ public class Stage1 extends Game implements SensorEventListener
 					player.useItem();
 				}
 			}
-//			else
-//			{
-//				controller.setActive(true);
-//				controller.setCenter(x, y);
-//			}
+			else
+			{
+				breakButton.setActive(true);
+				breakButton.setCenter(x, y);
+				
+				pushBack = true;
+			}
 		}
 	}
 	
@@ -778,8 +748,7 @@ public class Stage1 extends Game implements SensorEventListener
 		buffyDif = null;
 		berserkerDif = null;
 		
-		controller = null;
-		gamepad = null;
+		breakButton = null;
 		itemBox = null;
 		vehicle = null;
 

@@ -31,6 +31,7 @@ public class MainMenu extends Game implements OnTouchListener
 	private Sprite profileLayout;
 	private Button loadProfile, createNewProfile, backToMain;
 	
+	private Sprite[] mapPic;
 	private Sprite createRaceLayout;
 	private Button createRaceStart_btn;
 	private Button createRaceBack_btn;
@@ -40,10 +41,7 @@ public class MainMenu extends Game implements OnTouchListener
 	
 	private Button aiRadioBtnHierarchy;
 	private Button[] aiRadioBtns;
-	
-	private Button aiNum;
-	private Button labNum;
-	
+
 	private Button creditLayout;
 	private Button deURL;
 	
@@ -57,7 +55,10 @@ public class MainMenu extends Game implements OnTouchListener
 	private boolean isLoad = false;
 	
 	// Profile
-	public static int[] database = new int[3];
+	public static Profile profile;
+	int profileData[] = new int[3];
+	
+	private Database db;
 
 	public void onInitialize(Bundle arg0)
 	{
@@ -65,6 +66,9 @@ public class MainMenu extends Game implements OnTouchListener
 		getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+		db = new Database(this);
+		profile = db.get();
+		
 		scene = new Scene();
 		
 		bg = sprite("ui/mainmenu.png");
@@ -104,11 +108,7 @@ public class MainMenu extends Game implements OnTouchListener
 		
 		labRadioBtnHierarchy = button();
 		aiRadioBtnHierarchy = button();
-		
-		labNum = button("ui/radios/lab_num.png");
-		labNum.setScale(0.09f, 0.15f);
-		labNum.setCenter(0.19f, 0.5f);
-		
+
 		labRadioBtns = new Button[6];
 		labRadioBtns[0] = button("ui/radios/num1.png");
 		labRadioBtns[1] = button("ui/radios/num1_chk.png");
@@ -116,11 +116,7 @@ public class MainMenu extends Game implements OnTouchListener
 		labRadioBtns[3] = button("ui/radios/num2_chk.png");
 		labRadioBtns[4] = button("ui/radios/num3.png");
 		labRadioBtns[5] = button("ui/radios/num3_chk.png");
-		
-		aiNum = button("ui/radios/ai_num.png");
-		aiNum.setScale(0.09f, 0.15f);
-		aiNum.setCenter(0.19f, 0.59f);
-		
+
 		aiRadioBtns = new Button[6];
 		aiRadioBtns[0] = button("ui/radios/num1.png");
 		aiRadioBtns[1] = button("ui/radios/num1_chk.png");
@@ -131,10 +127,10 @@ public class MainMenu extends Game implements OnTouchListener
 		
 		for (int i = 0; i < aiRadioBtns.length; i++)
 		{
-			labRadioBtns[i].setScale(0.06f, 0.1f);
+			labRadioBtns[i].setScale(0.1f, 0.1f);
 			
-			float pad = ((int)(i / 2f)) * 0.1f;
-			labRadioBtns[i].setCenter(0.28f + pad, 0.51f);
+			float pad = ((int)(i / 2f)) * 0.15f;
+			labRadioBtns[i].setCenter(0.4f + pad, 0.55f);
 			labRadioBtns[i].setOnTouchListener(this);
 			
 			if(i == 1 || i == 3 || i == 5)
@@ -144,8 +140,8 @@ public class MainMenu extends Game implements OnTouchListener
 			
 			//
 			
-			aiRadioBtns[i].setScale(0.06f, 0.1f);
-			aiRadioBtns[i].setCenter(0.28f + pad, 0.6f);
+			aiRadioBtns[i].setScale(0.1f, 0.1f);
+			aiRadioBtns[i].setCenter(0.4f + pad, 0.75f);
 			aiRadioBtns[i].setOnTouchListener(this);
 			
 			if(i == 1 || i == 3 || i == 5)
@@ -154,10 +150,10 @@ public class MainMenu extends Game implements OnTouchListener
 			}
 		}
 		
-		labRadioBtnHierarchy.addChild(labNum);
+//		labRadioBtnHierarchy.addChild(labNum);
 		labRadioBtnHierarchy.addChild(labRadioBtns);
 		
-		aiRadioBtnHierarchy.addChild(aiNum);
+//		aiRadioBtnHierarchy.addChild(aiNum);
 		aiRadioBtnHierarchy.addChild(aiRadioBtns);
 		
 		createRaceStart_btn = button("ui/start_btn.png");
@@ -168,9 +164,16 @@ public class MainMenu extends Game implements OnTouchListener
 		createRaceBack_btn.setScale(0.1f, 0.0875f);
 		createRaceBack_btn.setPosition(0.78f, 0.875f);
 		
-		createRaceLayout = sprite("ui/layout.png");
+		createRaceLayout = sprite("ui/createrace_layout.png");
 		createRaceLayout.setScale(0.8f, 1);
 		createRaceLayout.setCenter(0.5f, 0.5f);
+		
+		mapPic = new Sprite[1];
+		mapPic[0] = sprite("ui/map01.jpg");
+		mapPic[0].setScale(0.3f, 0.3f);
+		mapPic[0].setCenter(0.5f, 0.3f);
+		
+		createRaceLayout.addChild(mapPic);
 		
 		creditLayout = button("ui/credit_layout.png");
 		creditLayout.setScale(0.8f, 1);
@@ -233,14 +236,20 @@ public class MainMenu extends Game implements OnTouchListener
 		isChangedScene = false;
 		isExited = false;
 	}
+	
+	
 
 	public void onUpdate()
 	{
 		if(isLoad)
 		{
+			profileData[0] = profile.getMatch();
+			profileData[1] = profile.getWin();
+			profileData[2] = profile.getLose();
+			
 			for (int i = 0; i < txt.length; i++)
 			{
-				String textData = database[i]+"";
+				String textData = profileData[i]+"";
 				txt[i].setImageSrc(text(textData, 60, Color.WHITE));
 				txt[i].setScale(textData.length() * 0.0175f, 0.04f);
 			}
@@ -358,11 +367,7 @@ public class MainMenu extends Game implements OnTouchListener
 					}
 					else if(btn == createNewProfile)
 					{
-						for (int i = 0; i < database.length; i++)
-						{
-							database[i] = 0;
-						}
-						
+						profile = new Profile();
 						isLoad = true;
 					}
 					else if(btn == loadProfile)
@@ -483,10 +488,7 @@ public class MainMenu extends Game implements OnTouchListener
 		
 		aiRadioBtnHierarchy = null;
 		aiRadioBtns = null;
-		
-		aiNum = null;
-		labNum = null;
-		
+
 		creditLayout = null;
 		deURL = null;
 
@@ -500,6 +502,8 @@ public class MainMenu extends Game implements OnTouchListener
 	{
 		if(isExited)
 		{
+			db.delete();
+			db.add(profile);
 			super.onBackPressed();
 		}
 	}

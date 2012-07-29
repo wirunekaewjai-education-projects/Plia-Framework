@@ -92,9 +92,9 @@ public class Player
 		{
 			value += ((rank-1) * AI_HACKINGSPEED);
 			
-			if(MainMenu.database[0] > 0)
+			if(MainMenu.profile.getMatch() > 0)
 			{
-				value += (((float)MainMenu.database[1]/MainMenu.database[0]) * 0.05f);
+				value += (((float)MainMenu.profile.getWin()/MainMenu.profile.getMatch()) * 0.05f);
 			}
 		}
 		vehicle.setVelocityMultiplier(vehicle.getVelocityMultiplier() + value);
