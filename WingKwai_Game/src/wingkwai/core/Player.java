@@ -16,6 +16,7 @@ public class Player
 	private int checkpointCount = 0;
 	
 	private boolean isEnd = false;
+	private boolean isAI = false;
 	
 	public Player(Vehicle vehicle)
 	{
@@ -55,7 +56,16 @@ public class Player
 		usedItem.getOnItemEventListener().onEffectEnd(this);
 		usedItem = null;
 		isUseItem = false;
-		vehicle.setVelocityMultiplier(1 + ((rank-1) * RANK_SPEED));
+		
+		if(isAI)
+		{
+			vehicle.setVelocityMultiplier(1 + ((rank-1) * RANK_SPEED) + ((rank-1) * AI_HACKINGSPEED));
+		}
+		else
+		{
+			vehicle.setVelocityMultiplier(1 + ((rank-1) * RANK_SPEED));
+		}
+		
 		vehicle.setAngularVelocityMultiplier(1);
 	}
 
@@ -76,6 +86,10 @@ public class Player
 		
 		int dist = rank - oldRank;
 		float value = dist * RANK_SPEED;
+		if(isAI)
+		{
+			value += ((rank-1) * AI_HACKINGSPEED);
+		}
 		vehicle.setVelocityMultiplier(vehicle.getVelocityMultiplier() + value);
 	}
 	
@@ -156,5 +170,16 @@ public class Player
 		this.isEnd = isEnd;
 	}
 	
-	private static float RANK_SPEED = 0.005f;
+	public void setAI(boolean isAI)
+	{
+		this.isAI = isAI;
+	}
+	
+	public boolean isAI()
+	{
+		return isAI;
+	}
+	
+	private static float RANK_SPEED = 0.01f;
+	private static float AI_HACKINGSPEED = 0.004f;
 }

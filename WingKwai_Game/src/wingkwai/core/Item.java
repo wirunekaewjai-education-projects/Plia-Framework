@@ -1,6 +1,7 @@
 package wingkwai.core;
 
 import plia.core.GameObject;
+import plia.core.scene.Sprite;
 
 public class Item extends GameObject
 {
@@ -12,9 +13,12 @@ public class Item extends GameObject
 	
 	private OnItemEventListener onItemEventListener;
 	
-	public Item(String name, float str, float spd, float ctrl, float luck, long time)
+	private Sprite shortcut;
+	
+	public Item(String name, Sprite shortcut, float str, float spd, float ctrl, float luck, long time)
 	{
 		super(name);
+		this.shortcut = shortcut;
 		this.strength = str;
 		this.speed = spd;
 		this.control = ctrl;
@@ -37,9 +41,10 @@ public class Item extends GameObject
 		};
 	}
 	
-	public Item(String name, float str, float spd, float ctrl, float luck, long time, OnItemEventListener onItemEventListener)
+	public Item(String name, Sprite shortcut, float str, float spd, float ctrl, float luck, long time, OnItemEventListener onItemEventListener)
 	{
 		super(name);
+		this.shortcut = shortcut;
 		this.strength = str;
 		this.speed = spd;
 		this.control = ctrl;
@@ -51,7 +56,7 @@ public class Item extends GameObject
 	@Override
 	public GameObject instantiate()
 	{
-		Item item = new Item(name, strength, speed, control, luck, time);
+		Item item = new Item(name, shortcut, strength, speed, control, luck, time);
 		return item;
 	}
 	
@@ -83,5 +88,10 @@ public class Item extends GameObject
 	public OnItemEventListener getOnItemEventListener()
 	{
 		return onItemEventListener;
+	}
+	
+	public Sprite getShortcut()
+	{
+		return shortcut;
 	}
 }

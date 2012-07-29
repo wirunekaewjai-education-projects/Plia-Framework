@@ -1,7 +1,9 @@
 package wingkwai.game;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import plia.core.Game;
@@ -39,8 +41,13 @@ public class MainMenu extends Game implements OnTouchListener
 	private Button aiNum;
 	private Button labNum;
 	
+	private Button creditLayout;
+	private Button deURL;
+	
 	private boolean isChangedScene = false;
 	private boolean isExited = false;
+	
+	private int state = 0;
 
 	public void onInitialize(Bundle arg0)
 	{
@@ -128,6 +135,17 @@ public class MainMenu extends Game implements OnTouchListener
 		createRaceLayout.setScale(0.8f, 1);
 		createRaceLayout.setCenter(0.5f, 0.5f);
 		
+		creditLayout = button("ui/credit_layout.png");
+		creditLayout.setScale(0.8f, 1);
+		creditLayout.setCenter(0.5f, 0.5f);
+		creditLayout.setActive(false);
+		
+		deURL = button();
+		deURL.setScale(0.3f, 0.1f);
+		deURL.setCenter(0.5f, 0.75f);
+		deURL.setActive(false);
+//		creditLayout.addChild(deURL);
+		
 		createRaceLayout.addChild(createRaceStart_btn, createRaceBack_btn);
 		createRaceLayout.addChild(labRadioBtnHierarchy);
 		createRaceLayout.addChild(aiRadioBtnHierarchy);
@@ -149,6 +167,8 @@ public class MainMenu extends Game implements OnTouchListener
 		exit_btn.setOnTouchListener(this);
 		createRaceStart_btn.setOnTouchListener(this);
 		createRaceBack_btn.setOnTouchListener(this);
+		deURL.setOnTouchListener(this);
+		creditLayout.setOnTouchListener(this);
 
 		bgBtnGroup.addChild(create_btn, load_btn, credit_btn, exit_btn);
 		bg.addChild(bgBtnGroup);
@@ -223,7 +243,7 @@ public class MainMenu extends Game implements OnTouchListener
 		{
 			if(action == TouchEvent.ACTION_UP)
 			{
-				if(bgBtnGroup.isActive())
+				if(state == 0)
 				{
 					if(btn == create_btn)
 					{
@@ -235,7 +255,23 @@ public class MainMenu extends Game implements OnTouchListener
 							
 							chooseRadioButtonNumber(aiRadioBtns, 1);
 							chooseRadioButtonNumber(labRadioBtns, 1);
+							
+							state = 2;
 						}
+					}
+					else if(btn == credit_btn)
+					{
+						state = 3;
+						if(!uiLayer.contains(creditLayout))
+						{
+							uiLayer.addChild(deURL);
+							uiLayer.addChild(creditLayout);
+							
+							creditLayout.setActive(true);
+							deURL.setActive(true);
+							bgBtnGroup.setActive(false);
+						}
+						
 					}
 					else if(btn == exit_btn)
 					{
@@ -243,7 +279,7 @@ public class MainMenu extends Game implements OnTouchListener
 						Game.exit();
 					}
 				}
-				else
+				else if(state == 2)
 				{
 					if(btn == createRaceStart_btn)
 					{
@@ -271,6 +307,8 @@ public class MainMenu extends Game implements OnTouchListener
 							uiLayer.removeChild(createRaceLayout);
 							createRaceLayout.setActive(false);
 							bgBtnGroup.setActive(true);
+							
+							state = 0;
 						}
 					}
 					else if(btn == aiRadioBtns[0])
@@ -297,6 +335,30 @@ public class MainMenu extends Game implements OnTouchListener
 					{
 						chooseRadioButtonNumber(labRadioBtns, 5);
 					}
+				}
+				else if(state == 3)
+				{
+					if(btn == deURL && !isChangedScene)
+					{
+						isChangedScene = true;
+						Uri uri = Uri.parse("http://www.dpu.ac.th/eng/ae/");
+						Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+						startActivity(intent);
+					}
+					else 
+					{
+						if(uiLayer.contains(creditLayout))
+						{
+							uiLayer.removeChild(creditLayout);
+							uiLayer.removeChild(deURL);
+							createRaceLayout.setActive(false);
+							deURL.setActive(false);
+							bgBtnGroup.setActive(true);
+
+							state = 0;
+						}
+					}
+					
 				}
 			}
 		}

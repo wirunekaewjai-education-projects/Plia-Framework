@@ -33,6 +33,7 @@ public class AIScript
 		currentDirection = Vector2.subtract(chkpp, sphrpp).getNormalized();
 		
 		forwardDir = vehicle.getObject().getForward();
+		player.setAI(true);
 	}
 
 	public void update()
@@ -42,7 +43,7 @@ public class AIScript
 			player.useItem();
 		}
 		
-		float rand = (float) Math.max(0.7f, Math.random()) * 0.03f;
+		float rand = (float) Math.max(0.7f, Math.random()) * 0.075f;
 		vehicle.accelerate(rand);
 
 		Group obj = vehicle.getObject();

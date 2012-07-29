@@ -7,33 +7,12 @@ import android.view.Window;
 import android.view.WindowManager;
 import plia.core.Game;
 import plia.core.Screen;
-import plia.core.event.OnTouchListener;
-import plia.core.event.TouchEvent;
-import plia.core.scene.Button;
-import plia.core.scene.Camera;
-import plia.core.scene.Collider;
-import plia.core.scene.CurveCollider;
-import plia.core.scene.Group;
-import plia.core.scene.Layer;
-import plia.core.scene.Light;
-import plia.core.scene.Scene;
-import plia.core.scene.SphereCollider;
-import plia.core.scene.Sprite;
-import plia.core.scene.View;
-import plia.core.scene.animation.Animation;
-import plia.core.scene.animation.PlaybackMode;
-import plia.core.scene.shading.Material;
-import plia.core.scene.shading.Shader;
-import plia.core.scene.shading.Texture2D;
-import plia.math.Vector2;
-import plia.math.Vector3;
-import wingkwai.core.AIScript;
-import wingkwai.core.Checkpoint;
-import wingkwai.core.Item;
-import wingkwai.core.OnItemEventListener;
-import wingkwai.core.Player;
-import wingkwai.core.ShadowPlane;
-import wingkwai.core.Vehicle;
+import plia.core.event.*;
+import plia.core.scene.*;
+import plia.core.scene.animation.*;
+import plia.core.scene.shading.*;
+import plia.math.*;
+import wingkwai.core.*;
 
 public class Stage1 extends Game
 {
@@ -108,6 +87,8 @@ public class Stage1 extends Game
 	private Sprite[] rankNumHud, labNumHud;
 	private Sprite rankHud, labHud;
 	private int currentRank = 1, currentLab = 1, tempRank = 1, tempLab = 1;
+	
+	private Button itemShortcutShadow;
 
 	public void onInitialize(Bundle arg0)
 	{
@@ -176,6 +157,8 @@ public class Stage1 extends Game
 		
 		rankHud = sprite("ui/player_hud/rank.png");
 		labHud = sprite("ui/player_hud/lab.png");
+		
+		itemShortcutShadow = button("model/shadow/shadow_tex.png");
 	}
 
 	private void init()
@@ -261,7 +244,7 @@ public class Stage1 extends Game
 					
 					Vector2 dir = vec2(dx, dy).getNormalized();
 
-					if(dir.y != 0.0f && !Float.isNaN(dir.y))
+					if(dir.y < 0.0f && !Float.isNaN(dir.y))
 					{
 						vehicle.accelerate(0.03f * dir.y);
 					}
@@ -283,8 +266,8 @@ public class Stage1 extends Game
 		initCheckpoint();
 		
 		players.add(new Player(vehicle));
-		AIScript aiScript1 = new AIScript(players.get(0), checkpoint);
-		aiScripts.add(aiScript1);
+//		AIScript aiScript1 = new AIScript(players.get(0), checkpoint);
+//		aiScripts.add(aiScript1);
 
 		for (int i = 1; i < aiCount+1; i++)
 		{
@@ -356,8 +339,12 @@ public class Stage1 extends Game
 			labNumHud[i].setPosition(0.14f, 0.115f);
 		}
 		
+		itemShortcutShadow.setScale(0.25f, 0.25f);
+		itemShortcutShadow.setPosition(0.75f, 0.75f);
+		itemShortcutShadow.setActive(false);
+		
 		layer1.addChild(light1, light2, light3, buffy_statue, terrain1, buffy, trackOutside, trackInside);
-		layer2.addChild(controller, rankHud, labHud, rankNumHud[0], labNumHud[0]);
+		layer2.addChild(controller, rankHud, labHud, itemShortcutShadow, rankNumHud[0], labNumHud[0]);
 //		layer2.addChild(rankNumHud);
 //		layer2.addChild(labNumHud);
 		
@@ -508,7 +495,11 @@ public class Stage1 extends Game
 		}
 
 		// Init Item DB
-		Item berserker = new Item("Berserker", 1.2f, 1.2f, -1, 0, 5, new OnItemEventListener()
+		Sprite berserkerSpr = sprite("ui/item_shortcut/superbuffy_sht.png");
+		berserkerSpr.setScale(0.2f, 0.2f);
+		berserkerSpr.setCenter(0.875f, 0.85f);
+		
+		Item berserker = new Item("Berserker", berserkerSpr, 1.2f, 1.2f, -1, 0, 5, new OnItemEventListener()
 		{
 			public void onEffectStart(Player player)
 			{
@@ -548,8 +539,6 @@ public class Stage1 extends Game
 				tempLab = currentLab;
 			}
 			
-			checkpoint.update();
-			
 			for (Player player : players)
 			{
 				player.update();
@@ -562,6 +551,11 @@ public class Stage1 extends Game
 			
 			if(!isEnd)
 			{
+				checkpoint.update();
+				
+				float rand = (float) Math.max(0.7f, Math.random()) * 0.055f;
+				players.get(0).getVehicle().accelerate(rand);
+				
 				for (AIScript aiScript : aiScripts)
 				{
 					aiScript.update();
@@ -586,8 +580,15 @@ public class Stage1 extends Game
 						if(Collider.intersect(itemb.getCollider(), player.getVehicle().getObject().getCollider()))
 						{
 							itemb.setActive(false);
-							player.setItem(items.get(0));
+							Item item = items.get(0);
+							player.setItem(item);
 //							player.useItem();
+							
+							if(players.indexOf(player) == 0)
+							{
+								layer2.addChild(item.getShortcut());
+								itemShortcutShadow.setActive(true);
+							}
 						}
 					}
 				}
@@ -641,8 +642,22 @@ public class Stage1 extends Game
 		}
 		else if(action == TouchEvent.ACTION_DOWN)
 		{
-			controller.setActive(true);
-			controller.setCenter(x, y);
+			if(itemShortcutShadow.intersect(x, y))
+			{
+				Player player = players.get(0);
+				if(player.hasItem())
+				{
+					itemShortcutShadow.setActive(false);
+					Item item = player.getItem();
+					layer2.removeChild(item.getShortcut());
+					player.useItem();
+				}
+			}
+			else
+			{
+				controller.setActive(true);
+				controller.setCenter(x, y);
+			}
 		}
 	}
 	
