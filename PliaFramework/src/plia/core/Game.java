@@ -26,9 +26,14 @@ import plia.math.Vector3;
 import plia.math.Vector4;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
+import android.opengl.GLUtils;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -561,6 +566,52 @@ public abstract class Game extends Activity implements IFramework
 	public static final Texture2D tex2D(String path)
 	{
 		return GameObjectManager.loadTexture2D(path);
+	}
+	
+	public static final Texture2D text(String text, float textSize, int textColor)
+	{
+		Paint paint = new Paint();
+	    paint.setTextSize(textSize);
+	    paint.setColor(textColor);
+	    paint.setTextAlign(Paint.Align.CENTER);
+	    
+	    Rect bounds = new Rect();
+	    paint.getTextBounds("  "+text+"  ", 0, text.length()+4, bounds);
+	    
+	    int width = bounds.width();
+	    int height = bounds.height();
+	    
+	    int x = (width / 2);
+	    int y = Math.abs(bounds.top);
+
+	    Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+	    Canvas canvas = new Canvas(bitmap);
+	    canvas.drawText(text, x, y, paint);
+
+		int[] tex = new int[1];
+		
+		GLES20.glGenTextures(1, tex, 0);
+		
+		// generate color texture
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex[0]);
+
+		// parameters
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+
+		GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+		GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
+		
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+		
+		int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
+	    bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+	    
+	    Texture2D texture = new Texture2D(text, tex[0], pixels, bitmap.getWidth(), bitmap.getHeight());
+	    
+	    return texture;
 	}
 	
 	public static final PlaneCollider collider(float upX, float upY, float upZ, float scaleX, float scaleY, float posX, float posY, float posZ)

@@ -3,7 +3,6 @@ package wingkwai.game;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import plia.core.Game;
@@ -54,7 +53,7 @@ public class MainMenu extends Game implements OnTouchListener
 		setRequestedOrientation(0);
 		getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		
+
 		scene = new Scene();
 		
 		bg = sprite("ui/mainmenu.png");
@@ -245,7 +244,13 @@ public class MainMenu extends Game implements OnTouchListener
 			{
 				if(state == 0)
 				{
-					if(btn == create_btn)
+					if(btn == load_btn)
+					{
+						isChangedScene = true;
+						Intent intent = new Intent(this, ProfilePage.class);
+						startActivity(intent);
+					}
+					else if(btn == create_btn)
 					{
 						if(!uiLayer.contains(createRaceLayout))
 						{
