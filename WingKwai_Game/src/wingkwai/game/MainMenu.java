@@ -1,6 +1,7 @@
 package wingkwai.game;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Window;
@@ -27,6 +28,9 @@ public class MainMenu extends Game implements OnTouchListener
 	private Button exit_btn;
 	private Sprite bg;
 	
+	private Sprite profileLayout;
+	private Button loadProfile, createNewProfile, backToMain;
+	
 	private Sprite createRaceLayout;
 	private Button createRaceStart_btn;
 	private Button createRaceBack_btn;
@@ -47,6 +51,13 @@ public class MainMenu extends Game implements OnTouchListener
 	private boolean isExited = false;
 	
 	private int state = 0;
+	
+	private Sprite[] txt;
+	
+	private boolean isLoad = false;
+	
+	// Profile
+	public static int[] database = new int[3];
 
 	public void onInitialize(Bundle arg0)
 	{
@@ -63,6 +74,33 @@ public class MainMenu extends Game implements OnTouchListener
 		create_btn = button();//"ui/create_btn.jpg");
 		credit_btn = button();//"ui/credit_btn.jpg");
 		exit_btn = button();//"ui/exit_btn.jpg");
+		
+		profileLayout = sprite("ui/profile_layout.png");
+		profileLayout.setScale(0.8f, 1);
+		profileLayout.setCenter(0.5f, 0.5f);
+		profileLayout.setActive(false);
+		
+		loadProfile = button();
+		loadProfile.setPosition(0.75f, 0.75f);
+		loadProfile.setScale(0.15f, 0.1f);
+		
+		createNewProfile = button();
+		createNewProfile.setPosition(0.12f, 0.9f);
+		createNewProfile.setScale(0.2f, 0.1f);
+		
+		backToMain = button();
+		backToMain.setPosition(0.75f, 0.9f);
+		backToMain.setScale(0.15f, 0.1f);
+		
+		txt = new Sprite[3];
+		for (int i = 0; i < txt.length; i++)
+		{
+			txt[i] = new Sprite();
+			txt[i].setPosition(0.4325f, 0.23f + (i * 0.2f));
+		}
+		
+		profileLayout.addChild(loadProfile, createNewProfile, backToMain);
+		profileLayout.addChild(txt);
 		
 		labRadioBtnHierarchy = button();
 		aiRadioBtnHierarchy = button();
@@ -160,6 +198,11 @@ public class MainMenu extends Game implements OnTouchListener
 		credit_btn.setCenter(0.25f, 0.69f);
 		exit_btn.setCenter(0.25f, 0.885f);
 		
+		
+		createNewProfile.setOnTouchListener(this);
+		loadProfile.setOnTouchListener(this);
+		backToMain.setOnTouchListener(this);
+		
 		create_btn.setOnTouchListener(this);
 		load_btn.setOnTouchListener(this);
 		credit_btn.setOnTouchListener(this);
@@ -179,8 +222,10 @@ public class MainMenu extends Game implements OnTouchListener
 
 		scene.addLayer(bgLayer);
 		scene.addLayer(uiLayer);
-		
+
 		setScene(scene);
+		
+		
 	}
 	
 	@Override
@@ -193,8 +238,19 @@ public class MainMenu extends Game implements OnTouchListener
 
 	public void onUpdate()
 	{
-		
+		if(isLoad)
+		{
+			for (int i = 0; i < txt.length; i++)
+			{
+				String textData = database[i]+"";
+				txt[i].setImageSrc(text(textData, 60, Color.WHITE));
+				txt[i].setScale(textData.length() * 0.0175f, 0.04f);
+			}
+
+			isLoad = false;
+		}
 	}
+
 
 	private void chooseRadioButtonNumber(Button[] btn, int index)
 	{
@@ -246,9 +302,14 @@ public class MainMenu extends Game implements OnTouchListener
 				{
 					if(btn == load_btn)
 					{
-						isChangedScene = true;
-						Intent intent = new Intent(this, ProfilePage.class);
-						startActivity(intent);
+						if(!uiLayer.contains(profileLayout))
+						{
+							uiLayer.addChild(profileLayout);
+							profileLayout.setActive(true);
+							bgBtnGroup.setActive(false);
+							isLoad = true;
+							state = 1;
+						}
 					}
 					else if(btn == create_btn)
 					{
@@ -282,6 +343,33 @@ public class MainMenu extends Game implements OnTouchListener
 					{
 						isExited = true;
 						Game.exit();
+					}
+				}
+				else if(state == 1)
+				{
+					if(btn == backToMain)
+					{
+						if(uiLayer.contains(profileLayout))
+						{
+							uiLayer.removeChild(profileLayout);
+							profileLayout.setActive(false);
+							bgBtnGroup.setActive(true);
+							
+							state = 0;
+						}
+					}
+					else if(btn == createNewProfile)
+					{
+						for (int i = 0; i < database.length; i++)
+						{
+							database[i] = 0;
+						}
+						
+						isLoad = true;
+					}
+					else if(btn == loadProfile)
+					{
+						isLoad = true;
 					}
 				}
 				else if(state == 2)
