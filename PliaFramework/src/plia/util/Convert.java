@@ -322,6 +322,14 @@ public final class Convert
 		
 		return minPowD[cast] * decimal;
 	}
+	
+	public static float pow(double a, double b)
+	{
+		double rt = Math.sqrt(a);
+		double ln = Math.log(rt);
+		double p = Math.exp(b * ln);
+		return (float)(p*p);
+	}
 
 	private static double[] maxPowD = new double[309];
 	private static double[] minPowD = new double[325];

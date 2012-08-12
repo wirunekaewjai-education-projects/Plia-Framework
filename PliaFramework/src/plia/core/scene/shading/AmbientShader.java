@@ -68,23 +68,23 @@ final class AmbientShader extends Shader
 			"	gl_FragColor = texture2D(baseTexture, uvCoord);" +
 			"}";
 	
-	private static String fsWithTexture2 = 
-			"precision mediump float;" +
-			"" +
-			"uniform sampler2D baseTexture;" +
-			"" +
-			"varying vec2 uvCoord;" +
-			"" +
-			"void main()" +
-			"{" +
-			"	lowp vec4 final_color = texture2D(baseTexture, uvCoord);" +
-			"	if(final_color.w < 0.5)" +
-			"	{" +
-			"		discard;" +
-			"	}" +
-			"	else" +
-			"		gl_FragColor = final_color;" +
-			"}";
+//	private static String fsWithTexture2 = 
+//			"precision mediump float;" +
+//			"" +
+//			"uniform sampler2D baseTexture;" +
+//			"" +
+//			"varying vec2 uvCoord;" +
+//			"" +
+//			"void main()" +
+//			"{" +
+//			"	lowp vec4 final_color = texture2D(baseTexture, uvCoord);" +
+//			"	if(final_color.w < 0.5)" +
+//			"	{" +
+//			"		discard;" +
+//			"	}" +
+//			"	else" +
+//			"		gl_FragColor = final_color;" +
+//			"}";
 	
 	private static String fsWithTexture3 = 
 			"precision mediump float;" +
