@@ -185,6 +185,8 @@ public class Scene extends GameObject
 	
 	public static void setMainCamera(Camera mainCamera)
 	{
+		hasChangedProjection = true;
+		hasChangedModelView = true;
 		Scene.mainCamera = mainCamera;
 	}
 	
