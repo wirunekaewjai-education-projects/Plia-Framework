@@ -1,4 +1,4 @@
-package demo1.main;
+package demo1.app;
 
 import plia.core.GameObjectManager;
 import plia.core.scene.Group;
@@ -6,7 +6,7 @@ import plia.core.scene.Light;
 import plia.core.scene.shading.Shader;
 import plia.math.Vector3;
 
-public class Lighting extends App
+public class Lighting extends BaseApplication
 {
 	private Group geosphere;
 	private Group blackBox;

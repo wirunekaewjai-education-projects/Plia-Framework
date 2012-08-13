@@ -2,6 +2,10 @@ package demo1.main;
 
 import java.util.ArrayList;
 
+import demo1.app.BaseApplication;
+import demo1.app.FbxViewer;
+import demo1.app.Lighting;
+
 import plia.core.Game;
 import plia.core.event.TouchEvent;
 import plia.core.scene.Group;
@@ -14,7 +18,7 @@ import android.view.WindowManager;
 public class Program extends Game
 {
 	private Scene scene;
-	private ArrayList<App> apps;
+	private ArrayList<BaseApplication> apps;
 
 	private int state = -1;
 
@@ -25,7 +29,7 @@ public class Program extends Game
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		scene = new Scene();
-		apps = new ArrayList<App>();
+		apps = new ArrayList<BaseApplication>();
 		apps.add(new FbxViewer());
 		apps.add(new Lighting());
 

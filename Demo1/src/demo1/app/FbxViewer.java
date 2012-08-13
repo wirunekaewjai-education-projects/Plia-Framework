@@ -1,5 +1,6 @@
-package demo1.main;
+package demo1.app;
 
+import demo1.main.Grid;
 import plia.core.GameObjectManager;
 import plia.core.scene.Group;
 import plia.core.scene.animation.Animation;
@@ -7,7 +8,7 @@ import plia.core.scene.animation.PlaybackMode;
 import plia.core.scene.shading.Shader;
 import plia.math.Vector3;
 
-public class FbxViewer extends App
+public class FbxViewer extends BaseApplication
 {
 	private Group buffy;
 
