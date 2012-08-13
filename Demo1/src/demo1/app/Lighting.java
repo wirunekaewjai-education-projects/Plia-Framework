@@ -15,6 +15,7 @@ public class Lighting extends BaseApplication
 
 	public Lighting()
 	{
+		super("Lighting");
 		camera.setPosition(20, 20, 12);
 		camera.setEulerAngles(0, 0, 0);
 		camera.setLookAt(new Vector3(0, 0, 4));
@@ -42,12 +43,12 @@ public class Lighting extends BaseApplication
 		bluePoint.asModel().getMaterial().setBaseColor(0, 0, 1);
 		
 		movingLightPoint = redPoint.instantiate();
-		movingLightPoint.setPosition(12, 0, 5);
+		movingLightPoint.setPosition(0, 12, 5);
 		movingLightPoint.asModel().getMaterial().setShader(Shader.AMBIENT);
 		movingLightPoint.asModel().getMaterial().setBaseColor(1, 1, 1);
 
-		movingLight = new Light(Light.POINT_LIGHT, 5);
-		movingLight.setPosition(12, 0, 5);
+		movingLight = new Light(Light.POINT_LIGHT, 5, 4);
+		movingLight.setPosition(0, 12, 5);
 		
 		Light l1 = new Light(Light.POINT_LIGHT, 5, 1, 1, 0, 0);
 		l1.setPosition(18, 0, 0);
@@ -58,7 +59,7 @@ public class Lighting extends BaseApplication
 		Light l3 = new Light(Light.POINT_LIGHT, 5, 1, 0, 0, 1);
 		l3.setPosition(0, 0, 18);
 
-		getLayer().addChild(camera, geosphere, blackBox, l1, l2, l3, redPoint, greenPoint, bluePoint, movingLight, movingLightPoint);
+		_3DLayer.addChild(camera, geosphere, blackBox, l1, l2, l3, redPoint, greenPoint, bluePoint, movingLight, movingLightPoint);
 	}
 
 	public void update()
