@@ -47,6 +47,16 @@ public class CurveCollider extends Collider
 		colliders.remove(c);
 	}
 	
+	public int getColliderCount()
+	{
+		return colliders.size();
+	}
+	
+	public Collider getCollider(int index)
+	{
+		return colliders.get(index);
+	}
+	
 	private static int[] indx = new int[5];
 	
 	@Override

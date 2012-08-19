@@ -284,7 +284,7 @@ final class AmbientShader extends Shader
 				"" +
 				"void main()" +
 				"{" +
-				"	vec4 final_color = color * intensity;" +
+				"	vec4 final_color = color;" + // * intensity;" +
 				"	gl_FragColor = final_color;" +
 				"}";
 		

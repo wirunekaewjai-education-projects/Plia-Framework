@@ -1003,7 +1003,10 @@ public class Scene extends GameObject
 		{
 			if(view instanceof Sprite)
 			{
-				sprites.add((Sprite) view);
+				if(((Sprite) view).getImageSrc() != null && ((Sprite) view).getImageSrc().getTextureBuffer() > -1)
+				{
+					sprites.add((Sprite) view);
+				}
 			}
 			
 			for (int i = 0; i < view.getChildCount(); i++)

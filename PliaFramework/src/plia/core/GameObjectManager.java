@@ -12,6 +12,9 @@ import java.util.HashMap;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
@@ -47,9 +50,14 @@ public class GameObjectManager
 	private ArrayList<Terrain> getNormalQueue = new ArrayList<Terrain>();
 //	private ArrayList<Terrain> getTextureQueue = new ArrayList<Terrain>();
 	
+	private ArrayList<Texture2D> textsTex = new ArrayList<Texture2D>(); 
+	private ArrayList<Bitmap> textsBmp = new ArrayList<Bitmap>();
+	
 	private int[] terrainBuffers = new int[2];
 	
 	private boolean isInitialized = false;
+	
+	private boolean isUpdateState = false;
 	
 	public void setContext(Context context)
 	{
@@ -127,6 +135,41 @@ public class GameObjectManager
 				texture2d.setTextureBuffer(tex[0]);
 				Log.e("Tex2D : "+texture2d.hashCode(), "On Resume");
 			}
+		}
+	}
+	
+	public void update()
+	{
+		if(!isUpdateState)
+		{
+			isUpdateState = true;
+		}
+		
+		int textsSize = textsTex.size();
+		for (int i = 0; i < textsSize; i++)
+		{
+			Texture2D texture = textsTex.remove(0);
+			Bitmap bitmap = textsBmp.remove(0);
+			
+			int[] tex = new int[1];
+			
+			GLES20.glGenTextures(1, tex, 0);
+			
+			// generate color texture
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex[0]);
+
+			// parameters
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+
+			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+			GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
+			
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+			
+			texture.setTextureBuffer(tex[0]);
 		}
 	}
 	
@@ -334,6 +377,62 @@ public class GameObjectManager
 		instance.terrains.add(terrain);
 
 		return terrain;
+	}
+	
+	public static Texture2D createText(String text, float textSize, int textColor)
+	{
+		Paint paint = new Paint();
+	    paint.setTextSize(textSize);
+	    paint.setColor(textColor);
+	    paint.setTextAlign(Paint.Align.CENTER);
+	    
+	    Rect bounds = new Rect();
+	    paint.getTextBounds("  "+text+"  ", 0, text.length()+4, bounds);
+	    
+	    int width = bounds.width();
+	    int height = bounds.height();
+	    
+	    int x = (width / 2);
+	    int y = Math.abs(bounds.top);
+
+	    Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+	    Canvas canvas = new Canvas(bitmap);
+	    canvas.drawText(text, x, y, paint);
+		
+		int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
+	    bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+	    
+	    Texture2D texture = new Texture2D(text, -1, pixels, bitmap.getWidth(), bitmap.getHeight());
+	    
+	    if(instance.isUpdateState)
+	    {
+			int[] tex = new int[1];
+			
+			GLES20.glGenTextures(1, tex, 0);
+			
+			// generate color texture
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex[0]);
+
+			// parameters
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+
+			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+			GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
+			
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+			
+			texture.setTextureBuffer(tex[0]);
+	    }
+	    else
+	    {
+	    	instance.textsTex.add(texture);
+		    instance.textsBmp.add(bitmap);
+	    }
+	    
+	    return texture;
 	}
 
 	public static Group loadModel(String fbx_path)

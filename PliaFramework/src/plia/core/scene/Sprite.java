@@ -4,6 +4,7 @@ import android.graphics.RectF;
 import plia.core.AnimationPlayer;
 import plia.core.GameObject;
 import plia.core.scene.animation.Animation;
+import plia.core.scene.animation.PlaybackMode;
 import plia.core.scene.shading.Texture2D;
 import plia.math.Vector2;
 
@@ -64,6 +65,8 @@ public class Sprite extends View
 	{
 		this.imageSrc = imageSrc;
 		setAnimation(new Animation(0, frame));
+		getAnimation().play("idle");
+		getAnimation().getAnimationClip("idle").setPlaybackMode(PlaybackMode.LOOP);
 	}
 	
 	public void setCenter(float x, float y)
