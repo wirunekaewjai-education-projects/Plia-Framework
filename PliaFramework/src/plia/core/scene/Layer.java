@@ -14,6 +14,17 @@ public final class Layer<T extends Node> extends GameObject
 	}
 	
 	@Override
+	public void setActive(boolean active)
+	{
+		super.setActive(active);
+		
+		for (int i = 0; i < childCount; i++)
+		{
+			children[i].setActive(active);
+		}
+	}
+	
+	@Override
 	protected void update()
 	{
 		if(isActive())

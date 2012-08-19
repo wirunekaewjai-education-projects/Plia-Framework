@@ -41,7 +41,7 @@ public class TouchEventManager
 	
 	public void update()
 	{
-		if(currentButton != null)
+		if(currentButton != null && currentButton.isActive())
 		{
 			if(currentAction == TouchEvent.ACTION_DOWN)
 			{
@@ -90,9 +90,10 @@ public class TouchEventManager
 					OnTouchListener onTouchListener = button.getOnTouchListener();
 					if(onTouchListener != null)
 					{
+//						Log.e(button.toString(), button.getOnTouchListener().toString());
 						currentAction = TouchEvent.ACTION_DOWN;
 						currentButton = button;
-						onTouchListener.onTouch(currentButton, currentAction, locationX, locationY);
+						button.getOnTouchListener().onTouch(currentButton, currentAction, locationX, locationY);
 						count = 0;
 						break;
 					}

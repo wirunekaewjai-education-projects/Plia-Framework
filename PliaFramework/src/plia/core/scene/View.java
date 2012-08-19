@@ -34,6 +34,14 @@ public class View extends Node<View>
 	{
 		// TODO Auto-generated method stub
 		super.update();
+		
+		if(isActive())
+		{
+			for (int i = 0; i < childCount; i++)
+			{
+				getChild(i).update();
+			}
+		}
 	}
 	
 	public Vector2 getPosition()
