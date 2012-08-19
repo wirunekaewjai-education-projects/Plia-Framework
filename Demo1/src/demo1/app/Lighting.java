@@ -15,7 +15,7 @@ public class Lighting extends BaseApplication
 
 	public Lighting()
 	{
-		super("Lighting");
+		super("Lighting (Gouraud shading)");
 		camera.setPosition(20, 20, 12);
 		camera.setEulerAngles(0, 0, 0);
 		camera.setLookAt(new Vector3(0, 0, 4));

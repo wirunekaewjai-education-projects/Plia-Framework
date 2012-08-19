@@ -49,6 +49,13 @@ public class FBX extends BaseApplication implements OnTouchListener
 		_3DLayer.addChild(camera, buffy);
 	}
 
+	@Override
+	public void resume()
+	{
+		super.resume();
+		buffy.getAnimation().play("idle");
+	}
+	
 	public void update()
 	{
 		camera.rotate(0, 0, 0.25f, true);
