@@ -26,6 +26,11 @@ public class ListView extends View implements OnTouchListener
 		isChanged = true;
 	}
 	
+	public void resume()
+	{
+		isChanged = true;
+	}
+	
 	@Override
 	protected void update()
 	{

@@ -218,6 +218,7 @@ public class Program extends Game implements OnTouchListener, SensorEventListene
 				scene.addLayer(apps.get(state).get2DLayer());
 				scene.addLayer(apps.get(state).get3DLayer());
 
+				listView.resume();
 				isChanged = false;
 			}
 			
