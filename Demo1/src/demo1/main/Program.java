@@ -8,6 +8,7 @@ import demo1.app.Displacement;
 import demo1.app.FBX;
 import demo1.app.Lighting;
 import demo1.app.ObjectInstancing;
+import demo1.app.PathFollowing;
 import demo1.app.SkyDomeApp;
 import demo1.app.Sprite2D;
 
@@ -43,6 +44,7 @@ public class Program extends Game implements OnTouchListener, SensorEventListene
 
 	private int state = -1;
 	private boolean isChanged = false;
+	private boolean isFocused = false;
 	
 	private Layer<View> mainLayer;
 	private Sprite mainbg;
@@ -75,6 +77,7 @@ public class Program extends Game implements OnTouchListener, SensorEventListene
 				"Sprite 2D",
 				"Sky Dome",
 				"Object Instancing",
+				"Path Following",
 			};
 		
 		listView = new ListView(4, 0.6f, 0.2f);
@@ -115,6 +118,7 @@ public class Program extends Game implements OnTouchListener, SensorEventListene
 		apps.add(new Sprite2D());
 		apps.add(new SkyDomeApp());
 		apps.add(new ObjectInstancing());
+		apps.add(new PathFollowing());
 		
 		previous = button("ui/previous.png");
 		previous.setScale(0.06f, 0.1f);
@@ -220,9 +224,13 @@ public class Program extends Game implements OnTouchListener, SensorEventListene
 
 				listView.resume();
 				isChanged = false;
+				isFocused = true;
 			}
 			
-			apps.get(state).update();
+			if(isFocused)
+			{
+				apps.get(state).update();
+			}
 		}
 	}
 	
@@ -235,6 +243,7 @@ public class Program extends Game implements OnTouchListener, SensorEventListene
 		}
 		else
 		{
+			isFocused = false;
 			removeAll();
 			mainbg.setActive(true);
 			listView.setActive(true);

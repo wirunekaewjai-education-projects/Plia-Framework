@@ -20,7 +20,7 @@ public class FBX extends BaseApplication implements OnTouchListener
 
 	public FBX()
 	{
-		super("FBX File Format");
+		super("FBX File Format (GPU Animation)");
 		camera.setPosition(10, 10, 5);
 		camera.setEulerAngles(0, 0, 0);
 		camera.setLookAt(new Vector3());

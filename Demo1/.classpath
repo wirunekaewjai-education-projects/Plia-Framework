@@ -5,5 +5,6 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="lib" path="jlib/plia_framework_ver_1_02.jar"/>
+	<classpathentry exported="true" kind="lib" path="jlib/racing_framework_v1_0.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

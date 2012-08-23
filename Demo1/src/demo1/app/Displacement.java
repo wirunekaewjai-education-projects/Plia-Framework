@@ -17,7 +17,7 @@ public class Displacement extends BaseApplication
 
 	public Displacement()
 	{
-		super("Displacement Mapping");
+		super("Displacement Mapping (GPU)");
 		camera.setPosition(40, 40, 40);
 		camera.setLookAt(new Vector3());
 		camera.setRange(1000);
