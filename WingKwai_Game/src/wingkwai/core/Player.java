@@ -91,11 +91,11 @@ public class Player
 		if(isAI)
 		{
 			value += ((rank-1) * AI_HACKINGSPEED);
-			
-			if(MainMenu.profile.getMatch() > 0)
-			{
-				value += (((float)MainMenu.profile.getWin()/MainMenu.profile.getMatch()) * 0.05f);
-			}
+//			
+//			if(MainMenu.profile.getMatch() > 0)
+//			{
+//				value += (((float)MainMenu.profile.getWin()/MainMenu.profile.getMatch()) * 0.05f);
+//			}
 		}
 		vehicle.setVelocityMultiplier(vehicle.getVelocityMultiplier() + value);
 	}
