@@ -387,14 +387,6 @@ public class MainMenu extends Game implements OnTouchListener
 						intent.putExtra("AI Count", aiCount);
 						intent.putExtra("LAB Count", labCount);
 						startActivity(intent);
-						
-//						RaceScene raceScene = new RaceScene();
-//						if(raceScene != getScene())
-//						{
-//							log("Set Scene");
-//							setScene(raceScene);
-//							
-//						}
 					}
 					else if(btn == createRaceBack_btn)
 					{

@@ -25,6 +25,7 @@ import plia.core.scene.View;
 import plia.core.scene.shading.Texture2D;
 import plia.math.Vector3;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -64,7 +65,7 @@ public class Program extends Game implements OnTouchListener, SensorEventListene
 
 	public void onInitialize(Bundle arg0)
 	{
-		setRequestedOrientation(0);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		

@@ -2,6 +2,7 @@ package game.test;
 
 import java.io.IOException;
 
+import plia.core.FbxDroid;
 import plia.plugin.fbx.fileio.FbxImporter;
 import game.test.R;
 import android.app.Activity;
@@ -26,14 +27,7 @@ public class MainActivity extends Activity
 		if(event.getAction() == MotionEvent.ACTION_DOWN)
 		{
 			long start = System.nanoTime();
-			try
-			{
-				FbxImporter.importScene(getAssets().open("elementalist31.FBX"));
-			} catch (IOException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			FbxDroid.importScene("buffylow.FBX", this);
 			float end = (System.nanoTime() - start) / 1000000f;
 			Log.e("Usage Time", end+" ms");
 		}
